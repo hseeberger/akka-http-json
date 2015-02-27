@@ -1,3 +1,5 @@
+import bintray. { Keys => BintrayKeys }
+import bintray.Plugin._
 import com.typesafe.sbt.SbtGit._
 import com.typesafe.sbt.SbtScalariform._
 import de.heikoseeberger.sbtheader.SbtHeader.autoImport._
@@ -14,6 +16,7 @@ object Build extends AutoPlugin {
   override def projectSettings =
     scalariformSettings ++
     versionWithGit ++
+    bintrayPublishSettings ++
     inConfig(Compile)(compileInputs.in(compile) <<= compileInputs.in(compile).dependsOn(createHeaders.in(compile))) ++
     inConfig(Test)(compileInputs.in(compile) <<= compileInputs.in(compile).dependsOn(createHeaders.in(compile))) ++
     List(
@@ -30,6 +33,7 @@ object Build extends AutoPlugin {
       ),
       unmanagedSourceDirectories in Compile := List((scalaSource in Compile).value),
       unmanagedSourceDirectories in Test := List((scalaSource in Test).value),
+      licenses += ("APSL-2.0", url("http://www.apache.org/licenses/LICENSE-2.0")),
       // Scalariform settings
       ScalariformKeys.preferences := ScalariformKeys.preferences.value
         .setPreference(AlignArguments, true)
@@ -61,6 +65,8 @@ object Build extends AutoPlugin {
              |
              |""".stripMargin
         )
-      )
+      ),
+      // Bintray settings
+      name in BintrayKeys.bintray := "akka-http-json"
     )
 }
