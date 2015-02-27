@@ -1,18 +1,16 @@
 import sbt._
 
 object Version {
-  val akka      = "2.3.9"
-  val logback   = "1.1.2"
+  val akkaHttp  = "1.0-M4"
+  val play      = "2.4.0-M2"
   val scala     = "2.11.6"
   val scalaTest = "2.2.4"
-  val scalactic = "2.2.4"
+  val sprayJson = "1.3.1"
 }
 
 object Library {
-  val akkaActor      = "com.typesafe.akka" %% "akka-actor"      % Version.akka
-  val akkaSlf4j      = "com.typesafe.akka" %% "akka-slf4j"      % Version.akka
-  val akkaTestkit    = "com.typesafe.akka" %% "akka-testkit"    % Version.akka
-  val logbackClassic = "ch.qos.logback"    %  "logback-classic" % Version.logback
-  val scalaTest      = "org.scalatest"     %% "scalatest"       % Version.scalaTest
-  val scalactic      = "org.scalactic"     %% "scalactic"       % Version.scalactic
+  val akkaHttp  = "com.typesafe.akka" %% "akka-http-experimental" % Version.akkaHttp
+  val playJson  = "com.typesafe.play" %% "play-json"              % Version.play
+  val scalaTest = "org.scalatest"     %% "scalatest"              % Version.scalaTest
+  val sprayJson = "io.spray"          %% "spray-json"             % Version.sprayJson
 }

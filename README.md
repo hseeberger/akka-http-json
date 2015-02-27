@@ -1,6 +1,6 @@
 # akka-http-json #
 
-Welcome to akka-http-json!
+akka-http-json, not an official [Akka](akka.io) project, provides JSON support for Akka HTTP.
 
 ## Contribution policy ##
 
