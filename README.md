@@ -1,6 +1,6 @@
 # akka-http-json #
 
-akka-http-json provides JSON (un)marshalling support for Akka[Akka](akka.io) HTTP. Currently it supports Play JSON and spray-json.
+akka-http-json provides JSON (un)marshalling support for [Akka](akka.io) HTTP. Currently it supports Play JSON and spray-json.
 
 ## Installation
 
