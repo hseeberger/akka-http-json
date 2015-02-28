@@ -1,6 +1,28 @@
 # akka-http-json #
 
-akka-http-json, not an official [Akka](akka.io) project, provides JSON support for Akka HTTP.
+akka-http-json provides JSON (un)marshalling support for Akka[Akka](akka.io) HTTP. Currently it supports Play JSON and spray-json.
+
+## Installation
+
+akka-http-json depends on akka-http 1.0-M4.
+
+Grab it while it's hot:
+
+``` scala
+resolvers += "hseeberger at bintray" at "http://dl.bintray.com/hseeberger/maven"
+
+libraryDependencies ++= List(
+  "de.heikoseeberger" %% "akka-http-json-play" % "0.1.0", // or akka-http-json-spray
+  ...
+)
+```
+
+## Usage
+
+Mix `PlayJsonMarshalling` or `SprayJsonMarshalling` into your Akka HTTP code which is supposed to (un)marshal from/to JSON. Don't forget to provide the necessary format type class instances for Play JSON or spray-json.
+
+A complete demo using akka-http-json is [Reactive Flows](https://github.com/hseeberger/reactive-flows).
+Have fun, and please report any issues, suggestions, complaints.
 
 ## Contribution policy ##
 
