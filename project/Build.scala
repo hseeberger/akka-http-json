@@ -24,6 +24,8 @@ object Build extends AutoPlugin {
       organization := "de.heikoseeberger",
       scalaVersion := Version.scala,
       crossScalaVersions := List(scalaVersion.value),
+      // TODO Remove once Scala 2.11.6 has been fully released!
+      resolvers += "Scala 2.11.6 staging repo" at "https://oss.sonatype.org/content/repositories/orgscala-lang-1184",
       scalacOptions ++= List(
         "-unchecked",
         "-deprecation",

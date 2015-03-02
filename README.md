@@ -1,6 +1,7 @@
 # akka-http-json #
 
 [![Join the chat at https://gitter.im/hseeberger/akka-http-json](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/hseeberger/akka-http-json?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Build Status](https://travis-ci.org/hseeberger/akka-http-json.svg?branch=master)](https://travis-ci.org/hseeberger/akka-http-json)
 
 akka-http-json provides JSON (un)marshalling support for [Akka](akka.io) HTTP. Currently it supports Play JSON and spray-json.
 
