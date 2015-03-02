@@ -33,7 +33,7 @@ object Build extends AutoPlugin {
       ),
       unmanagedSourceDirectories in Compile := List((scalaSource in Compile).value),
       unmanagedSourceDirectories in Test := List((scalaSource in Test).value),
-      licenses += ("APSL-2.0", url("http://www.apache.org/licenses/LICENSE-2.0")),
+      licenses += ("Apache-2.0", url("http://www.apache.org/licenses/LICENSE-2.0")),
       // Scalariform settings
       ScalariformKeys.preferences := ScalariformKeys.preferences.value
         .setPreference(AlignArguments, true)
