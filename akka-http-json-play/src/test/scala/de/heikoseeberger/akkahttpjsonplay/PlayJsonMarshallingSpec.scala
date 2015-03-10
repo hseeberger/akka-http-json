@@ -42,7 +42,7 @@ class PlayJsonMarshallingSpec extends WordSpec with Matchers with BeforeAndAfter
   implicit val system = ActorSystem()
   implicit val mat = ActorFlowMaterializer()
 
-  "SprayJsonMarshalling" should {
+  "PlayJsonMarshalling" should {
 
     "enable marshalling and unmarshalling objects for which RootJsonWriter and RootJsonReader exist" in {
       val foo = Foo("bar")
