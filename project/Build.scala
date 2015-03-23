@@ -1,27 +1,25 @@
-import bintray. { Keys => BintrayKeys }
-import bintray.Plugin._
-import com.typesafe.sbt.SbtGit._
-import com.typesafe.sbt.SbtScalariform._
-import de.heikoseeberger.sbtheader.SbtHeader.autoImport._
+import bintray.{ Keys => BintrayKeys }
+import bintray.Plugin.bintrayPublishSettings
+import com.typesafe.sbt.GitPlugin
+import com.typesafe.sbt.SbtScalariform
+import com.typesafe.sbt.SbtScalariform.ScalariformKeys
+import de.heikoseeberger.sbtheader.HeaderPlugin
+import de.heikoseeberger.sbtheader.license.Apache2_0
 import sbt._
 import sbt.Keys._
 import scalariform.formatter.preferences._
 
 object Build extends AutoPlugin {
 
-  override def requires = plugins.JvmPlugin
+  override def requires = plugins.JvmPlugin && HeaderPlugin && GitPlugin
 
   override def trigger = allRequirements
 
   override def projectSettings =
-    scalariformSettings ++
-    versionWithGit ++
-    bintrayPublishSettings ++
-    inConfig(Compile)(compileInputs.in(compile) <<= compileInputs.in(compile).dependsOn(createHeaders.in(compile))) ++
-    inConfig(Test)(compileInputs.in(compile) <<= compileInputs.in(compile).dependsOn(createHeaders.in(compile))) ++
+    // Core settings
     List(
-      // Core settings
       organization := "de.heikoseeberger",
+      licenses += ("Apache-2.0", url("http://www.apache.org/licenses/LICENSE-2.0")),
       scalaVersion := Version.scala,
       crossScalaVersions := List(scalaVersion.value),
       scalacOptions ++= List(
@@ -31,42 +29,28 @@ object Build extends AutoPlugin {
         "-target:jvm-1.7",
         "-encoding", "UTF-8"
       ),
-      unmanagedSourceDirectories in Compile := List((scalaSource in Compile).value),
-      unmanagedSourceDirectories in Test := List((scalaSource in Test).value),
-      licenses += ("Apache-2.0", url("http://www.apache.org/licenses/LICENSE-2.0")),
-      // Scalariform settings
+      unmanagedSourceDirectories.in(Compile) := List(scalaSource.in(Compile).value),
+      unmanagedSourceDirectories.in(Test) := List(scalaSource.in(Test).value)
+    ) ++
+    // Scalariform settings
+    SbtScalariform.scalariformSettings ++
+    List(
       ScalariformKeys.preferences := ScalariformKeys.preferences.value
-        .setPreference(AlignArguments, true)
-        .setPreference(AlignParameters, true)
         .setPreference(AlignSingleLineCaseStatements, true)
         .setPreference(AlignSingleLineCaseStatements.MaxArrowIndent, 100)
-        .setPreference(DoubleIndentClassDeclaration, true),
-      // Git settings
-      git.baseVersion := "0.2.0",
-      // Header settings
-      headers := Map(
-        "scala" -> (
-          HeaderPattern.cStyleBlockComment,
-          """|/*
-             | * Copyright 2015 Heiko Seeberger
-             | *
-             | * Licensed under the Apache License, Version 2.0 (the "License");
-             | * you may not use this file except in compliance with the License.
-             | * You may obtain a copy of the License at
-             | *
-             | *    http://www.apache.org/licenses/LICENSE-2.0
-             | *
-             | * Unless required by applicable law or agreed to in writing, software
-             | * distributed under the License is distributed on an "AS IS" BASIS,
-             | * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-             | * See the License for the specific language governing permissions and
-             | * limitations under the License.
-             | */
-             |
-             |""".stripMargin
-        )
-      ),
-      // Bintray settings
+        .setPreference(DoubleIndentClassDeclaration, true)
+    ) ++
+    // Git settings
+    List(
+      GitPlugin.autoImport.git.baseVersion := "0.2.0"
+    ) ++
+    // Header settings
+    List(
+      HeaderPlugin.autoImport.headers := Map("scala" -> Apache2_0("2015", "Heiko Seeberger"))
+    ) ++
+    // Bintray settings
+    bintrayPublishSettings ++
+    List (
       name in BintrayKeys.bintray := "akka-http-json"
     )
 }

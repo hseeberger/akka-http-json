@@ -1,1 +1,1 @@
-shellPrompt in ThisBuild := (state => s"[${(Project extract state).currentRef.project}]> ")
+shellPrompt.in(ThisBuild) := (state => s"[${Project.extract(state).currentRef.project}]> ")
