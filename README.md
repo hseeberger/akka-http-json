@@ -12,6 +12,8 @@ akka-http-json depends on akka-http 1.0-M4.
 Grab it while it's hot:
 
 ``` scala
+// All releases including intermediate ones are published here,
+// final ones are also published to Maven Central.
 resolvers += "hseeberger at bintray" at "http://dl.bintray.com/hseeberger/maven"
 
 libraryDependencies ++= List(
