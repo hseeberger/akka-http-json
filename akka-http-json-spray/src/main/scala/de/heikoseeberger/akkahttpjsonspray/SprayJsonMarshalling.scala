@@ -19,7 +19,7 @@ package de.heikoseeberger.akkahttpjsonspray
 import akka.http.marshalling.{ PredefinedToEntityMarshallers, ToEntityMarshaller }
 import akka.http.model.MediaTypes
 import akka.http.unmarshalling.{ FromEntityUnmarshaller, PredefinedFromEntityUnmarshallers }
-import akka.stream.ActorFlowMaterializer
+import akka.stream.FlowMaterializer
 import scala.concurrent.ExecutionContext
 import spray.json.{ JsonParser, JsonPrinter, PrettyPrinter, RootJsonReader, RootJsonWriter }
 
@@ -29,8 +29,7 @@ object SprayJsonMarshalling extends SprayJsonMarshalling
 trait SprayJsonMarshalling {
 
   /** `FromEntityUnmarshaller` for `application/json` depending on a spray-json `RootJsonReader`. */
-  // TODO: Change ActorFlowMaterializer to FlowMaterializer once #16963 is fixed!
-  implicit def unmarshaller[A](implicit reader: RootJsonReader[A], ec: ExecutionContext, mat: ActorFlowMaterializer): FromEntityUnmarshaller[A] =
+  implicit def unmarshaller[A](implicit reader: RootJsonReader[A], ec: ExecutionContext, mat: FlowMaterializer): FromEntityUnmarshaller[A] =
     PredefinedFromEntityUnmarshallers
       .stringUnmarshaller
       .forContentTypes(MediaTypes.`application/json`)

@@ -19,7 +19,7 @@ package de.heikoseeberger.akkahttpjsonplay
 import akka.http.marshalling.{ PredefinedToEntityMarshallers, ToEntityMarshaller }
 import akka.http.model.MediaTypes
 import akka.http.unmarshalling.{ FromEntityUnmarshaller, PredefinedFromEntityUnmarshallers }
-import akka.stream.ActorFlowMaterializer
+import akka.stream.FlowMaterializer
 import play.api.libs.json.{ Json, Reads, Writes }
 import scala.concurrent.ExecutionContext
 
@@ -29,8 +29,7 @@ object PlayJsonMarshalling extends PlayJsonMarshalling
 trait PlayJsonMarshalling {
 
   /** `FromEntityUnmarshaller` for `application/json` depending on a Play JSON `Reads`. */
-  // TODO: Change ActorFlowMaterializer to FlowMaterializer once #16963 is fixed!
-  implicit def unmarshaller[A](implicit reads: Reads[A], ec: ExecutionContext, mat: ActorFlowMaterializer): FromEntityUnmarshaller[A] =
+  implicit def unmarshaller[A](implicit reads: Reads[A], ec: ExecutionContext, mat: FlowMaterializer): FromEntityUnmarshaller[A] =
     PredefinedFromEntityUnmarshallers
       .stringUnmarshaller
       .forContentTypes(MediaTypes.`application/json`)
