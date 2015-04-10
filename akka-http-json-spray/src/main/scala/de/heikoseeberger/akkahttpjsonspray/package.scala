@@ -18,17 +18,15 @@ package de.heikoseeberger
 
 package object akkahttpjsonspray {
 
-  // format: OFF
-  private[akkahttpjsonspray] val Traversable = scala.collection.immutable.Traversable
-  private[akkahttpjsonspray] type Traversable[+A] = scala.collection.immutable.Traversable[A]
+  val Traversable = scala.collection.immutable.Traversable
+  type Traversable[+A] = scala.collection.immutable.Traversable[A]
 
-  private[akkahttpjsonspray] val Iterable = scala.collection.immutable.Iterable
-  private[akkahttpjsonspray] type Iterable[+A] = scala.collection.immutable.Iterable[A]
+  val Iterable = scala.collection.immutable.Iterable
+  type Iterable[+A] = scala.collection.immutable.Iterable[A]
 
-  private[akkahttpjsonspray] val Seq = scala.collection.immutable.Seq
-  private[akkahttpjsonspray] type Seq[+A] = scala.collection.immutable.Seq[A]
+  val Seq = scala.collection.immutable.Seq
+  type Seq[+A] = scala.collection.immutable.Seq[A]
 
-  private[akkahttpjsonspray] val IndexedSeq = scala.collection.immutable.IndexedSeq
-  private[akkahttpjsonspray] type IndexedSeq[+A] = scala.collection.immutable.IndexedSeq[A]
-  // format: ON
+  val IndexedSeq = scala.collection.immutable.IndexedSeq
+  type IndexedSeq[+A] = scala.collection.immutable.IndexedSeq[A]
 }

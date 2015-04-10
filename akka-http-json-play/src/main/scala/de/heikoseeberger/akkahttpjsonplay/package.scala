@@ -18,17 +18,15 @@ package de.heikoseeberger
 
 package object akkahttpjsonplay {
 
-  // format: OFF
-  private[akkahttpjsonplay] val Traversable = scala.collection.immutable.Traversable
-  private[akkahttpjsonplay] type Traversable[+A] = scala.collection.immutable.Traversable[A]
+  val Traversable = scala.collection.immutable.Traversable
+  type Traversable[+A] = scala.collection.immutable.Traversable[A]
 
-  private[akkahttpjsonplay] val Iterable = scala.collection.immutable.Iterable
-  private[akkahttpjsonplay] type Iterable[+A] = scala.collection.immutable.Iterable[A]
+  val Iterable = scala.collection.immutable.Iterable
+  type Iterable[+A] = scala.collection.immutable.Iterable[A]
 
-  private[akkahttpjsonplay] val Seq = scala.collection.immutable.Seq
-  private[akkahttpjsonplay] type Seq[+A] = scala.collection.immutable.Seq[A]
+  val Seq = scala.collection.immutable.Seq
+  type Seq[+A] = scala.collection.immutable.Seq[A]
 
-  private[akkahttpjsonplay] val IndexedSeq = scala.collection.immutable.IndexedSeq
-  private[akkahttpjsonplay] type IndexedSeq[+A] = scala.collection.immutable.IndexedSeq[A]
-  // format: ON
+  val IndexedSeq = scala.collection.immutable.IndexedSeq
+  type IndexedSeq[+A] = scala.collection.immutable.IndexedSeq[A]
 }
