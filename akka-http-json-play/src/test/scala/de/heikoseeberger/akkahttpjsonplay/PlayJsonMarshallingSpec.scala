@@ -22,7 +22,7 @@ import akka.http.model.RequestEntity
 import akka.http.unmarshalling.Unmarshal
 import akka.stream.ActorFlowMaterializer
 import org.scalatest.{ BeforeAndAfterAll, Matchers, WordSpec }
-import play.api.libs.json.Json
+import play.api.libs.json.{ JsResult, JsSuccess, Json }
 import scala.concurrent.Await
 import scala.concurrent.duration.DurationInt
 
@@ -44,10 +44,22 @@ class PlayJsonMarshallingSpec extends WordSpec with Matchers with BeforeAndAfter
 
   "PlayJsonMarshalling" should {
 
-    "enable marshalling and unmarshalling objects for which RootJsonWriter and RootJsonReader exist" in {
+    "enable marshalling and unmarshalling objects for which Writes and Reads exist" in {
       val foo = Foo("bar")
       val entity = Await.result(Marshal(foo).to[RequestEntity], 100 millis)
       Await.result(Unmarshal(entity).to[Foo], 100 millis) shouldBe foo
+    }
+
+    "enable unmarshalling to JsSuccess for objects for which a Reads exist" in {
+      val foo = Foo("bar")
+      val entity = Await.result(Marshal(foo).to[RequestEntity], 100 millis)
+      Await.result(Unmarshal(entity).to[JsResult[Foo]], 100 millis).asOpt shouldBe Some(foo)
+    }
+
+    "enable unmarshalling to JsError for objects for which a Reads exist" in {
+      val foo = Json.parse("""{ "bar": 1 }""")
+      val entity = Await.result(Marshal(foo).to[RequestEntity], 100 millis)
+      Await.result(Unmarshal(entity).to[JsResult[Foo]], 100 millis).isError shouldBe true
     }
   }
 
