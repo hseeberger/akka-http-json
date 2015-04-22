@@ -2,7 +2,7 @@ import sbt._
 
 object Version {
   val akkaHttp  = "1.0-M5"
-  val play      = "2.4.0-M3"
+  val play      = "2.4.0-RC1"
   val scala     = "2.11.6"
   val scalaTest = "2.2.4"
   val sprayJson = "1.3.1"
