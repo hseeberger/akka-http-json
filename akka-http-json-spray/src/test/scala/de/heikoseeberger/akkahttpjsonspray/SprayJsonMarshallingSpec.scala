@@ -17,9 +17,9 @@
 package de.heikoseeberger.akkahttpjsonspray
 
 import akka.actor.ActorSystem
-import akka.http.marshalling.Marshal
-import akka.http.model.RequestEntity
-import akka.http.unmarshalling.Unmarshal
+import akka.http.scaladsl.marshalling.Marshal
+import akka.http.scaladsl.model.RequestEntity
+import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.stream.ActorFlowMaterializer
 import org.scalatest.{ BeforeAndAfterAll, Matchers, WordSpec }
 import scala.concurrent.Await

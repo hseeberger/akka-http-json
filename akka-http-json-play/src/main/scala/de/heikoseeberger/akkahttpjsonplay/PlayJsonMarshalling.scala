@@ -16,9 +16,9 @@
 
 package de.heikoseeberger.akkahttpjsonplay
 
-import akka.http.marshalling.{ PredefinedToEntityMarshallers, ToEntityMarshaller }
-import akka.http.model.MediaTypes
-import akka.http.unmarshalling.{ FromEntityUnmarshaller, PredefinedFromEntityUnmarshallers }
+import akka.http.scaladsl.marshalling.{ PredefinedToEntityMarshallers, ToEntityMarshaller }
+import akka.http.scaladsl.model.MediaTypes
+import akka.http.scaladsl.unmarshalling.{ FromEntityUnmarshaller, PredefinedFromEntityUnmarshallers }
 import akka.stream.FlowMaterializer
 import play.api.libs.json.{ JsError, Json, Reads, Writes }
 import scala.concurrent.ExecutionContext
