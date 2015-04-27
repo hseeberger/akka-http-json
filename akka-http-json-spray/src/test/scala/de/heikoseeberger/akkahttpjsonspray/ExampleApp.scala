@@ -17,8 +17,8 @@
 package de.heikoseeberger.akkahttpjsonspray
 
 import akka.actor.ActorSystem
-import akka.http.Http
-import akka.http.server.Directives
+import akka.http.scaladsl.Http
+import akka.http.scaladsl.server.Directives
 import akka.stream.{ ActorFlowMaterializer, FlowMaterializer }
 import scala.concurrent.ExecutionContext
 import scala.io.StdIn

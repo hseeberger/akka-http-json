@@ -16,9 +16,9 @@
 
 package de.heikoseeberger.akkahttpjsonspray
 
-import akka.http.marshalling.{ PredefinedToEntityMarshallers, ToEntityMarshaller }
-import akka.http.model.MediaTypes
-import akka.http.unmarshalling.{ FromEntityUnmarshaller, PredefinedFromEntityUnmarshallers }
+import akka.http.scaladsl.marshalling.{ PredefinedToEntityMarshallers, ToEntityMarshaller }
+import akka.http.scaladsl.model.MediaTypes
+import akka.http.scaladsl.unmarshalling.{ FromEntityUnmarshaller, PredefinedFromEntityUnmarshallers }
 import akka.stream.FlowMaterializer
 import scala.concurrent.ExecutionContext
 import spray.json.{ JsonParser, JsonPrinter, PrettyPrinter, RootJsonReader, RootJsonWriter }
