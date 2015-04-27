@@ -30,15 +30,13 @@ trait SprayJsonMarshalling {
 
   /** `FromEntityUnmarshaller` for `application/json` depending on a spray-json `RootJsonReader`. */
   implicit def unmarshaller[A](implicit reader: RootJsonReader[A], ec: ExecutionContext, mat: FlowMaterializer): FromEntityUnmarshaller[A] =
-    PredefinedFromEntityUnmarshallers
-      .stringUnmarshaller
+    PredefinedFromEntityUnmarshallers.stringUnmarshaller
       .forContentTypes(MediaTypes.`application/json`)
       .map(s => reader.read(JsonParser(s)))
 
   /** `ToEntityMarshaller` to `application/json` depending on a spray-json `RootJsonWriter`. */
   implicit def marshaller[A](implicit writer: RootJsonWriter[A], printer: JsonPrinter = PrettyPrinter): ToEntityMarshaller[A] =
-    PredefinedToEntityMarshallers
-      .stringMarshaller(MediaTypes.`application/json`)
+    PredefinedToEntityMarshallers.stringMarshaller(MediaTypes.`application/json`)
       .compose(printer)
       .compose(writer.write)
 }
