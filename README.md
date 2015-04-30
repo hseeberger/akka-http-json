@@ -7,7 +7,7 @@ akka-http-json provides JSON (un)marshalling support for [Akka](akka.io) HTTP. C
 
 ## Installation
 
-akka-http-json depends on akka-http 1.0-RC1.
+akka-http-json depends on akka-http 1.0-RC2.
 
 Grab it while it's hot:
 
