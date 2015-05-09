@@ -1,5 +1,4 @@
-import bintray.{ Keys => BintrayKeys }
-import bintray.Plugin.bintrayPublishSettings
+import bintray.BintrayKeys
 import com.typesafe.sbt.GitPlugin
 import com.typesafe.sbt.SbtPgp
 import com.typesafe.sbt.SbtScalariform
@@ -63,7 +62,6 @@ object Build extends AutoPlugin {
       HeaderPlugin.autoImport.headers := Map("scala" -> Apache2_0("2015", "Heiko Seeberger"))
     ) ++
     // Bintray settings
-    bintrayPublishSettings ++
     List (
       name in BintrayKeys.bintray := "akka-http-json"
     )
