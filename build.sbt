@@ -1,14 +1,10 @@
 lazy val akkaHttpJson = project
   .in(file("."))
-  .aggregate(akkaHttpJsonPlay, akkaHttpJsonSpray)
+  .aggregate(akkaHttpJsonPlay)
   .enablePlugins(GitVersioning)
 
 lazy val akkaHttpJsonPlay = project
   .in(file("akka-http-json-play"))
-  .enablePlugins(AutomateHeaderPlugin)
-
-lazy val akkaHttpJsonSpray = project
-  .in(file("akka-http-json-spray"))
   .enablePlugins(AutomateHeaderPlugin)
 
 name := "akka-http-json"
