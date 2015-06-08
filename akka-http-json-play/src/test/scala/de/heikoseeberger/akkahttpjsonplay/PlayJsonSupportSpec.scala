@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package de.heikoseeberger.akkahttpjsonspray
+package de.heikoseeberger.akkahttpjsonplay
 
 import akka.actor.ActorSystem
 import akka.http.scaladsl.marshalling.Marshal
@@ -22,31 +22,29 @@ import akka.http.scaladsl.model.RequestEntity
 import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.stream.ActorFlowMaterializer
 import org.scalatest.{ BeforeAndAfterAll, Matchers, WordSpec }
+import play.api.libs.json.{ JsResult, JsSuccess, Json }
 import scala.concurrent.Await
 import scala.concurrent.duration.DurationInt
-import spray.json.DefaultJsonProtocol
 
-object SprayJsonMarshallingSpec {
-
-  import DefaultJsonProtocol._
+object PlayJsonSupportSpec {
 
   case class Foo(bar: String)
 
-  implicit val fooFormat = jsonFormat1(Foo)
+  implicit val fooFormat = Json.format[Foo]
 }
 
-class SprayJsonMarshallingSpec extends WordSpec with Matchers with BeforeAndAfterAll {
+class PlayJsonSupportSpec extends WordSpec with Matchers with BeforeAndAfterAll {
 
-  import SprayJsonMarshalling._
-  import SprayJsonMarshallingSpec._
+  import PlayJsonSupport._
+  import PlayJsonSupportSpec._
   import system.dispatcher
 
   implicit val system = ActorSystem()
   implicit val mat = ActorFlowMaterializer()
 
-  "SprayJsonMarshalling" should {
+  "PlayJsonSupport" should {
 
-    "enable marshalling and unmarshalling objects for which RootJsonWriter and RootJsonReader exist" in {
+    "enable marshalling and unmarshalling objects for which Writes and Reads exist" in {
       val foo = Foo("bar")
       val entity = Await.result(Marshal(foo).to[RequestEntity], 100 millis)
       Await.result(Unmarshal(entity).to[Foo], 100 millis) shouldBe foo

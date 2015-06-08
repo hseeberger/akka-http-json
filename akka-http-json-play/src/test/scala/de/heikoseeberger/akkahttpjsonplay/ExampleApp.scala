@@ -43,7 +43,7 @@ object ExampleApp {
 
   def route(implicit ec: ExecutionContext, mat: FlowMaterializer) = {
     import Directives._
-    import PlayJsonMarshalling._
+    import PlayJsonSupport._
     path("") {
       post {
         entity(as[Foo]) { foo =>

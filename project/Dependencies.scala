@@ -1,16 +1,14 @@
 import sbt._
 
 object Version {
-  val akkaHttp  = "1.0-RC2"
-  val play      = "2.4.0-RC1"
+  val akkaHttp  = "1.0-RC3"
+  val play      = "2.4.0"
   val scala     = "2.11.6"
-  val scalaTest = "2.2.4"
-  val sprayJson = "1.3.1"
+  val scalaTest = "2.2.5"
 }
 
 object Library {
-  val akkaHttp  = "com.typesafe.akka" %% "akka-http-scala-experimental" % Version.akkaHttp
-  val playJson  = "com.typesafe.play" %% "play-json"                    % Version.play
-  val scalaTest = "org.scalatest"     %% "scalatest"                    % Version.scalaTest
-  val sprayJson = "io.spray"          %% "spray-json"                   % Version.sprayJson
+  val akkaHttp  = "com.typesafe.akka" %% "akka-http-experimental" % Version.akkaHttp
+  val playJson  = "com.typesafe.play" %% "play-json"              % Version.play
+  val scalaTest = "org.scalatest"     %% "scalatest"              % Version.scalaTest
 }
