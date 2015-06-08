@@ -63,6 +63,6 @@ object Build extends AutoPlugin {
     ) ++
     // Bintray settings
     List (
-      name in BintrayKeys.bintray := "akka-http-json"
+      BintrayKeys.bintrayPackage := "akka-http-json"
     )
 }
