@@ -26,23 +26,23 @@ import play.api.libs.json.{ JsResult, JsSuccess, Json }
 import scala.concurrent.Await
 import scala.concurrent.duration.DurationInt
 
-object PlayJsonMarshallingSpec {
+object PlayJsonSupportSpec {
 
   case class Foo(bar: String)
 
   implicit val fooFormat = Json.format[Foo]
 }
 
-class PlayJsonMarshallingSpec extends WordSpec with Matchers with BeforeAndAfterAll {
+class PlayJsonSupportSpec extends WordSpec with Matchers with BeforeAndAfterAll {
 
-  import PlayJsonMarshalling._
-  import PlayJsonMarshallingSpec._
+  import PlayJsonSupport._
+  import PlayJsonSupportSpec._
   import system.dispatcher
 
   implicit val system = ActorSystem()
   implicit val mat = ActorFlowMaterializer()
 
-  "PlayJsonMarshalling" should {
+  "PlayJsonSupport" should {
 
     "enable marshalling and unmarshalling objects for which Writes and Reads exist" in {
       val foo = Foo("bar")
