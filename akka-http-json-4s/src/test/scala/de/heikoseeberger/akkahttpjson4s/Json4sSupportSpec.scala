@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-package de.heikoseeberger.akkahttpjson4snative
+package de.heikoseeberger.akkahttpjson4s
+
+import scala.concurrent.Await
+import scala.concurrent.duration.DurationInt
 
 import akka.actor.ActorSystem
 import akka.http.scaladsl.marshalling.Marshal
@@ -22,26 +25,31 @@ import akka.http.scaladsl.model.RequestEntity
 import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.stream.ActorFlowMaterializer
 import org.scalatest.{ BeforeAndAfterAll, Matchers, WordSpec }
-import scala.concurrent.Await
-import scala.concurrent.duration.DurationInt
-
-object Json4sNativeMarshallingSpec {
+import org.json4s._
+object Json4sSupportSpec {
   case class Foo(bar: String)
 }
 
-class Json4sNativeMarshallingSpec extends WordSpec with Matchers with BeforeAndAfterAll {
+class Json4sSupportSpec extends WordSpec with Matchers with BeforeAndAfterAll {
 
-  import Json4sNativeMarshalling._
-  import Json4sNativeMarshallingSpec._
+  import Json4sSupportSpec._
   import system.dispatcher
+  import Json4sSupport.{ json4sMarshaller, json4sUnmarshaller }
 
   implicit val system = ActorSystem()
   implicit val mat = ActorFlowMaterializer()
 
-  "Json4sNativeMarshalling" should {
+  val foo = Foo("bar")
 
-    "enable marshalling and unmarshalling objects for default `Formats` and `Serialization`" in {
-      val foo = Foo("bar")
+  "Json4sSupport" should {
+
+    "enable marshalling and unmarshalling objects for default `Formats` and `jackson.Serialization`" in {
+      implicit val serialization = jackson.Serialization
+      val entity = Await.result(Marshal(foo).to[RequestEntity], 100 millis)
+      Await.result(Unmarshal(entity).to[Foo], 100 millis) shouldBe foo
+    }
+    "enable marshalling and unmarshalling objects for default `Formats` and `native.Serialization`" in {
+      implicit val serialization = native.Serialization
       val entity = Await.result(Marshal(foo).to[RequestEntity], 100 millis)
       Await.result(Unmarshal(entity).to[Foo], 100 millis) shouldBe foo
     }

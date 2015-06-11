@@ -16,7 +16,7 @@
 
 package de.heikoseeberger
 
-package object akkahttpjson4sjackson {
+package object akkahttpjson4s {
 
   val Traversable = scala.collection.immutable.Traversable
   type Traversable[+A] = scala.collection.immutable.Traversable[A]

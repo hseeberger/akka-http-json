@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package de.heikoseeberger.akkahttpjson4sjackson
+package de.heikoseeberger.akkahttpjson4s
 
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
@@ -22,6 +22,8 @@ import akka.http.scaladsl.server.Directives
 import akka.stream.{ ActorFlowMaterializer, FlowMaterializer }
 import scala.concurrent.ExecutionContext
 import scala.io.StdIn
+import Json4sSupport.{ json4sMarshaller, json4sUnmarshaller }
+import org.json4s._
 
 object ExampleApp {
 
@@ -41,7 +43,7 @@ object ExampleApp {
 
   def route(implicit ec: ExecutionContext, mat: FlowMaterializer) = {
     import Directives._
-    import Json4sJacksonMarshalling._
+    implicit val serialization = jackson.Serialization // or native.Serialization
 
     path("") {
       post {
