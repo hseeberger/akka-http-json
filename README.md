@@ -3,7 +3,9 @@
 [![Join the chat at https://gitter.im/hseeberger/akka-http-json](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/hseeberger/akka-http-json?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Build Status](https://travis-ci.org/hseeberger/akka-http-json.svg?branch=master)](https://travis-ci.org/hseeberger/akka-http-json)
 
-akka-http-json provides JSON (un)marshalling support for [Akka](akka.io) HTTP. Currently it supports Play JSON and spray-json.
+akka-http-json provides JSON (un)marshalling support for [Akka](http://akka.io) HTTP. It offers support for the following JSON libraries:
+- [Play JSON](https://www.playframework.com/documentation/2.4.x/ScalaJson)
+- [Json4s](https://github.com/json4s/json4s)
 
 ## Installation
 
@@ -17,17 +19,14 @@ Grab it while it's hot:
 resolvers += "hseeberger at bintray" at "http://dl.bintray.com/hseeberger/maven"
 
 libraryDependencies ++= List(
-  "de.heikoseeberger" %% "akka-http-json-play" % "0.7.0", // or akka-http-json-spray
+  "de.heikoseeberger" %% "akka-http-play-json" % "0.8.0", // or akka-http-json4s
   ...
 )
 ```
 
 ## Usage
 
-Mix `PlayJsonMarshalling` or `SprayJsonMarshalling` into your Akka HTTP code which is supposed to (un)marshal from/to JSON. Don't forget to provide the necessary format type class instances for Play JSON or spray-json.
-
-A complete demo using akka-http-json is [Reactive Flows](https://github.com/hseeberger/reactive-flows).
-Have fun, and please report any issues, suggestions, complaints.
+Mix `PlayJsonSupport` or `Json4sSupport` into your Akka HTTP code which is supposed to (un)marshal from/to JSON. Don't forget to provide the necessary format type class instances.
 
 ## Contribution policy ##
 
