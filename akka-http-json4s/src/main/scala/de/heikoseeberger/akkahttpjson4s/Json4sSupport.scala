@@ -24,13 +24,26 @@ import org.json4s.{ Formats, Serialization }
 
 /**
  * Automatic to and from JSON marshalling/unmarshalling using an in-scope *Json4s* protocol.
+ *
+ * Pretty printing is enabled if an implicit [[Json4sSupport.ShouldWritePretty.True]] is in scope.
  */
-object Json4sSupport extends Json4sSupport
+object Json4sSupport extends Json4sSupport {
+
+  sealed abstract class ShouldWritePretty
+
+  object ShouldWritePretty {
+    object True extends ShouldWritePretty
+    object False extends ShouldWritePretty
+  }
+}
 
 /**
  * Automatic to and from JSON marshalling/unmarshalling using an in-scope *Json4s* protocol.
+ *
+ * Pretty printing is enabled if an implicit [[Json4sSupport.ShouldWritePretty.True]] is in scope.
  */
 trait Json4sSupport {
+  import Json4sSupport._
 
   implicit def json4sUnmarshallerConverter[A: Manifest](serialization: Serialization, formats: Formats)(implicit mat: FlowMaterializer): FromEntityUnmarshaller[A] =
     json4sUnmarshaller(manifest, serialization, formats, mat)
@@ -43,9 +56,13 @@ trait Json4sSupport {
         serialization.read(input)
       }
 
-  implicit def json4sMarshallerConverter[A <: AnyRef](serialization: Serialization, formats: Formats): ToEntityMarshaller[A] =
-    json4sMarshaller(serialization, formats)
+  implicit def json4sMarshallerConverter[A <: AnyRef](serialization: Serialization, formats: Formats, shouldWritePretty: ShouldWritePretty = ShouldWritePretty.False): ToEntityMarshaller[A] =
+    json4sMarshaller(serialization, formats, shouldWritePretty)
 
-  implicit def json4sMarshaller[A <: AnyRef](implicit serialization: Serialization, formats: Formats): ToEntityMarshaller[A] =
-    Marshaller.StringMarshaller.wrap(ContentTypes.`application/json`)(serialization.write[A])
+  implicit def json4sMarshaller[A <: AnyRef](implicit serialization: Serialization, formats: Formats, shouldWritePretty: ShouldWritePretty = ShouldWritePretty.False): ToEntityMarshaller[A] =
+    shouldWritePretty match {
+      case ShouldWritePretty.False => Marshaller.StringMarshaller.wrap(ContentTypes.`application/json`)(serialization.write[A])
+      case _                       => Marshaller.StringMarshaller.wrap(ContentTypes.`application/json`)(serialization.writePretty[A])
+    }
+
 }
