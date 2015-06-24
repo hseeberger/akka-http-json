@@ -4,7 +4,7 @@ object Version {
   val akkaHttp  = "1.0-RC3"
   val json4s    = "3.3.0.RC2"
   val play      = "2.4.0"
-  val scala     = "2.11.6"
+  val scala     = "2.11.7"
   val scalaTest = "2.2.5"
 }
 
