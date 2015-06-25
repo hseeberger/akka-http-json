@@ -19,7 +19,7 @@ package de.heikoseeberger.akkahttpjson4s
 import akka.http.scaladsl.marshalling.{ Marshaller, ToEntityMarshaller }
 import akka.http.scaladsl.model.{ ContentTypes, HttpCharsets, MediaTypes }
 import akka.http.scaladsl.unmarshalling.{ FromEntityUnmarshaller, Unmarshaller }
-import akka.stream.FlowMaterializer
+import akka.stream.Materializer
 import org.json4s.{ Formats, Serialization }
 
 /**
@@ -45,10 +45,10 @@ object Json4sSupport extends Json4sSupport {
 trait Json4sSupport {
   import Json4sSupport._
 
-  implicit def json4sUnmarshallerConverter[A: Manifest](serialization: Serialization, formats: Formats)(implicit mat: FlowMaterializer): FromEntityUnmarshaller[A] =
+  implicit def json4sUnmarshallerConverter[A: Manifest](serialization: Serialization, formats: Formats)(implicit mat: Materializer): FromEntityUnmarshaller[A] =
     json4sUnmarshaller(manifest, serialization, formats, mat)
 
-  implicit def json4sUnmarshaller[A: Manifest](implicit serialization: Serialization, formats: Formats, mat: FlowMaterializer): FromEntityUnmarshaller[A] =
+  implicit def json4sUnmarshaller[A: Manifest](implicit serialization: Serialization, formats: Formats, mat: Materializer): FromEntityUnmarshaller[A] =
     Unmarshaller.byteStringUnmarshaller
       .forContentTypes(MediaTypes.`application/json`)
       .mapWithCharset { (data, charset) =>

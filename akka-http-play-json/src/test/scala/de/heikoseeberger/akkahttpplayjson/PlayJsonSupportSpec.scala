@@ -20,7 +20,7 @@ import akka.actor.ActorSystem
 import akka.http.scaladsl.marshalling.Marshal
 import akka.http.scaladsl.model.RequestEntity
 import akka.http.scaladsl.unmarshalling.Unmarshal
-import akka.stream.ActorFlowMaterializer
+import akka.stream.ActorMaterializer
 import org.scalatest.{ BeforeAndAfterAll, Matchers, WordSpec }
 import play.api.libs.json.{ JsResult, JsSuccess, Json }
 import scala.concurrent.Await
@@ -38,7 +38,7 @@ class PlayJsonSupportSpec extends WordSpec with Matchers with BeforeAndAfterAll 
   import PlayJsonSupportSpec._
 
   implicit val system = ActorSystem()
-  implicit val mat = ActorFlowMaterializer()
+  implicit val mat = ActorMaterializer()
 
   "PlayJsonSupport" should {
     import system.dispatcher

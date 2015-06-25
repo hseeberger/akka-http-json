@@ -19,7 +19,7 @@ package de.heikoseeberger.akkahttpplayjson
 import akka.http.scaladsl.marshalling.{ Marshaller, ToEntityMarshaller }
 import akka.http.scaladsl.model.{ ContentTypes, HttpCharsets, MediaTypes }
 import akka.http.scaladsl.unmarshalling.{ FromEntityUnmarshaller, Unmarshaller }
-import akka.stream.FlowMaterializer
+import akka.stream.Materializer
 import play.api.libs.json.{ JsResultException, JsValue, Json, Reads, Writes }
 
 /**
@@ -32,15 +32,15 @@ object PlayJsonSupport extends PlayJsonSupport
  */
 trait PlayJsonSupport {
 
-  implicit def playJsonUnmarshallerConverter[A](reads: Reads[A])(implicit mat: FlowMaterializer): FromEntityUnmarshaller[A] =
+  implicit def playJsonUnmarshallerConverter[A](reads: Reads[A])(implicit mat: Materializer): FromEntityUnmarshaller[A] =
     playJsonUnmarshaller(reads, mat)
 
-  implicit def playJsonUnmarshaller[A](implicit reads: Reads[A], mat: FlowMaterializer): FromEntityUnmarshaller[A] = {
+  implicit def playJsonUnmarshaller[A](implicit reads: Reads[A], mat: Materializer): FromEntityUnmarshaller[A] = {
     def read(json: JsValue) = reads.reads(json).recoverTotal(error => throw JsResultException(error.errors))
     playJsValueUnmarshaller.map(read)
   }
 
-  implicit def playJsValueUnmarshaller(implicit mat: FlowMaterializer): FromEntityUnmarshaller[JsValue] =
+  implicit def playJsValueUnmarshaller(implicit mat: Materializer): FromEntityUnmarshaller[JsValue] =
     Unmarshaller.byteStringUnmarshaller
       .forContentTypes(MediaTypes.`application/json`)
       .mapWithCharset { (data, charset) =>

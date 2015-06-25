@@ -20,7 +20,7 @@ import akka.actor.ActorSystem
 import akka.http.scaladsl.marshalling.Marshal
 import akka.http.scaladsl.model.RequestEntity
 import akka.http.scaladsl.unmarshalling.Unmarshal
-import akka.stream.ActorFlowMaterializer
+import akka.stream.ActorMaterializer
 import org.json4s.{ DefaultFormats, jackson, native }
 import org.scalatest.{ BeforeAndAfterAll, Matchers, WordSpec }
 import scala.concurrent.Await
@@ -35,7 +35,7 @@ class Json4sSupportSpec extends WordSpec with Matchers with BeforeAndAfterAll {
   import Json4sSupportSpec._
 
   implicit val system = ActorSystem()
-  implicit val mat = ActorFlowMaterializer()
+  implicit val mat = ActorMaterializer()
   implicit val formats = DefaultFormats
 
   val foo = Foo("bar")
