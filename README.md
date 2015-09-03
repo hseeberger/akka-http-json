@@ -20,7 +20,7 @@ Grab it while it's hot:
 resolvers += "hseeberger at bintray" at "http://dl.bintray.com/hseeberger/maven"
 
 libraryDependencies ++= List(
-  "de.heikoseeberger" %% "akka-http-json4s" % "1.0.0", // or other
+  "de.heikoseeberger" %% "akka-http-json4s" % "1.1.0", // or other
   ...
 )
 ```
