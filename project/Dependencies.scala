@@ -6,6 +6,7 @@ object Version {
   val play      = "2.4.2"
   val scala     = "2.11.7"
   val scalaTest = "2.2.5"
+  val upickle   = "0.3.6"
 }
 
 object Library {
@@ -15,4 +16,5 @@ object Library {
   val json4sNative  = "org.json4s"        %% "json4s-native"          % Version.json4s
   val playJson      = "com.typesafe.play" %% "play-json"              % Version.play
   val scalaTest     = "org.scalatest"     %% "scalatest"              % Version.scalaTest
+  val upickle       = "com.lihaoyi"       %% "upickle"                % Version.upickle
 }
