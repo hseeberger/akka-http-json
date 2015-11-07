@@ -19,7 +19,6 @@ package de.heikoseeberger.akkahttpupickle
 import akka.http.scaladsl.marshalling.{ Marshaller, ToEntityMarshaller }
 import akka.http.scaladsl.model.{ ContentTypes, HttpCharsets, MediaTypes }
 import akka.http.scaladsl.unmarshalling.{ FromEntityUnmarshaller, Unmarshaller }
-import akka.stream.Materializer
 import upickle.{ Js, json }
 import upickle.default.{ Reader, Writer, readJs, writeJs }
 
@@ -33,13 +32,13 @@ object UpickleSupport extends UpickleSupport
  */
 trait UpickleSupport {
 
-  implicit def upickleUnmarshallerConverter[A](reader: Reader[A])(implicit mat: Materializer): FromEntityUnmarshaller[A] =
-    upickleUnmarshaller(reader, mat)
+  implicit def upickleUnmarshallerConverter[A](reader: Reader[A]): FromEntityUnmarshaller[A] =
+    upickleUnmarshaller(reader)
 
-  implicit def upickleUnmarshaller[A](implicit reader: Reader[A], mat: Materializer): FromEntityUnmarshaller[A] =
+  implicit def upickleUnmarshaller[A](implicit reader: Reader[A]): FromEntityUnmarshaller[A] =
     upickleJsValueUnmarshaller.map(readJs[A])
 
-  implicit def upickleJsValueUnmarshaller(implicit mat: Materializer): FromEntityUnmarshaller[Js.Value] =
+  implicit def upickleJsValueUnmarshaller: FromEntityUnmarshaller[Js.Value] =
     Unmarshaller.byteStringUnmarshaller
       .forContentTypes(MediaTypes.`application/json`)
       .mapWithCharset { (data, charset) =>
