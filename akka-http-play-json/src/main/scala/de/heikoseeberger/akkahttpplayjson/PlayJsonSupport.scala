@@ -49,7 +49,7 @@ trait PlayJsonSupport {
       }
 
   implicit def playJsonMarshallerConverter[A](writes: Writes[A])(implicit printer: JsValue => String = Json.prettyPrint): ToEntityMarshaller[A] =
-    playJsonMarshaller[A](writes)
+    playJsonMarshaller[A](writes, printer)
 
   implicit def playJsonMarshaller[A](implicit writes: Writes[A], printer: JsValue => String = Json.prettyPrint): ToEntityMarshaller[A] =
     playJsValueMarshaller.compose(writes.writes)
