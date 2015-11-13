@@ -2,8 +2,8 @@ import sbt._
 
 object Version {
   val akkaHttp  = "2.0-M1"
-  val json4s    = "3.3.0.RC3"
-  val play      = "2.4.2"
+  val json4s    = "3.3.0"
+  val play      = "2.4.3"
   val scala     = "2.11.7"
   val scalaTest = "2.2.5"
   val upickle   = "0.3.6"
