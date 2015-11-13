@@ -10,7 +10,7 @@ akka-http-json provides JSON (un)marshalling support for [Akka](http://akka.io) 
 
 ## Installation
 
-akka-http-json 1.1.0 depends on akka-http 1.0 and 1.2.0 depends on akka-http 2.0-M1.
+akka-http-json 1.1.x depends on akka-http 1.0 and 1.2.x depends on akka-http 2.0-M1.
 
 Grab it while it's hot:
 
@@ -20,7 +20,7 @@ Grab it while it's hot:
 resolvers += "hseeberger at bintray" at "http://dl.bintray.com/hseeberger/maven"
 
 libraryDependencies ++= List(
-  "de.heikoseeberger" %% "akka-http-json4s" % "1.2.0", // or 1.1.0 for akka-http 1.0
+  "de.heikoseeberger" %% "akka-http-json4s" % "1.2.1", // or 1.1.0 for akka-http 1.0
   ...
 )
 ```
