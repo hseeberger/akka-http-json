@@ -1,7 +1,7 @@
 import sbt._
 
 object Version {
-  val akkaHttp  = "2.0-M1"
+  val akkaHttp  = "2.0-M2"
   val json4s    = "3.3.0"
   val play      = "2.4.3"
   val scala     = "2.11.7"
