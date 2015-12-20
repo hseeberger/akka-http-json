@@ -7,6 +7,7 @@ object Version {
   val scala     = "2.11.7"
   val scalaTest = "2.2.5"
   val upickle   = "0.3.6"
+  val circe     = "0.2.1"
 }
 
 object Library {
@@ -17,4 +18,7 @@ object Library {
   val playJson      = "com.typesafe.play" %% "play-json"              % Version.play
   val scalaTest     = "org.scalatest"     %% "scalatest"              % Version.scalaTest
   val upickle       = "com.lihaoyi"       %% "upickle"                % Version.upickle
+  val circe         = "io.circe"          %% "circe-core"             % Version.circe
+  val circeJawn     = "io.circe"          %% "circe-jawn"             % Version.circe
+  val circeGeneric  = "io.circe"          %% "circe-generic"          % Version.circe
 }
