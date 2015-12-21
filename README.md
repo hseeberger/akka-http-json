@@ -17,7 +17,7 @@ Grab it while it's hot:
 ``` scala
 // All releases including intermediate ones are published here,
 // final ones are also published to Maven Central.
-resolvers += "hseeberger at bintray" at "http://dl.bintray.com/hseeberger/maven"
+resolvers += Resolver.bintrayRepo("hseeberger", "maven")
 
 libraryDependencies ++= List(
   "de.heikoseeberger" %% "akka-http-json4s" % "1.3.0", // or 1.1.0 for akka-http 1.0
