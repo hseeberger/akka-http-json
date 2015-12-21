@@ -53,5 +53,5 @@ trait UpickleSupport {
     upickleJsValueMarshaller.compose(writeJs[A])
 
   implicit def upickleJsValueMarshaller(implicit printer: Js.Value => String = json.write): ToEntityMarshaller[Js.Value] =
-    Marshaller.StringMarshaller.wrap(ContentTypes.`application/json`)(printer)
+    Marshaller.StringMarshaller.wrap(MediaTypes.`application/json`)(printer)
 }
