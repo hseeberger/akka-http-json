@@ -61,7 +61,7 @@ trait Json4sSupport {
 
   implicit def json4sMarshaller[A <: AnyRef](implicit serialization: Serialization, formats: Formats, shouldWritePretty: ShouldWritePretty = ShouldWritePretty.False): ToEntityMarshaller[A] =
     shouldWritePretty match {
-      case ShouldWritePretty.False => Marshaller.StringMarshaller.wrap(ContentTypes.`application/json`)(serialization.write[A])
-      case _                       => Marshaller.StringMarshaller.wrap(ContentTypes.`application/json`)(serialization.writePretty[A])
+      case ShouldWritePretty.False => Marshaller.StringMarshaller.wrap(MediaTypes.`application/json`)(serialization.write[A])
+      case _                       => Marshaller.StringMarshaller.wrap(MediaTypes.`application/json`)(serialization.writePretty[A])
     }
 }

@@ -55,5 +55,5 @@ trait PlayJsonSupport {
     playJsValueMarshaller.compose(writes.writes)
 
   implicit def playJsValueMarshaller(implicit printer: JsValue => String = Json.prettyPrint): ToEntityMarshaller[JsValue] =
-    Marshaller.StringMarshaller.wrap(ContentTypes.`application/json`)(printer)
+    Marshaller.StringMarshaller.wrap(MediaTypes.`application/json`)(printer)
 }
