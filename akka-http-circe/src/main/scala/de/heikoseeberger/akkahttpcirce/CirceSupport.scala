@@ -83,7 +83,7 @@ trait CirceSupport {
    * @param encoder encoder for `T`, probably created by `circe.generic`
    * @param printer pretty printer function
    * @tparam T class to encode
-   * @return marshaller for any Json value
+   * @return marshaller for any `T` value
    */
   implicit def circeToEntityMarshaller[T](implicit encoder: Encoder[T], printer: Json => String = Printer.noSpaces.pretty): ToEntityMarshaller[T] =
     circeJsonMarshaller.compose(encoder.apply)
