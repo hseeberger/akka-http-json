@@ -1,6 +1,6 @@
 lazy val akkaHttpJson = project
   .in(file("."))
-  .aggregate(akkaHttpPlayJson, akkaHttpJson4s, akkaHttpUpickle, akkaHttpCirce)
+  .aggregate(akkaHttpPlayJson, akkaHttpJson4s, akkaHttpUpickle, akkaHttpCirce, akkaHttpArgonaut)
   .enablePlugins(GitVersioning)
 
 lazy val akkaHttpPlayJson = project
@@ -17,6 +17,10 @@ lazy val akkaHttpUpickle = project
 
 lazy val akkaHttpCirce = project
   .in(file("akka-http-circe"))
+  .enablePlugins(AutomateHeaderPlugin)
+
+lazy val akkaHttpArgonaut = project
+  .in(file("akka-http-argonaut"))
   .enablePlugins(AutomateHeaderPlugin)
 
 name := "akka-http-json"

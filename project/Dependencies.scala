@@ -8,6 +8,7 @@ object Version {
   val scalaTest = "2.2.5"
   val upickle   = "0.3.6"
   val circe     = "0.2.1"
+  val argonaut  = "6.1"
 }
 
 object Library {
@@ -21,4 +22,5 @@ object Library {
   val circe         = "io.circe"          %% "circe-core"             % Version.circe
   val circeJawn     = "io.circe"          %% "circe-jawn"             % Version.circe
   val circeGeneric  = "io.circe"          %% "circe-generic"          % Version.circe
+  val argonaut      = "io.argonaut"       %% "argonaut"               % Version.argonaut
 }
