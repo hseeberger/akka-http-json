@@ -4,10 +4,11 @@
 [![Build Status](https://travis-ci.org/hseeberger/akka-http-json.svg?branch=master)](https://travis-ci.org/hseeberger/akka-http-json)
 
 akka-http-json provides JSON (un)marshalling support for [Akka](http://akka.io) HTTP. It offers support for the following JSON libraries:
+- [Argonaut](http://argonaut.io)
+- [circe](https://github.com/travisbrown/circe)
 - [Json4s](https://github.com/json4s/json4s)
 - [Play JSON](https://www.playframework.com/documentation/2.4.x/ScalaJson)
 - [uPickle](https://github.com/lihaoyi/upickle-pprint)
-- [circe](https://github.com/travisbrown/circe)
 
 ## Installation
 
@@ -21,7 +22,7 @@ Grab it while it's hot:
 resolvers += Resolver.bintrayRepo("hseeberger", "maven")
 
 libraryDependencies ++= List(
-  "de.heikoseeberger" %% "akka-http-json4s" % "1.4.1", // or 1.1.0 for akka-http 1.0
+  "de.heikoseeberger" %% "akka-http-json4s" % "1.4.2", // or 1.1.0 for akka-http 1.0
   ...
 )
 ```
