@@ -21,7 +21,8 @@ import akka.http.scaladsl.Http
 import akka.http.scaladsl.server.Directives
 import akka.stream.{ ActorMaterializer, Materializer }
 import org.json4s.{ DefaultFormats, jackson }
-import scala.concurrent.ExecutionContext
+import scala.concurrent.duration.Duration
+import scala.concurrent.{ Await, ExecutionContext }
 import scala.io.StdIn
 
 object ExampleApp {
@@ -36,8 +37,7 @@ object ExampleApp {
     Http().bindAndHandle(route, "127.0.0.1", 8080)
 
     StdIn.readLine("Hit ENTER to exit")
-    system.shutdown()
-    system.awaitTermination()
+    Await.ready(system.terminate(), Duration.Inf)
   }
 
   def route(implicit ec: ExecutionContext, mat: Materializer) = {

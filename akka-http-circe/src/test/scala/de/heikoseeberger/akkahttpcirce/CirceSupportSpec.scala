@@ -22,9 +22,8 @@ import akka.http.scaladsl.model.RequestEntity
 import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.stream.ActorMaterializer
 import org.scalatest.{ BeforeAndAfterAll, Matchers, WordSpec }
-
 import scala.concurrent.Await
-import scala.concurrent.duration.DurationInt
+import scala.concurrent.duration.{ Duration, DurationInt }
 
 object CirceSupportSpec {
   case class Foo(bar: String)
@@ -51,8 +50,7 @@ class CirceSupportSpec extends WordSpec with Matchers with BeforeAndAfterAll {
   }
 
   override protected def afterAll() = {
-    system.shutdown()
-    system.awaitTermination()
+    Await.ready(system.terminate(), Duration.Inf)
     super.afterAll()
   }
 }

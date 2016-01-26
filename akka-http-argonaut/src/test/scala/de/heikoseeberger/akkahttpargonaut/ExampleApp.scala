@@ -21,8 +21,8 @@ import akka.http.scaladsl.Http
 import akka.http.scaladsl.server.Directives
 import akka.stream.{ ActorMaterializer, Materializer }
 import argonaut.Argonaut._
-
-import scala.concurrent.ExecutionContext
+import scala.concurrent.duration.Duration
+import scala.concurrent.{ Await, ExecutionContext }
 import scala.io.StdIn
 
 object ExampleApp {
@@ -37,13 +37,12 @@ object ExampleApp {
     Http().bindAndHandle(route, "127.0.0.1", 8080)
 
     StdIn.readLine("Hit ENTER to exit")
-    system.shutdown()
-    system.awaitTermination()
+    Await.ready(system.terminate(), Duration.Inf)
   }
 
   def route(implicit ec: ExecutionContext, mat: Materializer) = {
-    import Directives._
     import ArgonautSupport._
+    import Directives._
 
     implicit def FooCodec = casecodec1(Foo.apply, Foo.unapply)("bar")
 
