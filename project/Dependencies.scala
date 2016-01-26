@@ -1,9 +1,9 @@
 import sbt._
 
 object Version {
+  final val Akka      = "2.4.2-RC1"
   final val Argonaut  = "6.1"
   final val Circe     = "0.2.1"
-  final val AkkaHttp  = "2.0.1"
   final val Json4s    = "3.3.0"
   final val Play      = "2.4.6"
   final val Scala     = "2.11.7"
@@ -12,8 +12,8 @@ object Version {
 }
 
 object Library {
+  val akkaHttp      = "com.typesafe.akka" %% "akka-http-experimental" % Version.Akka
   val argonaut      = "io.argonaut"       %% "argonaut"               % Version.Argonaut
-  val akkaHttp      = "com.typesafe.akka" %% "akka-http-experimental" % Version.AkkaHttp
   val circe         = "io.circe"          %% "circe-core"             % Version.Circe
   val circeJawn     = "io.circe"          %% "circe-jawn"             % Version.Circe
   val circeGeneric  = "io.circe"          %% "circe-generic"          % Version.Circe

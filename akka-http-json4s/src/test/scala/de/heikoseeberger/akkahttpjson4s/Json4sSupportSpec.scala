@@ -24,7 +24,7 @@ import akka.stream.ActorMaterializer
 import org.json4s.{ DefaultFormats, jackson, native }
 import org.scalatest.{ BeforeAndAfterAll, Matchers, WordSpec }
 import scala.concurrent.Await
-import scala.concurrent.duration.DurationInt
+import scala.concurrent.duration.{ Duration, DurationInt }
 
 object Json4sSupportSpec {
   case class Foo(bar: String)
@@ -57,8 +57,7 @@ class Json4sSupportSpec extends WordSpec with Matchers with BeforeAndAfterAll {
   }
 
   override protected def afterAll() = {
-    system.shutdown()
-    system.awaitTermination()
+    Await.ready(system.terminate(), Duration.Inf)
     super.afterAll()
   }
 }

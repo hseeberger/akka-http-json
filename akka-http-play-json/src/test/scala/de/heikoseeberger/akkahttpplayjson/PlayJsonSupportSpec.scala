@@ -22,9 +22,9 @@ import akka.http.scaladsl.model.RequestEntity
 import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.stream.ActorMaterializer
 import org.scalatest.{ BeforeAndAfterAll, Matchers, WordSpec }
-import play.api.libs.json.{ JsResult, JsSuccess, Json }
+import play.api.libs.json.Json
 import scala.concurrent.Await
-import scala.concurrent.duration.DurationInt
+import scala.concurrent.duration.{ Duration, DurationInt }
 
 object PlayJsonSupportSpec {
 
@@ -51,8 +51,7 @@ class PlayJsonSupportSpec extends WordSpec with Matchers with BeforeAndAfterAll 
   }
 
   override protected def afterAll() = {
-    system.shutdown()
-    system.awaitTermination()
+    Await.ready(system.terminate(), Duration.Inf)
     super.afterAll()
   }
 }

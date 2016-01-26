@@ -39,7 +39,7 @@ object Build extends AutoPlugin {
         "-unchecked",
         "-deprecation",
         "-language:_",
-        "-target:jvm-1.7",
+        "-target:jvm-1.8",
         "-encoding", "UTF-8"
       ),
       unmanagedSourceDirectories.in(Compile) := List(scalaSource.in(Compile).value),
