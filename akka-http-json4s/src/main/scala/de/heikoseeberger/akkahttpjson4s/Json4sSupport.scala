@@ -17,16 +17,18 @@
 package de.heikoseeberger.akkahttpjson4s
 
 import akka.http.scaladsl.marshalling.{ Marshaller, ToEntityMarshaller }
-import akka.http.scaladsl.model.{ ContentTypes, HttpCharsets, MediaTypes }
+import akka.http.scaladsl.model.{ HttpCharsets, MediaTypes }
 import akka.http.scaladsl.unmarshalling.{ FromEntityUnmarshaller, Unmarshaller }
+import de.heikoseeberger.akkahttpjson4s.Json4sSupport.ShouldWritePretty
 import org.json4s.{ Formats, Serialization }
+import scala.concurrent.Future
 
 /**
  * Automatic to and from JSON marshalling/unmarshalling using an in-scope *Json4s* protocol.
  *
  * Pretty printing is enabled if an implicit [[Json4sSupport.ShouldWritePretty.True]] is in scope.
  */
-object Json4sSupport extends Json4sSupport {
+object Json4sSupport extends Json4sSupport with Json4sSupportProtection {
 
   sealed abstract class ShouldWritePretty
 
@@ -64,4 +66,28 @@ trait Json4sSupport {
       case ShouldWritePretty.False => Marshaller.StringMarshaller.wrap(MediaTypes.`application/json`)(serialization.write[A])
       case _                       => Marshaller.StringMarshaller.wrap(MediaTypes.`application/json`)(serialization.writePretty[A])
     }
+}
+
+/**
+ * Protection against automatic to and from JSON marshalling/unmarshalling of types that we know have no sensible JSON representation.
+ *
+ * This makes sure users get the expected compile errors for these types, rather than unwanted marshalling.
+ *
+ * Because these implicits require many parameters,
+ * it is unlikely that they will collide with user-defined marshallers for these types.
+ */
+trait Json4sSupportProtection {
+
+  implicit def noJson4sUnmarshallerConverterForFuturesDueToAmbiguityA[A <: Future[_]: Manifest](serialization: Serialization, formats: Formats): FromEntityUnmarshaller[A] = ???
+  implicit def noJson4sUnmarshallerConverterForFuturesDueToAmbiguityB[A <: Future[_]: Manifest](serialization: Serialization, formats: Formats): FromEntityUnmarshaller[A] = ???
+
+  implicit def noJson4sUnmarshallerForFuturesDueToAmbiguityA[A <: Future[_]: Manifest](implicit serialization: Serialization, formats: Formats): FromEntityUnmarshaller[A] = ???
+  implicit def noJson4sUnmarshallerForFuturesDueToAmbiguityB[A <: Future[_]: Manifest](implicit serialization: Serialization, formats: Formats): FromEntityUnmarshaller[A] = ???
+
+  implicit def noJson4sMarshallerConverterForFuturesDueToAmbiguityA[A <: Future[_]](serialization: Serialization, formats: Formats, shouldWritePretty: ShouldWritePretty = ShouldWritePretty.False): ToEntityMarshaller[A] = ???
+  implicit def noJson4sMarshallerConverterForFuturesDueToAmbiguityB[A <: Future[_]](serialization: Serialization, formats: Formats, shouldWritePretty: ShouldWritePretty = ShouldWritePretty.False): ToEntityMarshaller[A] = ???
+
+  implicit def noJson4sMarshallerForFuturesDueToAmbiguityA[A <: Future[_]](implicit serialization: Serialization, formats: Formats, shouldWritePretty: ShouldWritePretty = ShouldWritePretty.False): ToEntityMarshaller[A] = ???
+  implicit def noJson4sMarshallerForFuturesDueToAmbiguityB[A <: Future[_]](implicit serialization: Serialization, formats: Formats, shouldWritePretty: ShouldWritePretty = ShouldWritePretty.False): ToEntityMarshaller[A] = ???
+
 }

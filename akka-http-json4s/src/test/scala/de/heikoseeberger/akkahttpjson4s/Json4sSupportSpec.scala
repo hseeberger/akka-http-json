@@ -54,6 +54,18 @@ class Json4sSupportSpec extends WordSpec with Matchers with BeforeAndAfterAll {
       val entity = Await.result(Marshal(foo).to[RequestEntity], 100.millis)
       Await.result(Unmarshal(entity).to[Foo], 100.millis) shouldBe foo
     }
+
+    "disable marshalling for futures" in {
+      implicit val serialization = jackson.Serialization
+      assertDoesNotCompile("""Marshal(scala.concurrent.Future(())).to[RequestEntity]""")
+    }
+
+    "disable unmarshalling for futures" in {
+      implicit val serialization = jackson.Serialization
+      val entity: RequestEntity = null
+      assertDoesNotCompile("""Unmarshal(entity).to[scala.concurrent.Future[Unit]]""")
+    }
+
   }
 
   override protected def afterAll() = {
