@@ -12,7 +12,7 @@ akka-http-json provides JSON (un)marshalling support for [Akka](http://akka.io) 
 
 ## Installation
 
-The latest version of akka-http-json is 1.5.0 and depends on Akka HTTP 2.4.2-RC1. There's also version 1.4.2 which depends on akka-http 2.0.1 and an old version 1.1.0 which depends on akka-http 1.0.
+The latest version of akka-http-json is 1.5.1 and depends on Akka HTTP 2.4.2-RC3. There's also version 1.4.2 which depends on akka-http 2.0.1 and an old version 1.1.0 which depends on akka-http 1.0.
 
 Grab it while it's hot:
 
@@ -22,7 +22,7 @@ Grab it while it's hot:
 resolvers += Resolver.bintrayRepo("hseeberger", "maven")
 
 libraryDependencies ++= List(
-  "de.heikoseeberger" %% "akka-http-json4s" % "1.5.0", // or 1.1.0 for akka-http 1.0
+  "de.heikoseeberger" %% "akka-http-json4s" % "1.5.1",
   ...
 )
 ```
