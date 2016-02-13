@@ -5,7 +5,7 @@ libraryDependencies ++= List(
   Library.circe,
   Library.circeJawn,
   Library.circeGeneric % "test",
-  Library.scalaTest % "test"
+  Library.scalaTest    % "test"
 )
 
 initialCommands := """|import de.heikoseeberger.akkahttpcirce._""".stripMargin

@@ -23,24 +23,29 @@ import argonaut.{ DecodeJson, EncodeJson, Json, Parse, PrettyParams }
 
 /**
  * Automatic to and from JSON marshalling/unmarshalling using an in-scope *Argonaut* protocol.
- * To use automatic codec derivation, user needs to import `argonaut.Shapeless._`
+ *
+ * To use automatic codec derivation, user needs to import `argonaut.Shapeless._`.
  */
 object ArgonautSupport extends ArgonautSupport
 
 /**
  * JSON marshalling/unmarshalling using an in-scope *Argonaut* protocol.
+ *
  * To use automatic codec derivation, user needs to import `argonaut.Shapeless._`
  */
 trait ArgonautSupport {
 
+  implicit def argonautUnmarshallerConverter[A](decoder: DecodeJson[A]): FromEntityUnmarshaller[A] =
+    argonautUnmarshaller(decoder)
+
   /**
-   * HTTP Request => `T`
+   * HTTP entity => `A`
    *
-   * @param decoder decoder for `T`
-   * @tparam T class to decode
-   * @return unmarshaller for `T`
+   * @param decoder decoder for `A`
+   * @tparam A type to decode
+   * @return unmarshaller for `A`
    */
-  implicit def argonautUnmarshaller[T](implicit decoder: DecodeJson[T]): FromEntityUnmarshaller[T] =
+  implicit def argonautUnmarshaller[A](implicit decoder: DecodeJson[A]): FromEntityUnmarshaller[A] =
     argonautJsonUnmarshaller.map { json =>
       decoder.decodeJson(json).result.toEither match {
         case Right(entity)      => entity
@@ -49,7 +54,7 @@ trait ArgonautSupport {
     }
 
   /**
-   * HTTP Request => Json
+   * HTTP entity => JSON
    *
    * @return unmarshaller for Argonaut Json
    */
@@ -67,23 +72,26 @@ trait ArgonautSupport {
         }
       }
 
+  implicit def argonautToEntityMarshallerConverter[A](encoder: EncodeJson[A])(implicit printer: Json => String = PrettyParams.nospace.pretty): ToEntityMarshaller[A] =
+    argonautToEntityMarshaller(encoder)
+
   /**
-   * Json => HTTP Response
+   * `A` => HTTP entity
+   *
+   * @param encoder encoder for `A`
+   * @param printer pretty printer function
+   * @tparam A type to encode
+   * @return marshaller for any `A` value
+   */
+  implicit def argonautToEntityMarshaller[A](implicit encoder: EncodeJson[A], printer: Json => String = PrettyParams.nospace.pretty): ToEntityMarshaller[A] =
+    argonautJsonMarshaller.compose(encoder.apply)
+
+  /**
+   * JSON => HTTP entity
    *
    * @param printer pretty printer function
    * @return marshaller for any Json value
    */
   implicit def argonautJsonMarshaller(implicit printer: Json => String = PrettyParams.nospace.pretty): ToEntityMarshaller[Json] =
     Marshaller.StringMarshaller.wrap(MediaTypes.`application/json`)(printer)
-
-  /**
-   * `T` => HTTP Response
-   *
-   * @param encoder encoder for `T`
-   * @param printer pretty printer function
-   * @tparam T class to encode
-   * @return marshaller for any `T` value
-   */
-  implicit def argonautToEntityMarshaller[T](implicit encoder: EncodeJson[T], printer: Json => String = PrettyParams.nospace.pretty): ToEntityMarshaller[T] =
-    argonautJsonMarshaller.compose(encoder.apply)
 }
