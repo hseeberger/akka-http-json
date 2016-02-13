@@ -17,31 +17,36 @@
 package de.heikoseeberger.akkahttpcirce
 
 import akka.http.scaladsl.marshalling.{ Marshaller, ToEntityMarshaller }
-import akka.http.scaladsl.model.{ ContentTypes, HttpCharsets, MediaTypes }
+import akka.http.scaladsl.model.{ HttpCharsets, MediaTypes }
 import akka.http.scaladsl.unmarshalling.{ FromEntityUnmarshaller, Unmarshaller }
 import cats.data.Xor
-import io.circe.{ jawn, Encoder, Decoder, Json, Printer }
+import io.circe.{ Decoder, Encoder, Json, Printer, jawn }
 
 /**
  * Automatic to and from JSON marshalling/unmarshalling using an in-scope *Circe* protocol.
- * To use automatic codec derivation, user need to import `circe.generic.auto._`
+ *
+ * To use automatic codec derivation, user need to import `circe.generic.auto._`.
  */
 object CirceSupport extends CirceSupport
 
 /**
  * JSON marshalling/unmarshalling using an in-scope *Circe* protocol.
+ *
  * To use automatic codec derivation, user need to import `circe.generic.auto._`
  */
 trait CirceSupport {
 
+  implicit def circeUnmarshallerConverter[A](decoder: Decoder[A]): FromEntityUnmarshaller[A] =
+    circeUnmarshaller(decoder)
+
   /**
-   * HTTP Request => `T`
+   * HTTP entity => `A`
    *
-   * @param decoder decoder for `T`, probably created by `circe.generic`
-   * @tparam T class to decode
-   * @return unmarshaller for `T`
+   * @param decoder decoder for `A`, probably created by `circe.generic`
+   * @tparam A type to decode
+   * @return unmarshaller for `A`
    */
-  implicit def circeUnmarshaller[T](implicit decoder: Decoder[T]): FromEntityUnmarshaller[T] =
+  implicit def circeUnmarshaller[A](implicit decoder: Decoder[A]): FromEntityUnmarshaller[A] =
     circeJsonUnmarshaller.map { json =>
       decoder.decodeJson(json) match {
         case Xor.Right(entity) => entity
@@ -50,7 +55,7 @@ trait CirceSupport {
     }
 
   /**
-   * HTTP Request => Json
+   * HTTP entity => JSON
    *
    * @return unmarshaller for Circe Json
    */
@@ -68,23 +73,26 @@ trait CirceSupport {
         }
       }
 
+  implicit def circeToEntityMarshallerConverter[A](encoder: Encoder[A])(implicit printer: Json => String = Printer.noSpaces.pretty): ToEntityMarshaller[A] =
+    circeToEntityMarshaller(encoder)
+
   /**
-   * Json => HTTP Response
+   * `A` => HTTP entity
+   *
+   * @param encoder encoder for `A`, probably created by `circe.generic`
+   * @param printer pretty printer function
+   * @tparam A type to encode
+   * @return marshaller for any `A` value
+   */
+  implicit def circeToEntityMarshaller[A](implicit encoder: Encoder[A], printer: Json => String = Printer.noSpaces.pretty): ToEntityMarshaller[A] =
+    circeJsonMarshaller.compose(encoder.apply)
+
+  /**
+   * JSON => HTTP entity
    *
    * @param printer pretty printer function
    * @return marshaller for any Json value
    */
   implicit def circeJsonMarshaller(implicit printer: Json => String = Printer.noSpaces.pretty): ToEntityMarshaller[Json] =
     Marshaller.StringMarshaller.wrap(MediaTypes.`application/json`)(printer)
-
-  /**
-   * `T` => HTTP Response
-   *
-   * @param encoder encoder for `T`, probably created by `circe.generic`
-   * @param printer pretty printer function
-   * @tparam T class to encode
-   * @return marshaller for any `T` value
-   */
-  implicit def circeToEntityMarshaller[T](implicit encoder: Encoder[T], printer: Json => String = Printer.noSpaces.pretty): ToEntityMarshaller[T] =
-    circeJsonMarshaller.compose(encoder.apply)
 }

@@ -17,10 +17,10 @@
 package de.heikoseeberger.akkahttpupickle
 
 import akka.http.scaladsl.marshalling.{ Marshaller, ToEntityMarshaller }
-import akka.http.scaladsl.model.{ ContentTypes, HttpCharsets, MediaTypes }
+import akka.http.scaladsl.model.{ HttpCharsets, MediaTypes }
 import akka.http.scaladsl.unmarshalling.{ FromEntityUnmarshaller, Unmarshaller }
-import upickle.{ Js, json }
 import upickle.default.{ Reader, Writer, readJs, writeJs }
+import upickle.{ Js, json }
 
 /**
  * Automatic to and from JSON marshalling/unmarshalling using *upickle* protocol.
@@ -35,9 +35,21 @@ trait UpickleSupport {
   implicit def upickleUnmarshallerConverter[A](reader: Reader[A]): FromEntityUnmarshaller[A] =
     upickleUnmarshaller(reader)
 
+  /**
+   * HTTP entity => `A`
+   *
+   * @param reader reader for `A`
+   * @tparam A type to decode
+   * @return unmarshaller for `A`
+   */
   implicit def upickleUnmarshaller[A](implicit reader: Reader[A]): FromEntityUnmarshaller[A] =
     upickleJsValueUnmarshaller.map(readJs[A])
 
+  /**
+   * HTTP entity => JSON
+   *
+   * @return unmarshaller for upickle Json
+   */
   implicit def upickleJsValueUnmarshaller: FromEntityUnmarshaller[Js.Value] =
     Unmarshaller.byteStringUnmarshaller
       .forContentTypes(MediaTypes.`application/json`)
@@ -46,12 +58,26 @@ trait UpickleSupport {
         json.read(input)
       }
 
-  implicit def upickleMarshallerConverter[A](writer: Writer[A])(implicit printer: Js.Value => String = json.write): ToEntityMarshaller[A] =
+  implicit def upickleMarshallerConverter[A](writer: Writer[A])(implicit printer: Js.Value => String = json.write(_, 0)): ToEntityMarshaller[A] =
     upickleMarshaller[A](writer)
 
-  implicit def upickleMarshaller[A](implicit writer: Writer[A], printer: Js.Value => String = json.write): ToEntityMarshaller[A] =
+  /**
+   * `A` => HTTP entity
+   *
+   * @param writer writer for `A`
+   * @param printer pretty printer function
+   * @tparam A type to encode
+   * @return marshaller for any `A` value
+   */
+  implicit def upickleMarshaller[A](implicit writer: Writer[A], printer: Js.Value => String = json.write(_, 0)): ToEntityMarshaller[A] =
     upickleJsValueMarshaller.compose(writeJs[A])
 
-  implicit def upickleJsValueMarshaller(implicit printer: Js.Value => String = json.write): ToEntityMarshaller[Js.Value] =
+  /**
+   * JSON => HTTP entity
+   *
+   * @param printer pretty printer function
+   * @return marshaller for any Json value
+   */
+  implicit def upickleJsValueMarshaller(implicit printer: Js.Value => String = json.write(_, 0)): ToEntityMarshaller[Js.Value] =
     Marshaller.StringMarshaller.wrap(MediaTypes.`application/json`)(printer)
 }

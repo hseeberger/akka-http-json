@@ -17,7 +17,7 @@
 package de.heikoseeberger.akkahttpjson4s
 
 import akka.http.scaladsl.marshalling.{ Marshaller, ToEntityMarshaller }
-import akka.http.scaladsl.model.{ ContentTypes, HttpCharsets, MediaTypes }
+import akka.http.scaladsl.model.{ HttpCharsets, MediaTypes }
 import akka.http.scaladsl.unmarshalling.{ FromEntityUnmarshaller, Unmarshaller }
 import org.json4s.{ Formats, Serialization }
 
@@ -47,6 +47,12 @@ trait Json4sSupport {
   implicit def json4sUnmarshallerConverter[A: Manifest](serialization: Serialization, formats: Formats): FromEntityUnmarshaller[A] =
     json4sUnmarshaller(manifest, serialization, formats)
 
+  /**
+   * HTTP entity => `A`
+   *
+   * @tparam A type to decode
+   * @return unmarshaller for `A`
+   */
   implicit def json4sUnmarshaller[A: Manifest](implicit serialization: Serialization, formats: Formats): FromEntityUnmarshaller[A] =
     Unmarshaller
       .byteStringUnmarshaller
@@ -59,6 +65,12 @@ trait Json4sSupport {
   implicit def json4sMarshallerConverter[A <: AnyRef](serialization: Serialization, formats: Formats, shouldWritePretty: ShouldWritePretty = ShouldWritePretty.False): ToEntityMarshaller[A] =
     json4sMarshaller(serialization, formats, shouldWritePretty)
 
+  /**
+   * `A` => HTTP entity
+   *
+   * @tparam A type to encode, must be upper bounded by `AnyRef`
+   * @return marshaller for any `A` value
+   */
   implicit def json4sMarshaller[A <: AnyRef](implicit serialization: Serialization, formats: Formats, shouldWritePretty: ShouldWritePretty = ShouldWritePretty.False): ToEntityMarshaller[A] =
     shouldWritePretty match {
       case ShouldWritePretty.False => Marshaller.StringMarshaller.wrap(MediaTypes.`application/json`)(serialization.write[A])
