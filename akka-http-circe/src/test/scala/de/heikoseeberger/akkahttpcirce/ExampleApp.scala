@@ -44,11 +44,11 @@ object ExampleApp {
     import Directives._
     import io.circe.generic.auto._
 
-    path("") {
+    pathSingleSlash {
       post {
         entity(as[Foo]) { foo =>
           complete {
-            foo // Seems Intellij IDEA doesn't handle this implicit encoder well
+            foo
           }
         }
       }
