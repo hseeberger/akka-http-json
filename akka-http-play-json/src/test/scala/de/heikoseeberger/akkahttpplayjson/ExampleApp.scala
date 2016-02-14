@@ -20,15 +20,17 @@ import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.server.Directives
 import akka.stream.{ ActorMaterializer, Materializer }
-import play.api.libs.json.Json
+import play.api.libs.json.{ Format, Json }
 import scala.concurrent.duration.Duration
 import scala.concurrent.{ Await, ExecutionContext }
 import scala.io.StdIn
 
 object ExampleApp {
 
+  object Foo {
+    implicit val fooFormat: Format[Foo] = Json.format[Foo]
+  }
   case class Foo(bar: String)
-  implicit val fooFormat = Json.format[Foo]
 
   def main(args: Array[String]): Unit = {
     implicit val system = ActorSystem()
@@ -44,7 +46,7 @@ object ExampleApp {
   def route(implicit ec: ExecutionContext, mat: Materializer) = {
     import Directives._
     import PlayJsonSupport._
-    path("") {
+    pathSingleSlash {
       post {
         entity(as[Foo]) { foo =>
           complete {

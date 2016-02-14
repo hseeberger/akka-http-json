@@ -42,7 +42,8 @@ object ExampleApp {
   def route(implicit ec: ExecutionContext, mat: Materializer) = {
     import Directives._
     import UpickleSupport._
-    path("") {
+
+    pathSingleSlash {
       post {
         entity(as[Foo]) { foo =>
           complete {

@@ -20,13 +20,17 @@ import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.server.Directives
 import akka.stream.{ ActorMaterializer, Materializer }
-import argonaut.Argonaut._
+import argonaut.Argonaut.casecodec1
+import argonaut.CodecJson
 import scala.concurrent.duration.Duration
 import scala.concurrent.{ Await, ExecutionContext }
 import scala.io.StdIn
 
 object ExampleApp {
 
+  object Foo {
+    implicit val fooCodec: CodecJson[Foo] = casecodec1(Foo.apply, Foo.unapply)("bar")
+  }
   case class Foo(bar: String)
 
   def main(args: Array[String]): Unit = {
@@ -44,9 +48,7 @@ object ExampleApp {
     import ArgonautSupport._
     import Directives._
 
-    implicit def FooCodec = casecodec1(Foo.apply, Foo.unapply)("bar")
-
-    path("") {
+    pathSingleSlash {
       post {
         entity(as[Foo]) { foo =>
           complete {

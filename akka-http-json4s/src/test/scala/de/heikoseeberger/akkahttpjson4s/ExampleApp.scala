@@ -47,7 +47,7 @@ object ExampleApp {
     implicit val serialization = jackson.Serialization // or native.Serialization
     implicit val formats = DefaultFormats
 
-    path("") {
+    pathSingleSlash {
       post {
         entity(as[Foo]) { foo =>
           complete {
