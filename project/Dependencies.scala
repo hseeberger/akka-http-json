@@ -6,7 +6,7 @@ object Version {
   final val Circe     = "0.3.0"
   final val Json4s    = "3.3.0"
   final val Play      = "2.4.6"
-  final val Scala     = "2.11.7"
+  final val Scala     = "2.11.8"
   final val ScalaTest = "2.2.6"
   final val Upickle   = "0.3.8"
 }
