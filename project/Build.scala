@@ -1,4 +1,4 @@
-import bintray.BintrayKeys
+import bintray.BintrayPlugin
 import com.typesafe.sbt.GitPlugin
 import com.typesafe.sbt.SbtPgp
 import com.typesafe.sbt.SbtScalariform
@@ -12,7 +12,7 @@ import scalariform.formatter.preferences._
 
 object Build extends AutoPlugin {
 
-  override def requires = JvmPlugin && HeaderPlugin && GitPlugin && SbtPgp
+  override def requires = JvmPlugin && HeaderPlugin && GitPlugin && SbtScalariform && BintrayPlugin
 
   override def trigger = allRequirements
 
@@ -58,6 +58,6 @@ object Build extends AutoPlugin {
     HeaderPlugin.autoImport.headers := Map("scala" -> Apache2_0("2015", "Heiko Seeberger")),
 
     // Bintray settings
-    BintrayKeys.bintrayPackage := "akka-http-json"
+    BintrayPlugin.autoImport.bintrayPackage := "akka-http-json"
   )
 }
