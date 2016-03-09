@@ -1,5 +1,5 @@
-lazy val root = project
-  .copy(id = "root")
+lazy val akkaHttpJson = project
+  .copy(id = "akka-http-json")
   .in(file("."))
   .aggregate(akkaHttpPlayJson, akkaHttpJson4s, akkaHttpUpickle, akkaHttpCirce, akkaHttpArgonaut)
   .enablePlugins(GitVersioning)
@@ -29,9 +29,9 @@ lazy val akkaHttpPlayJson = project
   .in(file("akka-http-play-json"))
   .enablePlugins(AutomateHeaderPlugin)
 
-name := "root"
+name := "akka-http-json"
 
-unmanagedSourceDirectories in Compile := Nil
-unmanagedSourceDirectories in Test    := Nil
+unmanagedSourceDirectories in Compile := Vector.empty
+unmanagedSourceDirectories in Test    := Vector.empty
 
 publishArtifact := false
