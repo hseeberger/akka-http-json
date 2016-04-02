@@ -20,6 +20,7 @@ import akka.http.scaladsl.marshalling.{ Marshaller, ToEntityMarshaller }
 import akka.http.scaladsl.model.{ HttpCharsets, MediaTypes }
 import akka.http.scaladsl.unmarshalling.{ FromEntityUnmarshaller, Unmarshaller }
 import argonaut.{ DecodeJson, EncodeJson, Json, Parse, PrettyParams }
+import scalaz.Scalaz._
 
 /**
  * Automatic to and from JSON marshalling/unmarshalling using an in-scope *Argonaut* protocol.
@@ -49,7 +50,7 @@ trait ArgonautSupport {
     argonautJsonUnmarshaller.map { json =>
       decoder.decodeJson(json).result.toEither match {
         case Right(entity)      => entity
-        case Left((message, _)) => sys.error(message)
+        case Left((message, history)) => sys.error(message + " - " + history.shows)
       }
     }
 
