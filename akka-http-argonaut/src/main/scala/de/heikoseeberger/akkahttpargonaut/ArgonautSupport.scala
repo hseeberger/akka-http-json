@@ -49,7 +49,7 @@ trait ArgonautSupport {
   implicit def argonautUnmarshaller[A](implicit decoder: DecodeJson[A]): FromEntityUnmarshaller[A] =
     argonautJsonUnmarshaller.map { json =>
       decoder.decodeJson(json).result.toEither match {
-        case Right(entity)      => entity
+        case Right(entity)            => entity
         case Left((message, history)) => sys.error(message + " - " + history.shows)
       }
     }
