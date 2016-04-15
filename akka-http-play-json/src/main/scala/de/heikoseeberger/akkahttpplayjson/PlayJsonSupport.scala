@@ -31,9 +31,6 @@ object PlayJsonSupport extends PlayJsonSupport
  */
 trait PlayJsonSupport {
 
-  implicit def playJsonUnmarshallerConverter[A](reads: Reads[A]): FromEntityUnmarshaller[A] =
-    playJsonUnmarshaller(reads)
-
   /**
    * HTTP entity => `A`
    *
@@ -56,9 +53,6 @@ trait PlayJsonSupport {
       .byteStringUnmarshaller
       .forContentTypes(`application/json`)
       .mapWithCharset((data, charset) => Json.parse(data.decodeString(charset.nioCharset.name)))
-
-  implicit def playJsonMarshallerConverter[A](writes: Writes[A])(implicit printer: JsValue => String = Json.prettyPrint): ToEntityMarshaller[A] =
-    playJsonMarshaller[A](writes, printer)
 
   /**
    * `A` => HTTP entity

@@ -36,9 +36,6 @@ object ArgonautSupport extends ArgonautSupport
  */
 trait ArgonautSupport {
 
-  implicit def argonautUnmarshallerConverter[A](decoder: DecodeJson[A]): FromEntityUnmarshaller[A] =
-    argonautUnmarshaller(decoder)
-
   /**
    * HTTP entity => `A`
    *
@@ -69,9 +66,6 @@ trait ArgonautSupport {
           case Left(message) => sys.error(message)
         }
       }
-
-  implicit def argonautToEntityMarshallerConverter[A](encoder: EncodeJson[A])(implicit printer: Json => String = PrettyParams.nospace.pretty): ToEntityMarshaller[A] =
-    argonautToEntityMarshaller(encoder)
 
   /**
    * `A` => HTTP entity

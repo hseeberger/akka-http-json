@@ -44,9 +44,6 @@ object Json4sSupport extends Json4sSupport {
 trait Json4sSupport {
   import Json4sSupport._
 
-  implicit def json4sUnmarshallerConverter[A: Manifest](serialization: Serialization, formats: Formats): FromEntityUnmarshaller[A] =
-    json4sUnmarshaller(manifest, serialization, formats)
-
   /**
    * HTTP entity => `A`
    *
@@ -58,9 +55,6 @@ trait Json4sSupport {
       .byteStringUnmarshaller
       .forContentTypes(`application/json`)
       .mapWithCharset((data, charset) => serialization.read(data.decodeString(charset.nioCharset.name)))
-
-  implicit def json4sMarshallerConverter[A <: AnyRef](serialization: Serialization, formats: Formats, shouldWritePretty: ShouldWritePretty = ShouldWritePretty.False): ToEntityMarshaller[A] =
-    json4sMarshaller(serialization, formats, shouldWritePretty)
 
   /**
    * `A` => HTTP entity

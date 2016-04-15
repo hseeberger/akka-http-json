@@ -32,9 +32,6 @@ object UpickleSupport extends UpickleSupport
  */
 trait UpickleSupport {
 
-  implicit def upickleUnmarshallerConverter[A](reader: Reader[A]): FromEntityUnmarshaller[A] =
-    upickleUnmarshaller(reader)
-
   /**
    * HTTP entity => `A`
    *
@@ -54,9 +51,6 @@ trait UpickleSupport {
     Unmarshaller.byteStringUnmarshaller
       .forContentTypes(`application/json`)
       .mapWithCharset((data, charset) => json.read(data.decodeString(charset.nioCharset.name)))
-
-  implicit def upickleMarshallerConverter[A](writer: Writer[A])(implicit printer: Js.Value => String = json.write(_, 0)): ToEntityMarshaller[A] =
-    upickleMarshaller[A](writer)
 
   /**
    * `A` => HTTP entity
