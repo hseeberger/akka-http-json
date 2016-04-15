@@ -17,7 +17,7 @@
 package de.heikoseeberger.akkahttpjson4s
 
 import akka.http.scaladsl.marshalling.{ Marshaller, ToEntityMarshaller }
-import akka.http.scaladsl.model.{ HttpCharsets, MediaTypes }
+import akka.http.scaladsl.model.MediaTypes.`application/json`
 import akka.http.scaladsl.unmarshalling.{ FromEntityUnmarshaller, Unmarshaller }
 import org.json4s.{ Formats, Serialization }
 
@@ -56,11 +56,8 @@ trait Json4sSupport {
   implicit def json4sUnmarshaller[A: Manifest](implicit serialization: Serialization, formats: Formats): FromEntityUnmarshaller[A] =
     Unmarshaller
       .byteStringUnmarshaller
-      .forContentTypes(MediaTypes.`application/json`)
-      .mapWithCharset { (data, charset) =>
-        val input = if (charset == HttpCharsets.`UTF-8`) data.utf8String else data.decodeString(charset.nioCharset.name)
-        serialization.read(input)
-      }
+      .forContentTypes(`application/json`)
+      .mapWithCharset((data, charset) => serialization.read(data.decodeString(charset.nioCharset.name)))
 
   implicit def json4sMarshallerConverter[A <: AnyRef](serialization: Serialization, formats: Formats, shouldWritePretty: ShouldWritePretty = ShouldWritePretty.False): ToEntityMarshaller[A] =
     json4sMarshaller(serialization, formats, shouldWritePretty)
@@ -73,7 +70,7 @@ trait Json4sSupport {
    */
   implicit def json4sMarshaller[A <: AnyRef](implicit serialization: Serialization, formats: Formats, shouldWritePretty: ShouldWritePretty = ShouldWritePretty.False): ToEntityMarshaller[A] =
     shouldWritePretty match {
-      case ShouldWritePretty.False => Marshaller.StringMarshaller.wrap(MediaTypes.`application/json`)(serialization.write[A])
-      case _                       => Marshaller.StringMarshaller.wrap(MediaTypes.`application/json`)(serialization.writePretty[A])
+      case ShouldWritePretty.False => Marshaller.StringMarshaller.wrap(`application/json`)(serialization.write[A])
+      case _                       => Marshaller.StringMarshaller.wrap(`application/json`)(serialization.writePretty[A])
     }
 }

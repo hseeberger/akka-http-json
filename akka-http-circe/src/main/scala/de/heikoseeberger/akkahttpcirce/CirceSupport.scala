@@ -17,9 +17,9 @@
 package de.heikoseeberger.akkahttpcirce
 
 import akka.http.scaladsl.marshalling.{ Marshaller, ToEntityMarshaller }
-import akka.http.scaladsl.model.MediaTypes
+import akka.http.scaladsl.model.MediaTypes.`application/json`
 import akka.http.scaladsl.unmarshalling.{ FromEntityUnmarshaller, Unmarshaller }
-import io.circe._
+import io.circe.{ Decoder, Encoder, Json, Printer, jawn }
 
 /**
  * Automatic to and from JSON marshalling/unmarshalling using an in-scope *Circe* protocol.
@@ -31,12 +31,9 @@ object CirceSupport extends CirceSupport
 /**
  * JSON marshalling/unmarshalling using an in-scope *Circe* protocol.
  *
- * To use automatic codec derivation, user need to import `circe.generic.auto._`
+ * To use automatic codec derivation, user need to import `io.circe.generic.auto._`
  */
 trait CirceSupport {
-
-  implicit def circeUnmarshallerConverter[A](decoder: Decoder[A]): FromEntityUnmarshaller[A] =
-    circeUnmarshaller(decoder)
 
   /**
    * HTTP entity => `A`
@@ -48,13 +45,8 @@ trait CirceSupport {
   implicit def circeUnmarshaller[A](implicit decoder: Decoder[A]): FromEntityUnmarshaller[A] =
     Unmarshaller
       .byteStringUnmarshaller
-      .forContentTypes(MediaTypes.`application/json`)
-      .mapWithCharset { (data, charset) =>
-        jawn.decode(data.decodeString(charset.nioCharset.name)) valueOr (throw _)
-      }
-
-  implicit def circeToEntityMarshallerConverter[A](encoder: Encoder[A])(implicit printer: Json => String = Printer.noSpaces.pretty): ToEntityMarshaller[A] =
-    circeToEntityMarshaller(encoder)
+      .forContentTypes(`application/json`)
+      .mapWithCharset((data, charset) => jawn.decode(data.decodeString(charset.nioCharset.name)).valueOr(throw _))
 
   /**
    * `A` => HTTP entity
@@ -74,5 +66,5 @@ trait CirceSupport {
    * @return marshaller for any Json value
    */
   implicit def circeJsonMarshaller(implicit printer: Json => String = Printer.noSpaces.pretty): ToEntityMarshaller[Json] =
-    Marshaller.StringMarshaller.wrap(MediaTypes.`application/json`)(printer)
+    Marshaller.StringMarshaller.wrap(`application/json`)(printer)
 }

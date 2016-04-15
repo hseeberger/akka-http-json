@@ -17,7 +17,7 @@
 package de.heikoseeberger.akkahttpupickle
 
 import akka.http.scaladsl.marshalling.{ Marshaller, ToEntityMarshaller }
-import akka.http.scaladsl.model.{ HttpCharsets, MediaTypes }
+import akka.http.scaladsl.model.MediaTypes.`application/json`
 import akka.http.scaladsl.unmarshalling.{ FromEntityUnmarshaller, Unmarshaller }
 import upickle.default.{ Reader, Writer, readJs, writeJs }
 import upickle.{ Js, json }
@@ -52,11 +52,8 @@ trait UpickleSupport {
    */
   implicit def upickleJsValueUnmarshaller: FromEntityUnmarshaller[Js.Value] =
     Unmarshaller.byteStringUnmarshaller
-      .forContentTypes(MediaTypes.`application/json`)
-      .mapWithCharset { (data, charset) =>
-        val input = if (charset == HttpCharsets.`UTF-8`) data.utf8String else data.decodeString(charset.nioCharset.name)
-        json.read(input)
-      }
+      .forContentTypes(`application/json`)
+      .mapWithCharset((data, charset) => json.read(data.decodeString(charset.nioCharset.name)))
 
   implicit def upickleMarshallerConverter[A](writer: Writer[A])(implicit printer: Js.Value => String = json.write(_, 0)): ToEntityMarshaller[A] =
     upickleMarshaller[A](writer)
@@ -79,5 +76,5 @@ trait UpickleSupport {
    * @return marshaller for any Json value
    */
   implicit def upickleJsValueMarshaller(implicit printer: Js.Value => String = json.write(_, 0)): ToEntityMarshaller[Js.Value] =
-    Marshaller.StringMarshaller.wrap(MediaTypes.`application/json`)(printer)
+    Marshaller.StringMarshaller.wrap(`application/json`)(printer)
 }
