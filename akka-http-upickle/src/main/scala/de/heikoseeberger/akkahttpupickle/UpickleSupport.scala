@@ -40,17 +40,9 @@ trait UpickleSupport {
    * @return unmarshaller for `A`
    */
   implicit def upickleUnmarshaller[A](implicit reader: Reader[A]): FromEntityUnmarshaller[A] =
-    upickleJsValueUnmarshaller.map(readJs[A])
-
-  /**
-   * HTTP entity => JSON
-   *
-   * @return unmarshaller for upickle Json
-   */
-  implicit def upickleJsValueUnmarshaller: FromEntityUnmarshaller[Js.Value] =
     Unmarshaller.byteStringUnmarshaller
       .forContentTypes(`application/json`)
-      .mapWithCharset((data, charset) => json.read(data.decodeString(charset.nioCharset.name)))
+      .mapWithCharset((data, charset) => readJs[A](json.read(data.decodeString(charset.nioCharset.name))))
 
   /**
    * `A` => HTTP entity
@@ -61,14 +53,5 @@ trait UpickleSupport {
    * @return marshaller for any `A` value
    */
   implicit def upickleMarshaller[A](implicit writer: Writer[A], printer: Js.Value => String = json.write(_, 0)): ToEntityMarshaller[A] =
-    upickleJsValueMarshaller.compose(writeJs[A])
-
-  /**
-   * JSON => HTTP entity
-   *
-   * @param printer pretty printer function
-   * @return marshaller for any Json value
-   */
-  implicit def upickleJsValueMarshaller(implicit printer: Js.Value => String = json.write(_, 0)): ToEntityMarshaller[Js.Value] =
-    Marshaller.StringMarshaller.wrap(`application/json`)(printer)
+    Marshaller.StringMarshaller.wrap(`application/json`)(printer).compose(writeJs[A])
 }

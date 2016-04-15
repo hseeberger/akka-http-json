@@ -44,19 +44,6 @@ trait ArgonautSupport {
    * @return unmarshaller for `A`
    */
   implicit def argonautUnmarshaller[A](implicit decoder: DecodeJson[A]): FromEntityUnmarshaller[A] =
-    argonautJsonUnmarshaller.map { json =>
-      decoder.decodeJson(json).result.toEither match {
-        case Right(entity)            => entity
-        case Left((message, history)) => sys.error(message + " - " + history.shows)
-      }
-    }
-
-  /**
-   * HTTP entity => JSON
-   *
-   * @return unmarshaller for Argonaut Json
-   */
-  implicit def argonautJsonUnmarshaller: FromEntityUnmarshaller[Json] =
     Unmarshaller
       .byteStringUnmarshaller
       .forContentTypes(`application/json`)
@@ -64,6 +51,12 @@ trait ArgonautSupport {
         Parse.parse(data.decodeString(charset.nioCharset.name)).toEither match {
           case Right(json)   => json
           case Left(message) => sys.error(message)
+        }
+      }
+      .map { json =>
+        decoder.decodeJson(json).result.toEither match {
+          case Right(entity)            => entity
+          case Left((message, history)) => sys.error(message + " - " + history.shows)
         }
       }
 
@@ -76,14 +69,5 @@ trait ArgonautSupport {
    * @return marshaller for any `A` value
    */
   implicit def argonautToEntityMarshaller[A](implicit encoder: EncodeJson[A], printer: Json => String = PrettyParams.nospace.pretty): ToEntityMarshaller[A] =
-    argonautJsonMarshaller.compose(encoder.apply)
-
-  /**
-   * JSON => HTTP entity
-   *
-   * @param printer pretty printer function
-   * @return marshaller for any Json value
-   */
-  implicit def argonautJsonMarshaller(implicit printer: Json => String = PrettyParams.nospace.pretty): ToEntityMarshaller[Json] =
-    Marshaller.StringMarshaller.wrap(`application/json`)(printer)
+    Marshaller.StringMarshaller.wrap(`application/json`)(printer).compose(encoder.apply)
 }
