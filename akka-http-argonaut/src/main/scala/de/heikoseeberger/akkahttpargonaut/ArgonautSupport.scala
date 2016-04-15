@@ -36,9 +36,6 @@ object ArgonautSupport extends ArgonautSupport
  */
 trait ArgonautSupport {
 
-  implicit def argonautUnmarshallerConverter[A](decoder: DecodeJson[A]): FromEntityUnmarshaller[A] =
-    argonautUnmarshaller(decoder)
-
   /**
    * HTTP entity => `A`
    *
@@ -47,19 +44,6 @@ trait ArgonautSupport {
    * @return unmarshaller for `A`
    */
   implicit def argonautUnmarshaller[A](implicit decoder: DecodeJson[A]): FromEntityUnmarshaller[A] =
-    argonautJsonUnmarshaller.map { json =>
-      decoder.decodeJson(json).result.toEither match {
-        case Right(entity)            => entity
-        case Left((message, history)) => sys.error(message + " - " + history.shows)
-      }
-    }
-
-  /**
-   * HTTP entity => JSON
-   *
-   * @return unmarshaller for Argonaut Json
-   */
-  implicit def argonautJsonUnmarshaller: FromEntityUnmarshaller[Json] =
     Unmarshaller
       .byteStringUnmarshaller
       .forContentTypes(`application/json`)
@@ -69,9 +53,12 @@ trait ArgonautSupport {
           case Left(message) => sys.error(message)
         }
       }
-
-  implicit def argonautToEntityMarshallerConverter[A](encoder: EncodeJson[A])(implicit printer: Json => String = PrettyParams.nospace.pretty): ToEntityMarshaller[A] =
-    argonautToEntityMarshaller(encoder)
+      .map { json =>
+        decoder.decodeJson(json).result.toEither match {
+          case Right(entity)            => entity
+          case Left((message, history)) => sys.error(message + " - " + history.shows)
+        }
+      }
 
   /**
    * `A` => HTTP entity
@@ -82,14 +69,5 @@ trait ArgonautSupport {
    * @return marshaller for any `A` value
    */
   implicit def argonautToEntityMarshaller[A](implicit encoder: EncodeJson[A], printer: Json => String = PrettyParams.nospace.pretty): ToEntityMarshaller[A] =
-    argonautJsonMarshaller.compose(encoder.apply)
-
-  /**
-   * JSON => HTTP entity
-   *
-   * @param printer pretty printer function
-   * @return marshaller for any Json value
-   */
-  implicit def argonautJsonMarshaller(implicit printer: Json => String = PrettyParams.nospace.pretty): ToEntityMarshaller[Json] =
-    Marshaller.StringMarshaller.wrap(`application/json`)(printer)
+    Marshaller.StringMarshaller.wrap(`application/json`)(printer).compose(encoder.apply)
 }

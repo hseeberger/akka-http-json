@@ -31,9 +31,6 @@ object PlayJsonSupport extends PlayJsonSupport
  */
 trait PlayJsonSupport {
 
-  implicit def playJsonUnmarshallerConverter[A](reads: Reads[A]): FromEntityUnmarshaller[A] =
-    playJsonUnmarshaller(reads)
-
   /**
    * HTTP entity => `A`
    *
@@ -43,22 +40,11 @@ trait PlayJsonSupport {
    */
   implicit def playJsonUnmarshaller[A](implicit reads: Reads[A]): FromEntityUnmarshaller[A] = {
     def read(json: JsValue) = reads.reads(json).recoverTotal(error => throw JsResultException(error.errors))
-    playJsValueUnmarshaller.map(read)
-  }
-
-  /**
-   * HTTP entity => JSON
-   *
-   * @return unmarshaller for Play Json
-   */
-  implicit def playJsValueUnmarshaller: FromEntityUnmarshaller[JsValue] =
     Unmarshaller
       .byteStringUnmarshaller
       .forContentTypes(`application/json`)
-      .mapWithCharset((data, charset) => Json.parse(data.decodeString(charset.nioCharset.name)))
-
-  implicit def playJsonMarshallerConverter[A](writes: Writes[A])(implicit printer: JsValue => String = Json.prettyPrint): ToEntityMarshaller[A] =
-    playJsonMarshaller[A](writes, printer)
+      .mapWithCharset((data, charset) => read(Json.parse(data.decodeString(charset.nioCharset.name))))
+  }
 
   /**
    * `A` => HTTP entity
@@ -69,14 +55,5 @@ trait PlayJsonSupport {
    * @return marshaller for any `A` value
    */
   implicit def playJsonMarshaller[A](implicit writes: Writes[A], printer: JsValue => String = Json.prettyPrint): ToEntityMarshaller[A] =
-    playJsValueMarshaller.compose(writes.writes)
-
-  /**
-   * JSON => HTTP entity
-   *
-   * @param printer pretty printer function
-   * @return marshaller for any Json value
-   */
-  implicit def playJsValueMarshaller(implicit printer: JsValue => String = Json.prettyPrint): ToEntityMarshaller[JsValue] =
-    Marshaller.StringMarshaller.wrap(`application/json`)(printer)
+    Marshaller.StringMarshaller.wrap(`application/json`)(printer).compose(writes.writes)
 }

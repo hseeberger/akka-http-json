@@ -57,14 +57,5 @@ trait CirceSupport {
    * @return marshaller for any `A` value
    */
   implicit def circeToEntityMarshaller[A](implicit encoder: Encoder[A], printer: Json => String = Printer.noSpaces.pretty): ToEntityMarshaller[A] =
-    circeJsonMarshaller.compose(encoder.apply)
-
-  /**
-   * JSON => HTTP entity
-   *
-   * @param printer pretty printer function
-   * @return marshaller for any Json value
-   */
-  implicit def circeJsonMarshaller(implicit printer: Json => String = Printer.noSpaces.pretty): ToEntityMarshaller[Json] =
-    Marshaller.StringMarshaller.wrap(`application/json`)(printer)
+    Marshaller.StringMarshaller.wrap(`application/json`)(printer).compose(encoder.apply)
 }
