@@ -17,7 +17,7 @@
 package de.heikoseeberger.akkahttpargonaut
 
 import akka.http.scaladsl.marshalling.{ Marshaller, ToEntityMarshaller }
-import akka.http.scaladsl.model.{ HttpCharsets, MediaTypes }
+import akka.http.scaladsl.model.MediaTypes.`application/json`
 import akka.http.scaladsl.unmarshalling.{ FromEntityUnmarshaller, Unmarshaller }
 import argonaut.{ DecodeJson, EncodeJson, Json, Parse, PrettyParams }
 import scalaz.Scalaz._
@@ -62,12 +62,9 @@ trait ArgonautSupport {
   implicit def argonautJsonUnmarshaller: FromEntityUnmarshaller[Json] =
     Unmarshaller
       .byteStringUnmarshaller
-      .forContentTypes(MediaTypes.`application/json`)
+      .forContentTypes(`application/json`)
       .mapWithCharset { (data, charset) =>
-        val input =
-          if (charset == HttpCharsets.`UTF-8`) data.utf8String
-          else data.decodeString(charset.nioCharset.name)
-        Parse.parse(input).toEither match {
+        Parse.parse(data.decodeString(charset.nioCharset.name)).toEither match {
           case Right(json)   => json
           case Left(message) => sys.error(message)
         }
@@ -94,5 +91,5 @@ trait ArgonautSupport {
    * @return marshaller for any Json value
    */
   implicit def argonautJsonMarshaller(implicit printer: Json => String = PrettyParams.nospace.pretty): ToEntityMarshaller[Json] =
-    Marshaller.StringMarshaller.wrap(MediaTypes.`application/json`)(printer)
+    Marshaller.StringMarshaller.wrap(`application/json`)(printer)
 }

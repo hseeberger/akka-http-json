@@ -17,7 +17,7 @@
 package de.heikoseeberger.akkahttpplayjson
 
 import akka.http.scaladsl.marshalling.{ Marshaller, ToEntityMarshaller }
-import akka.http.scaladsl.model.{ HttpCharsets, MediaTypes }
+import akka.http.scaladsl.model.MediaTypes.`application/json`
 import akka.http.scaladsl.unmarshalling.{ FromEntityUnmarshaller, Unmarshaller }
 import play.api.libs.json.{ JsResultException, JsValue, Json, Reads, Writes }
 
@@ -54,11 +54,8 @@ trait PlayJsonSupport {
   implicit def playJsValueUnmarshaller: FromEntityUnmarshaller[JsValue] =
     Unmarshaller
       .byteStringUnmarshaller
-      .forContentTypes(MediaTypes.`application/json`)
-      .mapWithCharset { (data, charset) =>
-        val input = if (charset == HttpCharsets.`UTF-8`) data.utf8String else data.decodeString(charset.nioCharset.name)
-        Json.parse(input)
-      }
+      .forContentTypes(`application/json`)
+      .mapWithCharset((data, charset) => Json.parse(data.decodeString(charset.nioCharset.name)))
 
   implicit def playJsonMarshallerConverter[A](writes: Writes[A])(implicit printer: JsValue => String = Json.prettyPrint): ToEntityMarshaller[A] =
     playJsonMarshaller[A](writes, printer)
@@ -81,5 +78,5 @@ trait PlayJsonSupport {
    * @return marshaller for any Json value
    */
   implicit def playJsValueMarshaller(implicit printer: JsValue => String = Json.prettyPrint): ToEntityMarshaller[JsValue] =
-    Marshaller.StringMarshaller.wrap(MediaTypes.`application/json`)(printer)
+    Marshaller.StringMarshaller.wrap(`application/json`)(printer)
 }
