@@ -16,10 +16,12 @@
 
 package de.heikoseeberger.akkahttpjson4s
 
+import java.lang.reflect.InvocationTargetException
+
 import akka.http.scaladsl.marshalling.{ Marshaller, ToEntityMarshaller }
 import akka.http.scaladsl.model.MediaTypes.`application/json`
 import akka.http.scaladsl.unmarshalling.{ FromEntityUnmarshaller, Unmarshaller }
-import org.json4s.{ Formats, Serialization }
+import org.json4s.{ Formats, MappingException, Serialization }
 
 /**
  * Automatic to and from JSON marshalling/unmarshalling using an in-scope *Json4s* protocol.
@@ -54,7 +56,12 @@ trait Json4sSupport {
     Unmarshaller
       .byteStringUnmarshaller
       .forContentTypes(`application/json`)
-      .mapWithCharset((data, charset) => serialization.read(data.decodeString(charset.nioCharset.name)))
+      .mapWithCharset { (data, charset) =>
+        try serialization.read(data.decodeString(charset.nioCharset.name))
+        catch {
+          case MappingException("unknown error", ite: InvocationTargetException) => throw ite.getCause
+        }
+      }
 
   /**
    * `A` => HTTP entity
