@@ -59,7 +59,7 @@ class Json4sSupportSpec extends WordSpec with Matchers with BeforeAndAfterAll {
     "provide proper error messages for requirement errors" in {
       implicit val serialization = native.Serialization
       val entity = HttpEntity(MediaTypes.`application/json`, """{ "bar": "baz" }""")
-      val iae = the[IllegalArgumentException] thrownBy(Await.result(Unmarshal(entity).to[Foo], 100.millis))
+      val iae = the[IllegalArgumentException] thrownBy Await.result(Unmarshal(entity).to[Foo], 100.millis)
       iae should have message "requirement failed: bar must be 'bar'!"
     }
   }
