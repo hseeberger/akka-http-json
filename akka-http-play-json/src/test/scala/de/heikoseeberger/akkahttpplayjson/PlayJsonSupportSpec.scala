@@ -55,6 +55,12 @@ class PlayJsonSupportSpec extends WordSpec with Matchers with BeforeAndAfterAll 
       val iae = the[IllegalArgumentException] thrownBy Await.result(Unmarshal(entity).to[Foo], 100.millis)
       iae should have message "requirement failed: bar must be 'bar'!"
     }
+
+    "provide stringified error representation for parsing errors" in {
+      val entity = HttpEntity(MediaTypes.`application/json`, """{ "bar": 5 }""")
+      val iae = the[IllegalArgumentException] thrownBy Await.result(Unmarshal(entity).to[Foo], 100.millis)
+      iae should have message """{"obj.bar":[{"msg":["error.expected.jsstring"],"args":[]}]}"""
+    }
   }
 
   override protected def afterAll() = {
