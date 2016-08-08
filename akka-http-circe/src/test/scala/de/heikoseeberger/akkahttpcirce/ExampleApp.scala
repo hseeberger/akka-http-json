@@ -19,9 +19,10 @@ package de.heikoseeberger.akkahttpcirce
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.server.Directives
-import akka.stream.{ ActorMaterializer, Materializer }
+import akka.stream.{ActorMaterializer, Materializer}
+
 import scala.concurrent.duration.Duration
-import scala.concurrent.{ Await, ExecutionContext }
+import scala.concurrent.{Await, ExecutionContext}
 import scala.io.StdIn
 
 object ExampleApp {
@@ -32,6 +33,16 @@ object ExampleApp {
     implicit val system = ActorSystem()
     implicit val mat = ActorMaterializer()
     import system.dispatcher
+
+    // provide an implicit ObjectMapper if you want serialization/deserialization to use it
+    // instead of a default ObjectMapper configured only with DefaultScalaModule provided
+    // by JacksonSupport
+    //
+    // for example:
+    //
+    // implicit val objectMapper = new ObjectMapper()
+    //   .registerModule(DefaultScalaModule)
+    //   .registerModule(new GuavaModule())
 
     Http().bindAndHandle(route, "127.0.0.1", 8080)
 
