@@ -19,10 +19,9 @@ package de.heikoseeberger.akkahttpcirce
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.server.Directives
-import akka.stream.{ActorMaterializer, Materializer}
-
+import akka.stream.{ ActorMaterializer, Materializer }
 import scala.concurrent.duration.Duration
-import scala.concurrent.{Await, ExecutionContext}
+import scala.concurrent.{ Await, ExecutionContext }
 import scala.io.StdIn
 
 object ExampleApp {
