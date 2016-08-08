@@ -34,16 +34,6 @@ object ExampleApp {
     implicit val mat = ActorMaterializer()
     import system.dispatcher
 
-    // provide an implicit ObjectMapper if you want serialization/deserialization to use it
-    // instead of a default ObjectMapper configured only with DefaultScalaModule provided
-    // by JacksonSupport
-    //
-    // for example:
-    //
-    // implicit val objectMapper = new ObjectMapper()
-    //   .registerModule(DefaultScalaModule)
-    //   .registerModule(new GuavaModule())
-
     Http().bindAndHandle(route, "127.0.0.1", 8080)
 
     StdIn.readLine("Hit ENTER to exit")
