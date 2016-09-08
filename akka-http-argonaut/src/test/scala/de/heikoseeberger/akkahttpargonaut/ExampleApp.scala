@@ -29,13 +29,14 @@ import scala.io.StdIn
 object ExampleApp {
 
   final object Foo {
-    implicit val fooCodec: CodecJson[Foo] = casecodec1(Foo.apply, Foo.unapply)("bar")
+    implicit val fooCodec: CodecJson[Foo] =
+      casecodec1(Foo.apply, Foo.unapply)("bar")
   }
   final case class Foo(bar: String)
 
   def main(args: Array[String]): Unit = {
     implicit val system = ActorSystem()
-    implicit val mat = ActorMaterializer()
+    implicit val mat    = ActorMaterializer()
 
     Http().bindAndHandle(route, "127.0.0.1", 8000)
 

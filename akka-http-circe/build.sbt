@@ -1,5 +1,3 @@
-name := "akka-http-circe"
-
 libraryDependencies ++= List(
   Library.akkaHttp,
   Library.circe,

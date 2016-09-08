@@ -18,42 +18,60 @@ package de.heikoseeberger.akkahttpplayjson
 
 import akka.http.scaladsl.marshalling.{ Marshaller, ToEntityMarshaller }
 import akka.http.scaladsl.model.MediaTypes.`application/json`
-import akka.http.scaladsl.unmarshalling.{ FromEntityUnmarshaller, Unmarshaller }
+import akka.http.scaladsl.unmarshalling.{
+  FromEntityUnmarshaller,
+  Unmarshaller
+}
 import play.api.libs.json.{ JsError, JsValue, Json, Reads, Writes }
 
 /**
- * Automatic to and from JSON marshalling/unmarshalling using an in-scope *play-json* protocol.
- */
+  * Automatic to and from JSON marshalling/unmarshalling using an in-scope *play-json* protocol.
+  */
 object PlayJsonSupport extends PlayJsonSupport
 
 /**
- * Automatic to and from JSON marshalling/unmarshalling using an in-scope *play-json* protocol.
- */
+  * Automatic to and from JSON marshalling/unmarshalling using an in-scope *play-json* protocol.
+  */
 trait PlayJsonSupport {
 
   /**
-   * HTTP entity => `A`
-   *
-   * @param reads reader for `A`
-   * @tparam A type to decode
-   * @return unmarshaller for `A`
-   */
-  implicit def playJsonUnmarshaller[A](implicit reads: Reads[A]): FromEntityUnmarshaller[A] = {
-    def read(json: JsValue) = reads.reads(json).recoverTotal(error => throw new IllegalArgumentException(JsError.toJson(error).toString))
-    Unmarshaller
-      .byteStringUnmarshaller
+    * HTTP entity => `A`
+    *
+    * @param reads reader for `A`
+    * @tparam A type to decode
+    * @return unmarshaller for `A`
+    */
+  implicit def playJsonUnmarshaller[A](
+      implicit reads: Reads[A]
+  ): FromEntityUnmarshaller[A] = {
+    def read(json: JsValue) =
+      reads
+        .reads(json)
+        .recoverTotal(
+          error =>
+            throw new IllegalArgumentException(JsError.toJson(error).toString)
+        )
+    Unmarshaller.byteStringUnmarshaller
       .forContentTypes(`application/json`)
-      .mapWithCharset((data, charset) => read(Json.parse(data.decodeString(charset.nioCharset.name))))
+      .mapWithCharset(
+        (data, charset) =>
+          read(Json.parse(data.decodeString(charset.nioCharset.name)))
+      )
   }
 
   /**
-   * `A` => HTTP entity
-   *
-   * @param writes writer for `A`
-   * @param printer pretty printer function
-   * @tparam A type to encode
-   * @return marshaller for any `A` value
-   */
-  implicit def playJsonMarshaller[A](implicit writes: Writes[A], printer: JsValue => String = Json.prettyPrint): ToEntityMarshaller[A] =
-    Marshaller.StringMarshaller.wrap(`application/json`)(printer).compose(writes.writes)
+    * `A` => HTTP entity
+    *
+    * @param writes writer for `A`
+    * @param printer pretty printer function
+    * @tparam A type to encode
+    * @return marshaller for any `A` value
+    */
+  implicit def playJsonMarshaller[A](
+      implicit writes: Writes[A],
+      printer: JsValue => String = Json.prettyPrint
+  ): ToEntityMarshaller[A] =
+    Marshaller.StringMarshaller
+      .wrap(`application/json`)(printer)
+      .compose(writes.writes)
 }

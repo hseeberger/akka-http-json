@@ -1,5 +1,3 @@
-name := "akka-http-upickle"
-
 libraryDependencies ++= List(
   Library.akkaHttp,
   Library.upickle,

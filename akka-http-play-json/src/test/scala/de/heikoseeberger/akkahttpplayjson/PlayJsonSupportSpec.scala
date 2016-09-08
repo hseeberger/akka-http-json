@@ -28,36 +28,45 @@ import scala.concurrent.duration.DurationInt
 
 object PlayJsonSupportSpec {
 
-  final case class Foo(bar: String) { require(bar == "bar", "bar must be 'bar'!") }
+  final case class Foo(bar: String) {
+    require(bar == "bar", "bar must be 'bar'!")
+  }
 
   implicit val fooFormat = Json.format[Foo]
 }
 
-class PlayJsonSupportSpec extends WordSpec with Matchers with BeforeAndAfterAll {
+class PlayJsonSupportSpec
+    extends WordSpec
+    with Matchers
+    with BeforeAndAfterAll {
   import PlayJsonSupport._
   import PlayJsonSupportSpec._
 
   private implicit val system = ActorSystem()
-  private implicit val mat = ActorMaterializer()
+  private implicit val mat    = ActorMaterializer()
 
   "PlayJsonSupport" should {
     import system.dispatcher
 
     "enable marshalling and unmarshalling objects for which `Writes` and `Reads` exist" in {
-      val foo = Foo("bar")
+      val foo    = Foo("bar")
       val entity = Await.result(Marshal(foo).to[RequestEntity], 100.millis)
       Await.result(Unmarshal(entity).to[Foo], 100.millis) shouldBe foo
     }
 
     "provide proper error messages for requirement errors" in {
-      val entity = HttpEntity(MediaTypes.`application/json`, """{ "bar": "baz" }""")
-      val iae = the[IllegalArgumentException] thrownBy Await.result(Unmarshal(entity).to[Foo], 100.millis)
+      val entity =
+        HttpEntity(MediaTypes.`application/json`, """{ "bar": "baz" }""")
+      val iae = the[IllegalArgumentException] thrownBy Await
+          .result(Unmarshal(entity).to[Foo], 100.millis)
       iae should have message "requirement failed: bar must be 'bar'!"
     }
 
     "provide stringified error representation for parsing errors" in {
-      val entity = HttpEntity(MediaTypes.`application/json`, """{ "bar": 5 }""")
-      val iae = the[IllegalArgumentException] thrownBy Await.result(Unmarshal(entity).to[Foo], 100.millis)
+      val entity =
+        HttpEntity(MediaTypes.`application/json`, """{ "bar": 5 }""")
+      val iae = the[IllegalArgumentException] thrownBy Await
+          .result(Unmarshal(entity).to[Foo], 100.millis)
       iae should have message """{"obj.bar":[{"msg":["error.expected.jsstring"],"args":[]}]}"""
     }
   }

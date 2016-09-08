@@ -1,5 +1,3 @@
-name := "akka-http-jackson"
-
 libraryDependencies ++= List(
   Library.akkaHttp,
   Library.akkaHttpJacksonJava,
