@@ -23,23 +23,22 @@ import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.stream.ActorMaterializer
 import org.json4s.{ DefaultFormats, jackson, native }
 import org.scalatest.{ BeforeAndAfterAll, Matchers, WordSpec }
-
 import scala.concurrent.Await
-import scala.concurrent.duration.{ Duration, DurationInt }
+import scala.concurrent.duration.DurationInt
 
 object Json4sSupportSpec {
-  case class Foo(bar: String) { require(bar == "bar", "bar must be 'bar'!") }
+  final case class Foo(bar: String) { require(bar == "bar", "bar must be 'bar'!") }
 }
 
 class Json4sSupportSpec extends WordSpec with Matchers with BeforeAndAfterAll {
   import Json4sSupport._
   import Json4sSupportSpec._
 
-  implicit val system = ActorSystem()
-  implicit val mat = ActorMaterializer()
-  implicit val formats = DefaultFormats
+  private implicit val system = ActorSystem()
+  private implicit val mat = ActorMaterializer()
+  private implicit val formats = DefaultFormats
 
-  val foo = Foo("bar")
+  private val foo = Foo("bar")
 
   "Json4sSupport" should {
     import system.dispatcher
@@ -65,7 +64,7 @@ class Json4sSupportSpec extends WordSpec with Matchers with BeforeAndAfterAll {
   }
 
   override protected def afterAll() = {
-    Await.ready(system.terminate(), Duration.Inf)
+    Await.ready(system.terminate(), 42.seconds)
     super.afterAll()
   }
 }

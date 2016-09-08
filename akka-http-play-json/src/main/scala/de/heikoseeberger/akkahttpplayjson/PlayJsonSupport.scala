@@ -19,7 +19,7 @@ package de.heikoseeberger.akkahttpplayjson
 import akka.http.scaladsl.marshalling.{ Marshaller, ToEntityMarshaller }
 import akka.http.scaladsl.model.MediaTypes.`application/json`
 import akka.http.scaladsl.unmarshalling.{ FromEntityUnmarshaller, Unmarshaller }
-import play.api.libs.json.{ JsResultException, JsValue, JsError, Json, Reads, Writes }
+import play.api.libs.json.{ JsError, JsValue, Json, Reads, Writes }
 
 /**
  * Automatic to and from JSON marshalling/unmarshalling using an in-scope *play-json* protocol.

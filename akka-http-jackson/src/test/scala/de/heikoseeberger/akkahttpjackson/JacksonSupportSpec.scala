@@ -23,28 +23,25 @@ import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.stream.ActorMaterializer
 import com.fasterxml.jackson.databind.JsonMappingException
 import org.scalatest.{ BeforeAndAfterAll, Matchers, WordSpec }
-
 import scala.concurrent.Await
-import scala.concurrent.duration.{ Duration, DurationInt }
+import scala.concurrent.duration.DurationInt
 
 object JacksonSupportSpec {
-  case class Foo(bar: String) { require(bar == "bar", "bar must be 'bar'!") }
+  final case class Foo(bar: String) { require(bar == "bar", "bar must be 'bar'!") }
 }
 
 class JacksonSupportSpec extends WordSpec with Matchers with BeforeAndAfterAll {
-
   import JacksonSupport._
   import JacksonSupportSpec._
 
-  implicit val system = ActorSystem()
-  implicit val mat = ActorMaterializer()
-
-  val foo = Foo("bar")
+  private implicit val system = ActorSystem()
+  private implicit val mat = ActorMaterializer()
 
   "JacksonSupport" should {
     import system.dispatcher
 
     "should enable marshalling and unmarshalling of case classes" in {
+      val foo = Foo("bar")
       val entity = Await.result(Marshal(foo).to[RequestEntity], 100.millis)
       Await.result(Unmarshal(entity).to[Foo], 100.millis) shouldBe foo
     }
@@ -58,7 +55,7 @@ class JacksonSupportSpec extends WordSpec with Matchers with BeforeAndAfterAll {
   }
 
   override protected def afterAll() = {
-    Await.ready(system.terminate(), Duration.Inf)
+    Await.ready(system.terminate(), 42.seconds)
     super.afterAll()
   }
 }

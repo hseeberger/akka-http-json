@@ -20,20 +20,17 @@ import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.server.Directives
 import akka.stream.{ ActorMaterializer, Materializer }
-
+import scala.concurrent.Await
 import scala.concurrent.duration.Duration
-import scala.concurrent.{ Await, ExecutionContext }
 import scala.io.StdIn
 
 object ExampleApp {
 
-  case class Response(payload: String)
-  case class Query(payload: String)
+  final case class Foo(bar: String)
 
   def main(args: Array[String]): Unit = {
     implicit val system = ActorSystem()
     implicit val mat = ActorMaterializer()
-    import system.dispatcher
 
     // provide an implicit ObjectMapper if you want serialization/deserialization to use it
     // instead of a default ObjectMapper configured only with DefaultScalaModule provided
@@ -45,18 +42,24 @@ object ExampleApp {
     //   .registerModule(DefaultScalaModule)
     //   .registerModule(new GuavaModule())
 
-    Http().bindAndHandle(route, "127.0.0.1", 8080)
+    Http().bindAndHandle(route, "127.0.0.1", 8000)
 
     StdIn.readLine("Hit ENTER to exit")
     Await.ready(system.terminate(), Duration.Inf)
   }
 
-  def route(implicit ec: ExecutionContext, mat: Materializer) = {
-    import JacksonSupport._
+  def route(implicit mat: Materializer) = {
     import Directives._
+    import JacksonSupport._
 
-    (pathSingleSlash & post & entity(as[Query])) { query =>
-      complete(Response(payload = s"Response to '${query.payload}'"))
+    pathSingleSlash {
+      post {
+        entity(as[Foo]) { foo =>
+          complete {
+            foo
+          }
+        }
+      }
     }
   }
 }

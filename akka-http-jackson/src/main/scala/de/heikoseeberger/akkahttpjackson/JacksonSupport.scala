@@ -41,10 +41,6 @@ trait JacksonSupport {
 
   /**
    * HTTP entity => `A`
-   *
-   * @param objectMapper
-   * @tparam A
-   * @return
    */
   implicit def jacksonUnmarshaller[A](
     implicit
@@ -64,10 +60,6 @@ trait JacksonSupport {
 
   /**
    * `A` => HTTP entity
-   *
-   * @param objectMapper
-   * @tparam Object
-   * @return
    */
   implicit def jacksonToEntityMarshaller[Object](
     implicit

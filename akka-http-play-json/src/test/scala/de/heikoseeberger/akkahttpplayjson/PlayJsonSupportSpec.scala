@@ -23,13 +23,12 @@ import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.stream.ActorMaterializer
 import org.scalatest.{ BeforeAndAfterAll, Matchers, WordSpec }
 import play.api.libs.json.Json
-
 import scala.concurrent.Await
-import scala.concurrent.duration.{ Duration, DurationInt }
+import scala.concurrent.duration.DurationInt
 
 object PlayJsonSupportSpec {
 
-  case class Foo(bar: String) { require(bar == "bar", "bar must be 'bar'!") }
+  final case class Foo(bar: String) { require(bar == "bar", "bar must be 'bar'!") }
 
   implicit val fooFormat = Json.format[Foo]
 }
@@ -38,8 +37,8 @@ class PlayJsonSupportSpec extends WordSpec with Matchers with BeforeAndAfterAll 
   import PlayJsonSupport._
   import PlayJsonSupportSpec._
 
-  implicit val system = ActorSystem()
-  implicit val mat = ActorMaterializer()
+  private implicit val system = ActorSystem()
+  private implicit val mat = ActorMaterializer()
 
   "PlayJsonSupport" should {
     import system.dispatcher
@@ -64,7 +63,7 @@ class PlayJsonSupportSpec extends WordSpec with Matchers with BeforeAndAfterAll 
   }
 
   override protected def afterAll() = {
-    Await.ready(system.terminate(), Duration.Inf)
+    Await.ready(system.terminate(), 42.seconds)
     super.afterAll()
   }
 }
