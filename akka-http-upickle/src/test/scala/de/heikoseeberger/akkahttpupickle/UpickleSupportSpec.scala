@@ -25,26 +25,31 @@ import org.scalatest.{ BeforeAndAfterAll, Matchers, WordSpec }
 import scala.concurrent.Await
 import scala.concurrent.duration.DurationInt
 
-class UpickleSupportSpec extends WordSpec with Matchers with BeforeAndAfterAll {
+class UpickleSupportSpec
+    extends WordSpec
+    with Matchers
+    with BeforeAndAfterAll {
   import UpickleSupport._
 
   case class Foo(bar: String) { require(bar == "bar", "bar must be 'bar'!") }
 
   implicit val system = ActorSystem()
-  implicit val mat = ActorMaterializer()
+  implicit val mat    = ActorMaterializer()
 
   "UpickleSupport" should {
     import system.dispatcher
 
     "enable marshalling and unmarshalling of case classes" in {
-      val foo = Foo("bar")
+      val foo    = Foo("bar")
       val entity = Await.result(Marshal(foo).to[RequestEntity], 100.millis)
       Await.result(Unmarshal(entity).to[Foo], 100.millis) shouldBe foo
     }
 
     "provide proper error messages for requirement errors" in {
-      val entity = HttpEntity(MediaTypes.`application/json`, """{ "bar": "baz" }""")
-      val iae = the[IllegalArgumentException] thrownBy Await.result(Unmarshal(entity).to[Foo], 100.millis)
+      val entity =
+        HttpEntity(MediaTypes.`application/json`, """{ "bar": "baz" }""")
+      val iae = the[IllegalArgumentException] thrownBy Await
+          .result(Unmarshal(entity).to[Foo], 100.millis)
       iae should have message "requirement failed: bar must be 'bar'!"
     }
   }

@@ -34,7 +34,7 @@ object ExampleApp {
 
   def main(args: Array[String]): Unit = {
     implicit val system = ActorSystem()
-    implicit val mat = ActorMaterializer()
+    implicit val mat    = ActorMaterializer()
 
     Http().bindAndHandle(route, "127.0.0.1", 8000)
 

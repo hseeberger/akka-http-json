@@ -27,15 +27,17 @@ import scala.concurrent.Await
 import scala.concurrent.duration.DurationInt
 
 object Json4sSupportSpec {
-  final case class Foo(bar: String) { require(bar == "bar", "bar must be 'bar'!") }
+  final case class Foo(bar: String) {
+    require(bar == "bar", "bar must be 'bar'!")
+  }
 }
 
 class Json4sSupportSpec extends WordSpec with Matchers with BeforeAndAfterAll {
   import Json4sSupport._
   import Json4sSupportSpec._
 
-  private implicit val system = ActorSystem()
-  private implicit val mat = ActorMaterializer()
+  private implicit val system  = ActorSystem()
+  private implicit val mat     = ActorMaterializer()
   private implicit val formats = DefaultFormats
 
   private val foo = Foo("bar")
@@ -45,20 +47,22 @@ class Json4sSupportSpec extends WordSpec with Matchers with BeforeAndAfterAll {
 
     "enable marshalling and unmarshalling objects for `DefaultFormats` and `jackson.Serialization`" in {
       implicit val serialization = jackson.Serialization
-      val entity = Await.result(Marshal(foo).to[RequestEntity], 100.millis)
+      val entity                 = Await.result(Marshal(foo).to[RequestEntity], 100.millis)
       Await.result(Unmarshal(entity).to[Foo], 100.millis) shouldBe foo
     }
 
     "enable marshalling and unmarshalling objects for default `DefaultFormats` and `native.Serialization`" in {
       implicit val serialization = native.Serialization
-      val entity = Await.result(Marshal(foo).to[RequestEntity], 100.millis)
+      val entity                 = Await.result(Marshal(foo).to[RequestEntity], 100.millis)
       Await.result(Unmarshal(entity).to[Foo], 100.millis) shouldBe foo
     }
 
     "provide proper error messages for requirement errors" in {
       implicit val serialization = native.Serialization
-      val entity = HttpEntity(MediaTypes.`application/json`, """{ "bar": "baz" }""")
-      val iae = the[IllegalArgumentException] thrownBy Await.result(Unmarshal(entity).to[Foo], 100.millis)
+      val entity =
+        HttpEntity(MediaTypes.`application/json`, """{ "bar": "baz" }""")
+      val iae = the[IllegalArgumentException] thrownBy Await
+          .result(Unmarshal(entity).to[Foo], 100.millis)
       iae should have message "requirement failed: bar must be 'bar'!"
     }
   }

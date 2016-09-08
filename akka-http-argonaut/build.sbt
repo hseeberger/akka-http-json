@@ -1,5 +1,3 @@
-name := "akka-http-argonaut"
-
 libraryDependencies ++= List(
   Library.akkaHttp,
   Library.argonaut,

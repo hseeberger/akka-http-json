@@ -26,7 +26,9 @@ import scala.concurrent.Await
 import scala.concurrent.duration.DurationInt
 
 object CirceSupportSpec {
-  final case class Foo(bar: String) { require(bar == "bar", "bar must be 'bar'!") }
+  final case class Foo(bar: String) {
+    require(bar == "bar", "bar must be 'bar'!")
+  }
 }
 
 class CirceSupportSpec extends WordSpec with Matchers with BeforeAndAfterAll {
@@ -34,22 +36,24 @@ class CirceSupportSpec extends WordSpec with Matchers with BeforeAndAfterAll {
   import CirceSupportSpec._
 
   private implicit val system = ActorSystem()
-  private implicit val mat = ActorMaterializer()
+  private implicit val mat    = ActorMaterializer()
 
   "CirceSupport" should {
     import system.dispatcher
 
     "enable marshalling and unmarshalling objects for generic derivation" in {
       import io.circe.generic.auto._
-      val foo = Foo("bar")
+      val foo    = Foo("bar")
       val entity = Await.result(Marshal(foo).to[RequestEntity], 100.millis)
       Await.result(Unmarshal(entity).to[Foo], 100.millis) shouldBe foo
     }
 
     "provide proper error messages for requirement errors" in {
       import io.circe.generic.auto._
-      val entity = HttpEntity(MediaTypes.`application/json`, """{ "bar": "baz" }""")
-      val iae = the[IllegalArgumentException] thrownBy Await.result(Unmarshal(entity).to[Foo], 100.millis)
+      val entity =
+        HttpEntity(MediaTypes.`application/json`, """{ "bar": "baz" }""")
+      val iae = the[IllegalArgumentException] thrownBy Await
+          .result(Unmarshal(entity).to[Foo], 100.millis)
       iae should have message "requirement failed: bar must be 'bar'!"
     }
 

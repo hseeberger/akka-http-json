@@ -26,44 +26,42 @@ import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import scala.reflect._
 
 /**
- * Automatic to and from JSON marshalling/unmarshalling usung an in-scope Jackon's ObjectMapper
- */
+  * Automatic to and from JSON marshalling/unmarshalling usung an in-scope Jackon's ObjectMapper
+  */
 object JacksonSupport extends JacksonSupport {
-  val defaultObjectMapper = new ObjectMapper()
-    .registerModule(DefaultScalaModule)
+  val defaultObjectMapper =
+    new ObjectMapper().registerModule(DefaultScalaModule)
 }
 
 /**
- * JSON marshalling/unmarshalling using an in-scope Jackson's ObjectMapper
- */
+  * JSON marshalling/unmarshalling using an in-scope Jackson's ObjectMapper
+  */
 trait JacksonSupport {
   import JacksonSupport._
 
   /**
-   * HTTP entity => `A`
-   */
+    * HTTP entity => `A`
+    */
   implicit def jacksonUnmarshaller[A](
-    implicit
-    ct: ClassTag[A],
-    objectMapper: ObjectMapper = defaultObjectMapper
+      implicit ct: ClassTag[A],
+      objectMapper: ObjectMapper = defaultObjectMapper
   ): FromEntityUnmarshaller[A] = {
-    Unmarshaller
-      .byteStringUnmarshaller
+    Unmarshaller.byteStringUnmarshaller
       .forContentTypes(`application/json`)
       .mapWithCharset((data, charset) => {
-        val x: A = objectMapper.readValue(
-          data.decodeString(charset.nioCharset.name), ct.runtimeClass
-        ).asInstanceOf[A]
+        val x: A = objectMapper
+          .readValue(data.decodeString(charset.nioCharset.name),
+                     ct.runtimeClass)
+          .asInstanceOf[A]
         x
       })
   }
 
   /**
-   * `A` => HTTP entity
-   */
+    * `A` => HTTP entity
+    */
   implicit def jacksonToEntityMarshaller[Object](
-    implicit
-    objectMapper: ObjectMapper = defaultObjectMapper
+      implicit objectMapper: ObjectMapper = defaultObjectMapper
   ): ToEntityMarshaller[Object] = {
     Jackson.marshaller[Object](objectMapper)
   }

@@ -18,56 +18,68 @@ package de.heikoseeberger.akkahttpargonaut
 
 import akka.http.scaladsl.marshalling.{ Marshaller, ToEntityMarshaller }
 import akka.http.scaladsl.model.MediaTypes.`application/json`
-import akka.http.scaladsl.unmarshalling.{ FromEntityUnmarshaller, Unmarshaller }
+import akka.http.scaladsl.unmarshalling.{
+  FromEntityUnmarshaller,
+  Unmarshaller
+}
 import argonaut.{ DecodeJson, EncodeJson, Json, Parse, PrettyParams }
 import scalaz.Scalaz._
 
 /**
- * Automatic to and from JSON marshalling/unmarshalling using an in-scope *Argonaut* protocol.
- *
- * To use automatic codec derivation, user needs to import `argonaut.Shapeless._`.
- */
+  * Automatic to and from JSON marshalling/unmarshalling using an in-scope *Argonaut* protocol.
+  *
+  * To use automatic codec derivation, user needs to import `argonaut.Shapeless._`.
+  */
 object ArgonautSupport extends ArgonautSupport
 
 /**
- * JSON marshalling/unmarshalling using an in-scope *Argonaut* protocol.
- *
- * To use automatic codec derivation, user needs to import `argonaut.Shapeless._`
- */
+  * JSON marshalling/unmarshalling using an in-scope *Argonaut* protocol.
+  *
+  * To use automatic codec derivation, user needs to import `argonaut.Shapeless._`
+  */
 trait ArgonautSupport {
 
   /**
-   * HTTP entity => `A`
-   *
-   * @param decoder decoder for `A`
-   * @tparam A type to decode
-   * @return unmarshaller for `A`
-   */
-  implicit def argonautUnmarshaller[A](implicit decoder: DecodeJson[A]): FromEntityUnmarshaller[A] =
-    Unmarshaller
-      .byteStringUnmarshaller
+    * HTTP entity => `A`
+    *
+    * @param decoder decoder for `A`
+    * @tparam A type to decode
+    * @return unmarshaller for `A`
+    */
+  implicit def argonautUnmarshaller[A](
+      implicit decoder: DecodeJson[A]
+  ): FromEntityUnmarshaller[A] =
+    Unmarshaller.byteStringUnmarshaller
       .forContentTypes(`application/json`)
       .mapWithCharset { (data, charset) =>
-        Parse.parse(data.decodeString(charset.nioCharset.name)).toEither match {
+        Parse
+          .parse(data.decodeString(charset.nioCharset.name))
+          .toEither match {
           case Right(json)   => json
           case Left(message) => sys.error(message)
         }
       }
       .map { json =>
         decoder.decodeJson(json).result.toEither match {
-          case Right(entity)            => entity
-          case Left((message, history)) => sys.error(message + " - " + history.shows)
+          case Right(entity) => entity
+          case Left((message, history)) =>
+            sys.error(message + " - " + history.shows)
         }
       }
 
   /**
-   * `A` => HTTP entity
-   *
-   * @param encoder encoder for `A`
-   * @param printer pretty printer function
-   * @tparam A type to encode
-   * @return marshaller for any `A` value
-   */
-  implicit def argonautToEntityMarshaller[A](implicit encoder: EncodeJson[A], printer: Json => String = PrettyParams.nospace.pretty): ToEntityMarshaller[A] =
-    Marshaller.StringMarshaller.wrap(`application/json`)(printer).compose(encoder.apply)
+    * `A` => HTTP entity
+    *
+    * @param encoder encoder for `A`
+    * @param printer pretty printer function
+    * @tparam A type to encode
+    * @return marshaller for any `A` value
+    */
+  implicit def argonautToEntityMarshaller[A](
+      implicit encoder: EncodeJson[A],
+      printer: Json => String = PrettyParams.nospace.pretty
+  ): ToEntityMarshaller[A] =
+    Marshaller.StringMarshaller
+      .wrap(`application/json`)(printer)
+      .compose(encoder.apply)
 }

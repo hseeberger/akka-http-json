@@ -1,5 +1,7 @@
 import sbt._
 
+// format: off
+
 object Version {
   final val Akka         = "2.4.10"
   final val Argonaut     = "6.1"

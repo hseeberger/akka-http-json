@@ -31,7 +31,7 @@ object ExampleApp {
 
   def main(args: Array[String]): Unit = {
     implicit val system = ActorSystem()
-    implicit val mat = ActorMaterializer()
+    implicit val mat    = ActorMaterializer()
 
     Http().bindAndHandle(route, "127.0.0.1", 8000)
 
@@ -44,7 +44,7 @@ object ExampleApp {
     import Json4sSupport._
 
     implicit val serialization = jackson.Serialization // or native.Serialization
-    implicit val formats = DefaultFormats
+    implicit val formats       = DefaultFormats
 
     pathSingleSlash {
       post {

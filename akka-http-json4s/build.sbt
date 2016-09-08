@@ -1,5 +1,3 @@
-name := "akka-http-json4s"
-
 libraryDependencies ++= List(
   Library.akkaHttp,
   Library.json4sCore,

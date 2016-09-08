@@ -27,29 +27,35 @@ import scala.concurrent.Await
 import scala.concurrent.duration.DurationInt
 
 object JacksonSupportSpec {
-  final case class Foo(bar: String) { require(bar == "bar", "bar must be 'bar'!") }
+  final case class Foo(bar: String) {
+    require(bar == "bar", "bar must be 'bar'!")
+  }
 }
 
-class JacksonSupportSpec extends WordSpec with Matchers with BeforeAndAfterAll {
+class JacksonSupportSpec
+    extends WordSpec
+    with Matchers
+    with BeforeAndAfterAll {
   import JacksonSupport._
   import JacksonSupportSpec._
 
   private implicit val system = ActorSystem()
-  private implicit val mat = ActorMaterializer()
+  private implicit val mat    = ActorMaterializer()
 
   "JacksonSupport" should {
     import system.dispatcher
 
     "should enable marshalling and unmarshalling of case classes" in {
-      val foo = Foo("bar")
+      val foo    = Foo("bar")
       val entity = Await.result(Marshal(foo).to[RequestEntity], 100.millis)
       Await.result(Unmarshal(entity).to[Foo], 100.millis) shouldBe foo
     }
 
     "provide proper error messages for requirement errors" in {
-      val entity = HttpEntity(MediaTypes.`application/json`, """{ "bar": "baz" }""")
+      val entity =
+        HttpEntity(MediaTypes.`application/json`, """{ "bar": "baz" }""")
       val exception = the[JsonMappingException] thrownBy
-        Await.result(Unmarshal(entity).to[Foo], 100.millis)
+          Await.result(Unmarshal(entity).to[Foo], 100.millis)
       exception.getMessage should include("bar must be 'bar'!")
     }
   }

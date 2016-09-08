@@ -30,7 +30,7 @@ object ExampleApp {
 
   def main(args: Array[String]): Unit = {
     implicit val system = ActorSystem()
-    implicit val mat = ActorMaterializer()
+    implicit val mat    = ActorMaterializer()
 
     // provide an implicit ObjectMapper if you want serialization/deserialization to use it
     // instead of a default ObjectMapper configured only with DefaultScalaModule provided

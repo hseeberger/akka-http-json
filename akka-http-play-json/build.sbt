@@ -1,5 +1,3 @@
-name := "akka-http-play-json"
-
 libraryDependencies ++= List(
   Library.akkaHttp,
   Library.playJson,
