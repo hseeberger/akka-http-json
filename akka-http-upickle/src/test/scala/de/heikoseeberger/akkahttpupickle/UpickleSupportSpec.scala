@@ -21,12 +21,12 @@ import akka.http.scaladsl.marshalling.Marshal
 import akka.http.scaladsl.model.{ HttpEntity, MediaTypes, RequestEntity }
 import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.stream.ActorMaterializer
-import org.scalatest.{ BeforeAndAfterAll, Matchers, WordSpec }
+import org.scalatest.{ AsyncWordSpec, BeforeAndAfterAll, Matchers }
 import scala.concurrent.Await
 import scala.concurrent.duration.DurationInt
 
 class UpickleSupportSpec
-    extends WordSpec
+    extends AsyncWordSpec
     with Matchers
     with BeforeAndAfterAll {
   import UpickleSupport._
@@ -40,17 +40,20 @@ class UpickleSupportSpec
     import system.dispatcher
 
     "enable marshalling and unmarshalling of case classes" in {
-      val foo    = Foo("bar")
-      val entity = Await.result(Marshal(foo).to[RequestEntity], 100.millis)
-      Await.result(Unmarshal(entity).to[Foo], 100.millis) shouldBe foo
+      val foo = Foo("bar")
+      Marshal(foo)
+        .to[RequestEntity]
+        .flatMap(Unmarshal(_).to[Foo])
+        .map(_ shouldBe foo)
     }
 
     "provide proper error messages for requirement errors" in {
       val entity =
         HttpEntity(MediaTypes.`application/json`, """{ "bar": "baz" }""")
-      val iae = the[IllegalArgumentException] thrownBy Await
-          .result(Unmarshal(entity).to[Foo], 100.millis)
-      iae should have message "requirement failed: bar must be 'bar'!"
+      Unmarshal(entity)
+        .to[Foo]
+        .failed
+        .map(_ should have message "requirement failed: bar must be 'bar'!")
     }
   }
 
