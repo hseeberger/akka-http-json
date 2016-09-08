@@ -22,9 +22,8 @@ import akka.http.scaladsl.model.{ HttpEntity, MediaTypes, RequestEntity }
 import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.stream.ActorMaterializer
 import org.scalatest.{ BeforeAndAfterAll, Matchers, WordSpec }
-
 import scala.concurrent.Await
-import scala.concurrent.duration.{ Duration, DurationInt }
+import scala.concurrent.duration.DurationInt
 
 class UpickleSupportSpec extends WordSpec with Matchers with BeforeAndAfterAll {
   import UpickleSupport._
@@ -51,7 +50,7 @@ class UpickleSupportSpec extends WordSpec with Matchers with BeforeAndAfterAll {
   }
 
   override protected def afterAll() = {
-    Await.ready(system.terminate(), Duration.Inf)
+    Await.ready(system.terminate(), 42.seconds)
     super.afterAll()
   }
 }

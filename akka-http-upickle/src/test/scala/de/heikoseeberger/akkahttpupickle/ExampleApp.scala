@@ -20,26 +20,25 @@ import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.server.Directives
 import akka.stream.{ ActorMaterializer, Materializer }
+import scala.concurrent.Await
 import scala.concurrent.duration.Duration
-import scala.concurrent.{ Await, ExecutionContext }
 import scala.io.StdIn
 
 object ExampleApp {
 
-  case class Foo(bar: String)
+  final case class Foo(bar: String)
 
   def main(args: Array[String]): Unit = {
     implicit val system = ActorSystem()
     implicit val mat = ActorMaterializer()
-    import system.dispatcher
 
-    Http().bindAndHandle(route, "127.0.0.1", 8080)
+    Http().bindAndHandle(route, "127.0.0.1", 8000)
 
     StdIn.readLine("Hit ENTER to exit")
     Await.ready(system.terminate(), Duration.Inf)
   }
 
-  def route(implicit ec: ExecutionContext, mat: Materializer) = {
+  def route(implicit mat: Materializer) = {
     import Directives._
     import UpickleSupport._
 
