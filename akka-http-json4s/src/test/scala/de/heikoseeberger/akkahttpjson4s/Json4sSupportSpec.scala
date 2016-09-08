@@ -22,7 +22,7 @@ import akka.http.scaladsl.model.{ HttpEntity, MediaTypes, RequestEntity }
 import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.stream.ActorMaterializer
 import org.json4s.{ DefaultFormats, jackson, native }
-import org.scalatest.{ BeforeAndAfterAll, Matchers, WordSpec }
+import org.scalatest.{ AsyncWordSpec, BeforeAndAfterAll, Matchers }
 import scala.concurrent.Await
 import scala.concurrent.duration.DurationInt
 
@@ -32,7 +32,10 @@ object Json4sSupportSpec {
   }
 }
 
-class Json4sSupportSpec extends WordSpec with Matchers with BeforeAndAfterAll {
+class Json4sSupportSpec
+    extends AsyncWordSpec
+    with Matchers
+    with BeforeAndAfterAll {
   import Json4sSupport._
   import Json4sSupportSpec._
 
@@ -47,23 +50,28 @@ class Json4sSupportSpec extends WordSpec with Matchers with BeforeAndAfterAll {
 
     "enable marshalling and unmarshalling objects for `DefaultFormats` and `jackson.Serialization`" in {
       implicit val serialization = jackson.Serialization
-      val entity                 = Await.result(Marshal(foo).to[RequestEntity], 100.millis)
-      Await.result(Unmarshal(entity).to[Foo], 100.millis) shouldBe foo
+      Marshal(foo)
+        .to[RequestEntity]
+        .flatMap(Unmarshal(_).to[Foo])
+        .map(_ shouldBe foo)
     }
 
     "enable marshalling and unmarshalling objects for default `DefaultFormats` and `native.Serialization`" in {
       implicit val serialization = native.Serialization
-      val entity                 = Await.result(Marshal(foo).to[RequestEntity], 100.millis)
-      Await.result(Unmarshal(entity).to[Foo], 100.millis) shouldBe foo
+      Marshal(foo)
+        .to[RequestEntity]
+        .flatMap(Unmarshal(_).to[Foo])
+        .map(_ shouldBe foo)
     }
 
     "provide proper error messages for requirement errors" in {
       implicit val serialization = native.Serialization
       val entity =
         HttpEntity(MediaTypes.`application/json`, """{ "bar": "baz" }""")
-      val iae = the[IllegalArgumentException] thrownBy Await
-          .result(Unmarshal(entity).to[Foo], 100.millis)
-      iae should have message "requirement failed: bar must be 'bar'!"
+      Unmarshal(entity)
+        .to[Foo]
+        .failed
+        .map(_ should have message "requirement failed: bar must be 'bar'!")
     }
   }
 

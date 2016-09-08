@@ -21,8 +21,7 @@ import akka.http.scaladsl.marshalling.Marshal
 import akka.http.scaladsl.model.{ HttpEntity, MediaTypes, RequestEntity }
 import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.stream.ActorMaterializer
-import com.fasterxml.jackson.databind.JsonMappingException
-import org.scalatest.{ BeforeAndAfterAll, Matchers, WordSpec }
+import org.scalatest.{ AsyncWordSpec, BeforeAndAfterAll, Matchers }
 import scala.concurrent.Await
 import scala.concurrent.duration.DurationInt
 
@@ -33,7 +32,7 @@ object JacksonSupportSpec {
 }
 
 class JacksonSupportSpec
-    extends WordSpec
+    extends AsyncWordSpec
     with Matchers
     with BeforeAndAfterAll {
   import JacksonSupport._
@@ -46,17 +45,22 @@ class JacksonSupportSpec
     import system.dispatcher
 
     "should enable marshalling and unmarshalling of case classes" in {
-      val foo    = Foo("bar")
-      val entity = Await.result(Marshal(foo).to[RequestEntity], 100.millis)
-      Await.result(Unmarshal(entity).to[Foo], 100.millis) shouldBe foo
+      val foo = Foo("bar")
+      Marshal(foo)
+        .to[RequestEntity]
+        .flatMap(Unmarshal(_).to[Foo])
+        .map(_ shouldBe foo)
     }
 
     "provide proper error messages for requirement errors" in {
       val entity =
         HttpEntity(MediaTypes.`application/json`, """{ "bar": "baz" }""")
-      val exception = the[JsonMappingException] thrownBy
-          Await.result(Unmarshal(entity).to[Foo], 100.millis)
-      exception.getMessage should include("bar must be 'bar'!")
+      Unmarshal(entity)
+        .to[Foo]
+        .failed
+        .map(
+          _.getMessage should include("requirement failed: bar must be 'bar'!")
+        )
     }
   }
 
