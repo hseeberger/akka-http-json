@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import akka.http.scaladsl.marshalling._
 import akka.http.scaladsl.model.MediaTypes.`application/json`
 import akka.http.scaladsl.unmarshalling.{ Unmarshaller, _ }
+import akka.util.ByteString
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 
 import scala.reflect._
@@ -39,26 +40,28 @@ object JacksonSupport extends JacksonSupport {
 trait JacksonSupport {
   import JacksonSupport._
 
+  private val jsonStringUnmarshaller: FromEntityUnmarshaller[String] =
+    Unmarshaller.byteStringUnmarshaller
+      .forContentTypes(`application/json`)
+      .mapWithCharset {
+        case (ByteString.empty, _) ⇒ throw Unmarshaller.NoContentException
+        case (data, charset)       ⇒ data.decodeString(charset.nioCharset.name)
+      }
+
   /**
-    * HTTP entity => `A`
+    * HTTP entity ⇒ `A`
     */
   implicit def jacksonUnmarshaller[A](
       implicit ct: ClassTag[A],
       objectMapper: ObjectMapper = defaultObjectMapper
   ): FromEntityUnmarshaller[A] = {
-    Unmarshaller.byteStringUnmarshaller
-      .forContentTypes(`application/json`)
-      .mapWithCharset((data, charset) => {
-        val x: A = objectMapper
-          .readValue(data.decodeString(charset.nioCharset.name),
-                     ct.runtimeClass)
-          .asInstanceOf[A]
-        x
-      })
+    jsonStringUnmarshaller.map(
+      data ⇒ objectMapper.readValue(data, ct.runtimeClass).asInstanceOf[A]
+    )
   }
 
   /**
-    * `A` => HTTP entity
+    * `A` ⇒ HTTP entity
     */
   implicit def jacksonToEntityMarshaller[Object](
       implicit objectMapper: ObjectMapper = defaultObjectMapper

@@ -22,6 +22,7 @@ import akka.http.scaladsl.unmarshalling.{
   FromEntityUnmarshaller,
   Unmarshaller
 }
+import akka.util.ByteString
 import io.circe.{ Decoder, Encoder, Json, Printer, jawn }
 
 /**
@@ -38,8 +39,19 @@ object CirceSupport extends CirceSupport
   */
 trait CirceSupport {
 
+  private val jsonStringUnmarshaller: FromEntityUnmarshaller[String] =
+    Unmarshaller.byteStringUnmarshaller
+      .forContentTypes(`application/json`)
+      .mapWithCharset {
+        case (ByteString.empty, _) ⇒ throw Unmarshaller.NoContentException
+        case (data, charset)       ⇒ data.decodeString(charset.nioCharset.name)
+      }
+
+  private val jsonStringMarshaller: ToEntityMarshaller[String] =
+    Marshaller.stringMarshaller(`application/json`)
+
   /**
-    * HTTP entity => `A`
+    * HTTP entity ⇒ `A`
     *
     * @param decoder decoder for `A`, probably created by `circe.generic`
     * @tparam A type to decode
@@ -48,17 +60,10 @@ trait CirceSupport {
   implicit def circeUnmarshaller[A](
       implicit decoder: Decoder[A]
   ): FromEntityUnmarshaller[A] =
-    Unmarshaller.byteStringUnmarshaller
-      .forContentTypes(`application/json`)
-      .mapWithCharset(
-        (data, charset) =>
-          jawn
-            .decode(data.decodeString(charset.nioCharset.name))
-            .valueOr(throw _)
-      )
+    jsonStringUnmarshaller.map(data ⇒ jawn.decode(data).valueOr(throw _))
 
   /**
-    * `A` => HTTP entity
+    * `A` ⇒ HTTP entity
     *
     * @param encoder encoder for `A`, probably created by `circe.generic`
     * @param printer pretty printer function
@@ -67,9 +72,7 @@ trait CirceSupport {
     */
   implicit def circeToEntityMarshaller[A](
       implicit encoder: Encoder[A],
-      printer: Json => String = Printer.noSpaces.pretty
+      printer: Json ⇒ String = Printer.noSpaces.pretty
   ): ToEntityMarshaller[A] =
-    Marshaller.StringMarshaller
-      .wrap(`application/json`)(printer)
-      .compose(encoder.apply)
+    jsonStringMarshaller.compose(printer).compose(encoder.apply)
 }

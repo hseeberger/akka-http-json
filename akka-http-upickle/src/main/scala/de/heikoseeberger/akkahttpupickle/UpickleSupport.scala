@@ -22,6 +22,7 @@ import akka.http.scaladsl.unmarshalling.{
   FromEntityUnmarshaller,
   Unmarshaller
 }
+import akka.util.ByteString
 import upickle.default.{ Reader, Writer, readJs, writeJs }
 import upickle.{ Js, json }
 
@@ -35,8 +36,19 @@ object UpickleSupport extends UpickleSupport
   */
 trait UpickleSupport {
 
+  private val jsonStringUnmarshaller: FromEntityUnmarshaller[String] =
+    Unmarshaller.byteStringUnmarshaller
+      .forContentTypes(`application/json`)
+      .mapWithCharset {
+        case (ByteString.empty, _) ⇒ throw Unmarshaller.NoContentException
+        case (data, charset)       ⇒ data.decodeString(charset.nioCharset.name)
+      }
+
+  private val jsonStringMarshaller: ToEntityMarshaller[String] =
+    Marshaller.stringMarshaller(`application/json`)
+
   /**
-    * HTTP entity => `A`
+    * HTTP entity ⇒ `A`
     *
     * @param reader reader for `A`
     * @tparam A type to decode
@@ -45,15 +57,10 @@ trait UpickleSupport {
   implicit def upickleUnmarshaller[A](
       implicit reader: Reader[A]
   ): FromEntityUnmarshaller[A] =
-    Unmarshaller.byteStringUnmarshaller
-      .forContentTypes(`application/json`)
-      .mapWithCharset(
-        (data, charset) =>
-          readJs[A](json.read(data.decodeString(charset.nioCharset.name)))
-      )
+    jsonStringUnmarshaller.map(data ⇒ readJs[A](json.read(data)))
 
   /**
-    * `A` => HTTP entity
+    * `A` ⇒ HTTP entity
     *
     * @param writer writer for `A`
     * @param printer pretty printer function
@@ -62,9 +69,7 @@ trait UpickleSupport {
     */
   implicit def upickleMarshaller[A](
       implicit writer: Writer[A],
-      printer: Js.Value => String = json.write(_, 0)
+      printer: Js.Value ⇒ String = json.write(_, 0)
   ): ToEntityMarshaller[A] =
-    Marshaller.StringMarshaller
-      .wrap(`application/json`)(printer)
-      .compose(writeJs[A])
+    jsonStringMarshaller.compose(printer).compose(writeJs[A])
 }

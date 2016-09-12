@@ -18,10 +18,13 @@ package de.heikoseeberger.akkahttpupickle
 
 import akka.actor.ActorSystem
 import akka.http.scaladsl.marshalling.Marshal
+import akka.http.scaladsl.model.ContentTypes._
 import akka.http.scaladsl.model.{ HttpEntity, MediaTypes, RequestEntity }
-import akka.http.scaladsl.unmarshalling.Unmarshal
+import akka.http.scaladsl.unmarshalling.Unmarshaller.UnsupportedContentTypeException
+import akka.http.scaladsl.unmarshalling.{ Unmarshal, Unmarshaller }
 import akka.stream.ActorMaterializer
 import org.scalatest.{ AsyncWordSpec, BeforeAndAfterAll, Matchers }
+
 import scala.concurrent.Await
 import scala.concurrent.duration.DurationInt
 
@@ -54,6 +57,22 @@ class UpickleSupportSpec
         .to[Foo]
         .failed
         .map(_ should have message "requirement failed: bar must be 'bar'!")
+    }
+
+    "fail with NoContentException when unmarshalling empty entities" in {
+      val entity = HttpEntity.empty(`application/json`)
+      Unmarshal(entity)
+        .to[Foo]
+        .failed
+        .map(_ shouldBe Unmarshaller.NoContentException)
+    }
+
+    "fail with UnsupportedContentTypeException when Content-Type is not `application/json`" in {
+      val entity = HttpEntity("""{ "bar": "bar" }""")
+      Unmarshal(entity)
+        .to[Foo]
+        .failed
+        .map(_ shouldBe UnsupportedContentTypeException(`application/json`))
     }
   }
 

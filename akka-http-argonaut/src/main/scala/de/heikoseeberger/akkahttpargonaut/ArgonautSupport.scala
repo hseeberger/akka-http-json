@@ -22,7 +22,9 @@ import akka.http.scaladsl.unmarshalling.{
   FromEntityUnmarshaller,
   Unmarshaller
 }
+import akka.util.ByteString
 import argonaut.{ DecodeJson, EncodeJson, Json, Parse, PrettyParams }
+
 import scalaz.Scalaz._
 
 /**
@@ -39,8 +41,19 @@ object ArgonautSupport extends ArgonautSupport
   */
 trait ArgonautSupport {
 
+  private val jsonStringUnmarshaller: FromEntityUnmarshaller[String] =
+    Unmarshaller.byteStringUnmarshaller
+      .forContentTypes(`application/json`)
+      .mapWithCharset {
+        case (ByteString.empty, _) ⇒ throw Unmarshaller.NoContentException
+        case (data, charset)       ⇒ data.decodeString(charset.nioCharset.name)
+      }
+
+  private val jsonStringMarshaller: ToEntityMarshaller[String] =
+    Marshaller.stringMarshaller(`application/json`)
+
   /**
-    * HTTP entity => `A`
+    * HTTP entity ⇒ `A`
     *
     * @param decoder decoder for `A`
     * @tparam A type to decode
@@ -49,26 +62,21 @@ trait ArgonautSupport {
   implicit def argonautUnmarshaller[A](
       implicit decoder: DecodeJson[A]
   ): FromEntityUnmarshaller[A] =
-    Unmarshaller.byteStringUnmarshaller
-      .forContentTypes(`application/json`)
-      .mapWithCharset { (data, charset) =>
-        Parse
-          .parse(data.decodeString(charset.nioCharset.name))
-          .toEither match {
-          case Right(json)   => json
-          case Left(message) => sys.error(message)
-        }
+    jsonStringUnmarshaller.map { data ⇒
+      Parse.parse(data).toEither match {
+        case Right(json)   ⇒ json
+        case Left(message) ⇒ sys.error(message)
       }
-      .map { json =>
-        decoder.decodeJson(json).result.toEither match {
-          case Right(entity) => entity
-          case Left((message, history)) =>
-            sys.error(message + " - " + history.shows)
-        }
+    }.map { json ⇒
+      decoder.decodeJson(json).result.toEither match {
+        case Right(entity) ⇒ entity
+        case Left((message, history)) ⇒
+          sys.error(message + " - " + history.shows)
       }
+    }
 
   /**
-    * `A` => HTTP entity
+    * `A` ⇒ HTTP entity
     *
     * @param encoder encoder for `A`
     * @param printer pretty printer function
@@ -77,9 +85,8 @@ trait ArgonautSupport {
     */
   implicit def argonautToEntityMarshaller[A](
       implicit encoder: EncodeJson[A],
-      printer: Json => String = PrettyParams.nospace.pretty
+      printer: Json ⇒ String = PrettyParams.nospace.pretty
   ): ToEntityMarshaller[A] =
-    Marshaller.StringMarshaller
-      .wrap(`application/json`)(printer)
-      .compose(encoder.apply)
+    jsonStringMarshaller.compose(printer).compose(encoder.apply)
+
 }

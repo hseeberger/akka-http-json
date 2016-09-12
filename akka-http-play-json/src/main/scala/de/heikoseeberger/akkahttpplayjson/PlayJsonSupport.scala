@@ -22,6 +22,7 @@ import akka.http.scaladsl.unmarshalling.{
   FromEntityUnmarshaller,
   Unmarshaller
 }
+import akka.util.ByteString
 import play.api.libs.json.{ JsError, JsValue, Json, Reads, Writes }
 
 /**
@@ -34,8 +35,19 @@ object PlayJsonSupport extends PlayJsonSupport
   */
 trait PlayJsonSupport {
 
+  private val jsonStringUnmarshaller: FromEntityUnmarshaller[String] =
+    Unmarshaller.byteStringUnmarshaller
+      .forContentTypes(`application/json`)
+      .mapWithCharset {
+        case (ByteString.empty, _) ⇒ throw Unmarshaller.NoContentException
+        case (data, charset)       ⇒ data.decodeString(charset.nioCharset.name)
+      }
+
+  private val jsonStringMarshaller: ToEntityMarshaller[String] =
+    Marshaller.stringMarshaller(`application/json`)
+
   /**
-    * HTTP entity => `A`
+    * HTTP entity ⇒ `A`
     *
     * @param reads reader for `A`
     * @tparam A type to decode
@@ -48,19 +60,14 @@ trait PlayJsonSupport {
       reads
         .reads(json)
         .recoverTotal(
-          error =>
+          error ⇒
             throw new IllegalArgumentException(JsError.toJson(error).toString)
         )
-    Unmarshaller.byteStringUnmarshaller
-      .forContentTypes(`application/json`)
-      .mapWithCharset(
-        (data, charset) =>
-          read(Json.parse(data.decodeString(charset.nioCharset.name)))
-      )
+    jsonStringUnmarshaller.map(data ⇒ read(Json.parse(data)))
   }
 
   /**
-    * `A` => HTTP entity
+    * `A` ⇒ HTTP entity
     *
     * @param writes writer for `A`
     * @param printer pretty printer function
@@ -69,9 +76,7 @@ trait PlayJsonSupport {
     */
   implicit def playJsonMarshaller[A](
       implicit writes: Writes[A],
-      printer: JsValue => String = Json.prettyPrint
+      printer: JsValue ⇒ String = Json.prettyPrint
   ): ToEntityMarshaller[A] =
-    Marshaller.StringMarshaller
-      .wrap(`application/json`)(printer)
-      .compose(writes.writes)
+    jsonStringMarshaller.compose(printer).compose(writes.writes)
 }
