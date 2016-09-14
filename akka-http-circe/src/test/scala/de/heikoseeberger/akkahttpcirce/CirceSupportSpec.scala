@@ -24,7 +24,6 @@ import akka.http.scaladsl.unmarshalling.Unmarshaller.UnsupportedContentTypeExcep
 import akka.http.scaladsl.unmarshalling.{ Unmarshal, Unmarshaller }
 import akka.stream.ActorMaterializer
 import org.scalatest.{ AsyncWordSpec, BeforeAndAfterAll, Matchers }
-
 import scala.concurrent.Await
 import scala.concurrent.duration.DurationInt
 

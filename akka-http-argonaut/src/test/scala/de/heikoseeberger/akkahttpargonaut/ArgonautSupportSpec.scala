@@ -18,13 +18,12 @@ package de.heikoseeberger.akkahttpargonaut
 
 import akka.actor.ActorSystem
 import akka.http.scaladsl.marshalling.Marshal
-import akka.http.scaladsl.model.ContentTypes._
+import akka.http.scaladsl.model.ContentTypes.`application/json`
 import akka.http.scaladsl.model.{ HttpEntity, MediaTypes, RequestEntity }
 import akka.http.scaladsl.unmarshalling.Unmarshaller.UnsupportedContentTypeException
 import akka.http.scaladsl.unmarshalling.{ Unmarshal, Unmarshaller }
 import akka.stream.ActorMaterializer
 import org.scalatest.{ AsyncWordSpec, BeforeAndAfterAll, Matchers }
-
 import scala.concurrent.Await
 import scala.concurrent.duration.DurationInt
 

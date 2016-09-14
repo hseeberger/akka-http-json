@@ -25,7 +25,6 @@ import akka.http.scaladsl.unmarshalling.{ Unmarshal, Unmarshaller }
 import akka.stream.ActorMaterializer
 import org.json4s.{ DefaultFormats, jackson, native }
 import org.scalatest.{ AsyncWordSpec, BeforeAndAfterAll, Matchers }
-
 import scala.concurrent.Await
 import scala.concurrent.duration.DurationInt
 
