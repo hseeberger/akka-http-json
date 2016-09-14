@@ -17,13 +17,13 @@
 package de.heikoseeberger.akkahttpjson4s
 
 import java.lang.reflect.InvocationTargetException
-
 import akka.http.scaladsl.marshalling.{ Marshaller, ToEntityMarshaller }
 import akka.http.scaladsl.model.MediaTypes.`application/json`
 import akka.http.scaladsl.unmarshalling.{
   FromEntityUnmarshaller,
   Unmarshaller
 }
+import akka.util.ByteString
 import org.json4s.{ Formats, MappingException, Serialization }
 
 /**
@@ -49,6 +49,17 @@ object Json4sSupport extends Json4sSupport {
 trait Json4sSupport {
   import Json4sSupport._
 
+  private val jsonStringUnmarshaller =
+    Unmarshaller.byteStringUnmarshaller
+      .forContentTypes(`application/json`)
+      .mapWithCharset {
+        case (ByteString.empty, _) => throw Unmarshaller.NoContentException
+        case (data, charset)       => data.decodeString(charset.nioCharset.name)
+      }
+
+  private val jsonStringMarshaller =
+    Marshaller.stringMarshaller(`application/json`)
+
   /**
     * HTTP entity => `A`
     *
@@ -59,16 +70,16 @@ trait Json4sSupport {
       implicit serialization: Serialization,
       formats: Formats
   ): FromEntityUnmarshaller[A] =
-    Unmarshaller.byteStringUnmarshaller
-      .forContentTypes(`application/json`)
-      .mapWithCharset { (data, charset) =>
-        try serialization.read(data.decodeString(charset.nioCharset.name))
-        catch {
+    jsonStringUnmarshaller.map { data =>
+      serialization.read(data)
+    }.recover(
+      _ =>
+        _ => {
           case MappingException("unknown error",
                                 ite: InvocationTargetException) =>
             throw ite.getCause
-        }
       }
+    )
 
   /**
     * `A` => HTTP entity
@@ -83,12 +94,8 @@ trait Json4sSupport {
   ): ToEntityMarshaller[A] =
     shouldWritePretty match {
       case ShouldWritePretty.False =>
-        Marshaller.StringMarshaller.wrap(`application/json`)(
-          serialization.write[A]
-        )
-      case _ =>
-        Marshaller.StringMarshaller.wrap(`application/json`)(
-          serialization.writePretty[A]
-        )
+        jsonStringMarshaller.compose(serialization.write[A])
+      case ShouldWritePretty.True =>
+        jsonStringMarshaller.compose(serialization.writePretty[A])
     }
 }

@@ -22,6 +22,7 @@ import akka.http.scaladsl.unmarshalling.{
   FromEntityUnmarshaller,
   Unmarshaller
 }
+import akka.util.ByteString
 import play.api.libs.json.{ JsError, JsValue, Json, Reads, Writes }
 
 /**
@@ -33,6 +34,17 @@ object PlayJsonSupport extends PlayJsonSupport
   * Automatic to and from JSON marshalling/unmarshalling using an in-scope *play-json* protocol.
   */
 trait PlayJsonSupport {
+
+  private val jsonStringUnmarshaller =
+    Unmarshaller.byteStringUnmarshaller
+      .forContentTypes(`application/json`)
+      .mapWithCharset {
+        case (ByteString.empty, _) => throw Unmarshaller.NoContentException
+        case (data, charset)       => data.decodeString(charset.nioCharset.name)
+      }
+
+  private val jsonStringMarshaller =
+    Marshaller.stringMarshaller(`application/json`)
 
   /**
     * HTTP entity => `A`
@@ -51,12 +63,7 @@ trait PlayJsonSupport {
           error =>
             throw new IllegalArgumentException(JsError.toJson(error).toString)
         )
-    Unmarshaller.byteStringUnmarshaller
-      .forContentTypes(`application/json`)
-      .mapWithCharset(
-        (data, charset) =>
-          read(Json.parse(data.decodeString(charset.nioCharset.name)))
-      )
+    jsonStringUnmarshaller.map(data => read(Json.parse(data)))
   }
 
   /**
@@ -71,7 +78,5 @@ trait PlayJsonSupport {
       implicit writes: Writes[A],
       printer: JsValue => String = Json.prettyPrint
   ): ToEntityMarshaller[A] =
-    Marshaller.StringMarshaller
-      .wrap(`application/json`)(printer)
-      .compose(writes.writes)
+    jsonStringMarshaller.compose(printer).compose(writes.writes)
 }

@@ -18,8 +18,10 @@ package de.heikoseeberger.akkahttpjson4s
 
 import akka.actor.ActorSystem
 import akka.http.scaladsl.marshalling.Marshal
+import akka.http.scaladsl.model.ContentTypes.`application/json`
 import akka.http.scaladsl.model.{ HttpEntity, MediaTypes, RequestEntity }
-import akka.http.scaladsl.unmarshalling.Unmarshal
+import akka.http.scaladsl.unmarshalling.Unmarshaller.UnsupportedContentTypeException
+import akka.http.scaladsl.unmarshalling.{ Unmarshal, Unmarshaller }
 import akka.stream.ActorMaterializer
 import org.json4s.{ DefaultFormats, jackson, native }
 import org.scalatest.{ AsyncWordSpec, BeforeAndAfterAll, Matchers }
@@ -56,7 +58,7 @@ class Json4sSupportSpec
         .map(_ shouldBe foo)
     }
 
-    "enable marshalling and unmarshalling objects for default `DefaultFormats` and `native.Serialization`" in {
+    "enable marshalling and unmarshalling objects for `DefaultFormats` and `native.Serialization`" in {
       implicit val serialization = native.Serialization
       Marshal(foo)
         .to[RequestEntity]
@@ -72,6 +74,24 @@ class Json4sSupportSpec
         .to[Foo]
         .failed
         .map(_ should have message "requirement failed: bar must be 'bar'!")
+    }
+
+    "fail with NoContentException when unmarshalling empty entities" in {
+      implicit val serialization = native.Serialization
+      val entity                 = HttpEntity.empty(`application/json`)
+      Unmarshal(entity)
+        .to[Foo]
+        .failed
+        .map(_ shouldBe Unmarshaller.NoContentException)
+    }
+
+    "fail with UnsupportedContentTypeException when Content-Type is not `application/json`" in {
+      implicit val serialization = native.Serialization
+      val entity                 = HttpEntity("""{ "bar": "bar" }""")
+      Unmarshal(entity)
+        .to[Foo]
+        .failed
+        .map(_ shouldBe UnsupportedContentTypeException(`application/json`))
     }
   }
 

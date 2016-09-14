@@ -17,13 +17,16 @@
 package de.heikoseeberger.akkahttpjackson
 
 import akka.http.javadsl.marshallers.jackson.Jackson
-import com.fasterxml.jackson.databind.ObjectMapper
 import akka.http.scaladsl.marshalling._
 import akka.http.scaladsl.model.MediaTypes.`application/json`
-import akka.http.scaladsl.unmarshalling.{ Unmarshaller, _ }
+import akka.http.scaladsl.unmarshalling.{
+  FromEntityUnmarshaller,
+  Unmarshaller
+}
+import akka.util.ByteString
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
-
-import scala.reflect._
+import scala.reflect.ClassTag
 
 /**
   * Automatic to and from JSON marshalling/unmarshalling usung an in-scope Jackon's ObjectMapper
@@ -39,6 +42,14 @@ object JacksonSupport extends JacksonSupport {
 trait JacksonSupport {
   import JacksonSupport._
 
+  private val jsonStringUnmarshaller =
+    Unmarshaller.byteStringUnmarshaller
+      .forContentTypes(`application/json`)
+      .mapWithCharset {
+        case (ByteString.empty, _) => throw Unmarshaller.NoContentException
+        case (data, charset)       => data.decodeString(charset.nioCharset.name)
+      }
+
   /**
     * HTTP entity => `A`
     */
@@ -46,15 +57,9 @@ trait JacksonSupport {
       implicit ct: ClassTag[A],
       objectMapper: ObjectMapper = defaultObjectMapper
   ): FromEntityUnmarshaller[A] = {
-    Unmarshaller.byteStringUnmarshaller
-      .forContentTypes(`application/json`)
-      .mapWithCharset((data, charset) => {
-        val x: A = objectMapper
-          .readValue(data.decodeString(charset.nioCharset.name),
-                     ct.runtimeClass)
-          .asInstanceOf[A]
-        x
-      })
+    jsonStringUnmarshaller.map(
+      data => objectMapper.readValue(data, ct.runtimeClass).asInstanceOf[A]
+    )
   }
 
   /**
