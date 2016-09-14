@@ -17,7 +17,6 @@
 package de.heikoseeberger.akkahttpjson4s
 
 import java.lang.reflect.InvocationTargetException
-
 import akka.http.scaladsl.marshalling.{ Marshaller, ToEntityMarshaller }
 import akka.http.scaladsl.model.MediaTypes.`application/json`
 import akka.http.scaladsl.unmarshalling.{
@@ -50,19 +49,19 @@ object Json4sSupport extends Json4sSupport {
 trait Json4sSupport {
   import Json4sSupport._
 
-  private val jsonStringUnmarshaller: FromEntityUnmarshaller[String] =
+  private val jsonStringUnmarshaller =
     Unmarshaller.byteStringUnmarshaller
       .forContentTypes(`application/json`)
       .mapWithCharset {
-        case (ByteString.empty, _) ⇒ throw Unmarshaller.NoContentException
-        case (data, charset)       ⇒ data.decodeString(charset.nioCharset.name)
+        case (ByteString.empty, _) => throw Unmarshaller.NoContentException
+        case (data, charset)       => data.decodeString(charset.nioCharset.name)
       }
 
-  private val jsonStringMarshaller: ToEntityMarshaller[String] =
+  private val jsonStringMarshaller =
     Marshaller.stringMarshaller(`application/json`)
 
   /**
-    * HTTP entity ⇒ `A`
+    * HTTP entity => `A`
     *
     * @tparam A type to decode
     * @return unmarshaller for `A`
@@ -71,19 +70,19 @@ trait Json4sSupport {
       implicit serialization: Serialization,
       formats: Formats
   ): FromEntityUnmarshaller[A] =
-    jsonStringUnmarshaller.map { data ⇒
+    jsonStringUnmarshaller.map { data =>
       serialization.read(data)
     }.recover(
-      _ ⇒
-        _ ⇒ {
+      _ =>
+        _ => {
           case MappingException("unknown error",
-                                ite: InvocationTargetException) ⇒
+                                ite: InvocationTargetException) =>
             throw ite.getCause
       }
     )
 
   /**
-    * `A` ⇒ HTTP entity
+    * `A` => HTTP entity
     *
     * @tparam A type to encode, must be upper bounded by `AnyRef`
     * @return marshaller for any `A` value
@@ -94,9 +93,9 @@ trait Json4sSupport {
       shouldWritePretty: ShouldWritePretty = ShouldWritePretty.False
   ): ToEntityMarshaller[A] =
     shouldWritePretty match {
-      case ShouldWritePretty.False ⇒
+      case ShouldWritePretty.False =>
         jsonStringMarshaller.compose(serialization.write[A])
-      case ShouldWritePretty.True ⇒
+      case ShouldWritePretty.True =>
         jsonStringMarshaller.compose(serialization.writePretty[A])
     }
 }

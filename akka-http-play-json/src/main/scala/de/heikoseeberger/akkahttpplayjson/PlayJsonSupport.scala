@@ -35,19 +35,19 @@ object PlayJsonSupport extends PlayJsonSupport
   */
 trait PlayJsonSupport {
 
-  private val jsonStringUnmarshaller: FromEntityUnmarshaller[String] =
+  private val jsonStringUnmarshaller =
     Unmarshaller.byteStringUnmarshaller
       .forContentTypes(`application/json`)
       .mapWithCharset {
-        case (ByteString.empty, _) ⇒ throw Unmarshaller.NoContentException
-        case (data, charset)       ⇒ data.decodeString(charset.nioCharset.name)
+        case (ByteString.empty, _) => throw Unmarshaller.NoContentException
+        case (data, charset)       => data.decodeString(charset.nioCharset.name)
       }
 
-  private val jsonStringMarshaller: ToEntityMarshaller[String] =
+  private val jsonStringMarshaller =
     Marshaller.stringMarshaller(`application/json`)
 
   /**
-    * HTTP entity ⇒ `A`
+    * HTTP entity => `A`
     *
     * @param reads reader for `A`
     * @tparam A type to decode
@@ -60,14 +60,14 @@ trait PlayJsonSupport {
       reads
         .reads(json)
         .recoverTotal(
-          error ⇒
+          error =>
             throw new IllegalArgumentException(JsError.toJson(error).toString)
         )
-    jsonStringUnmarshaller.map(data ⇒ read(Json.parse(data)))
+    jsonStringUnmarshaller.map(data => read(Json.parse(data)))
   }
 
   /**
-    * `A` ⇒ HTTP entity
+    * `A` => HTTP entity
     *
     * @param writes writer for `A`
     * @param printer pretty printer function
@@ -76,7 +76,7 @@ trait PlayJsonSupport {
     */
   implicit def playJsonMarshaller[A](
       implicit writes: Writes[A],
-      printer: JsValue ⇒ String = Json.prettyPrint
+      printer: JsValue => String = Json.prettyPrint
   ): ToEntityMarshaller[A] =
     jsonStringMarshaller.compose(printer).compose(writes.writes)
 }

@@ -36,19 +36,19 @@ object UpickleSupport extends UpickleSupport
   */
 trait UpickleSupport {
 
-  private val jsonStringUnmarshaller: FromEntityUnmarshaller[String] =
+  private val jsonStringUnmarshaller =
     Unmarshaller.byteStringUnmarshaller
       .forContentTypes(`application/json`)
       .mapWithCharset {
-        case (ByteString.empty, _) ⇒ throw Unmarshaller.NoContentException
-        case (data, charset)       ⇒ data.decodeString(charset.nioCharset.name)
+        case (ByteString.empty, _) => throw Unmarshaller.NoContentException
+        case (data, charset)       => data.decodeString(charset.nioCharset.name)
       }
 
-  private val jsonStringMarshaller: ToEntityMarshaller[String] =
+  private val jsonStringMarshaller =
     Marshaller.stringMarshaller(`application/json`)
 
   /**
-    * HTTP entity ⇒ `A`
+    * HTTP entity => `A`
     *
     * @param reader reader for `A`
     * @tparam A type to decode
@@ -57,10 +57,10 @@ trait UpickleSupport {
   implicit def upickleUnmarshaller[A](
       implicit reader: Reader[A]
   ): FromEntityUnmarshaller[A] =
-    jsonStringUnmarshaller.map(data ⇒ readJs[A](json.read(data)))
+    jsonStringUnmarshaller.map(data => readJs[A](json.read(data)))
 
   /**
-    * `A` ⇒ HTTP entity
+    * `A` => HTTP entity
     *
     * @param writer writer for `A`
     * @param printer pretty printer function
@@ -69,7 +69,7 @@ trait UpickleSupport {
     */
   implicit def upickleMarshaller[A](
       implicit writer: Writer[A],
-      printer: Js.Value ⇒ String = json.write(_, 0)
+      printer: Js.Value => String = json.write(_, 0)
   ): ToEntityMarshaller[A] =
     jsonStringMarshaller.compose(printer).compose(writeJs[A])
 }
