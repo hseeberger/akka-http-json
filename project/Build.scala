@@ -1,15 +1,16 @@
 import bintray.BintrayPlugin
+import bintray.BintrayPlugin.autoImport._
 import com.typesafe.sbt.GitPlugin
+import com.typesafe.sbt.GitPlugin.autoImport._
 import com.typesafe.sbt.SbtPgp
 import de.heikoseeberger.sbtheader.HeaderPlugin
+import de.heikoseeberger.sbtheader.HeaderPlugin.autoImport._
 import de.heikoseeberger.sbtheader.license.Apache2_0
 import org.scalafmt.sbt.ScalaFmtPlugin
 import org.scalafmt.sbt.ScalaFmtPlugin.autoImport._
 import sbt._
 import sbt.plugins.JvmPlugin
 import sbt.Keys._
-
-// format: off
 
 object Build extends AutoPlugin {
 
@@ -51,15 +52,15 @@ object Build extends AutoPlugin {
 
       // scalafmt settings
       formatSbtFiles := false,
-      scalafmtConfig := Some(baseDirectory.in(ThisBuild).value / ".scalafmt"),
+      scalafmtConfig := Some(baseDirectory.in(ThisBuild).value / ".scalafmt.conf"),
 
       // Git settings
-      GitPlugin.autoImport.git.useGitDescribe := true,
+      git.useGitDescribe := true,
 
       // Header settings
-      HeaderPlugin.autoImport.headers := Map("scala" -> Apache2_0("2015", "Heiko Seeberger")),
+      headers := Map("scala" -> Apache2_0("2015", "Heiko Seeberger")),
 
       // Bintray settings
-      BintrayPlugin.autoImport.bintrayPackage := "akka-http-json"
+      bintrayPackage := "akka-http-json"
     )
 }
