@@ -35,7 +35,7 @@ lazy val `akka-http-upickle` = project
   .in(file("akka-http-upickle"))
   .enablePlugins(AutomateHeaderPlugin)
 
-unmanagedSourceDirectories in Compile := Vector.empty
-unmanagedSourceDirectories in Test    := Vector.empty
+unmanagedSourceDirectories.in(Compile) := Vector.empty
+unmanagedSourceDirectories.in(Test)    := Vector.empty
 
 publishArtifact := false
