@@ -3,12 +3,12 @@ import sbt._
 // format: off
 
 object Version {
-  final val Akka         = "2.4.10"
+  final val Akka         = "2.4.11"
   final val Argonaut     = "6.1"
-  final val Circe        = "0.5.1"
-  final val JacksonScala = "2.8.2"
-  final val Json4s       = "3.4.0"
-  final val Play         = "2.5.6"
+  final val Circe        = "0.5.2"
+  final val JacksonScala = "2.8.3"
+  final val Json4s       = "3.4.1"
+  final val Play         = "2.5.8"
   final val Scala        = "2.11.8"
   final val ScalaTest    = "3.0.0"
   final val Upickle      = "0.4.2"
