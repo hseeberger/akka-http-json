@@ -24,6 +24,17 @@ object Build extends AutoPlugin {
       // Core settings
       organization := "de.heikoseeberger",
       licenses += ("Apache-2.0", url("http://www.apache.org/licenses/LICENSE-2.0")),
+      scalaVersion := Version.Scala,
+      crossScalaVersions := Vector(scalaVersion.value),
+      scalacOptions ++= Vector(
+        "-unchecked",
+        "-deprecation",
+        "-language:_",
+        "-target:jvm-1.8",
+        "-encoding", "UTF-8"
+      ),
+      unmanagedSourceDirectories.in(Compile) := Vector(scalaSource.in(Compile).value),
+      unmanagedSourceDirectories.in(Test) := Vector(scalaSource.in(Test).value),
       homepage := Some(url("https://github.com/hseeberger/akka-http-json")),
       pomIncludeRepository := (_ => false),
       pomExtra := <scm>
@@ -37,17 +48,6 @@ object Build extends AutoPlugin {
                       <url>http://heikoseeberger.de</url>
                     </developer>
                   </developers>,
-      scalaVersion := Version.Scala,
-      crossScalaVersions := Vector(scalaVersion.value),
-      scalacOptions ++= Vector(
-        "-unchecked",
-        "-deprecation",
-        "-language:_",
-        "-target:jvm-1.8",
-        "-encoding", "UTF-8"
-      ),
-      unmanagedSourceDirectories.in(Compile) := Vector(scalaSource.in(Compile).value),
-      unmanagedSourceDirectories.in(Test) := Vector(scalaSource.in(Test).value),
 
       // scalafmt settings
       formatSbtFiles := false,
