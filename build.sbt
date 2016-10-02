@@ -10,30 +10,12 @@ lazy val `akka-http-json` = project
   )
   .enablePlugins(GitVersioning)
 
-lazy val `akka-http-argonaut` = project
-  .in(file("akka-http-argonaut"))
-  .enablePlugins(AutomateHeaderPlugin)
-
-lazy val `akka-http-circe` = project
-  .in(file("akka-http-circe"))
-  .enablePlugins(AutomateHeaderPlugin)
-
-lazy val `akka-http-jackson` = project
-  .in(file("akka-http-jackson"))
-  .enablePlugins(AutomateHeaderPlugin)
-
-lazy val `akka-http-json4s` = project
-  .copy(id = "akka-http-json4s")
-  .in(file("akka-http-json4s"))
-  .enablePlugins(AutomateHeaderPlugin)
-
-lazy val `akka-http-play-json` = project
-  .in(file("akka-http-play-json"))
-  .enablePlugins(AutomateHeaderPlugin)
-
-lazy val `akka-http-upickle` = project
-  .in(file("akka-http-upickle"))
-  .enablePlugins(AutomateHeaderPlugin)
+lazy val `akka-http-argonaut`  = project.enablePlugins(AutomateHeaderPlugin)
+lazy val `akka-http-circe`     = project.enablePlugins(AutomateHeaderPlugin)
+lazy val `akka-http-jackson`   = project.enablePlugins(AutomateHeaderPlugin)
+lazy val `akka-http-json4s`    = project.enablePlugins(AutomateHeaderPlugin)
+lazy val `akka-http-play-json` = project.enablePlugins(AutomateHeaderPlugin)
+lazy val `akka-http-upickle`   = project.enablePlugins(AutomateHeaderPlugin)
 
 unmanagedSourceDirectories.in(Compile) := Vector.empty
 unmanagedSourceDirectories.in(Test)    := Vector.empty
