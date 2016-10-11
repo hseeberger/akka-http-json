@@ -18,6 +18,7 @@ package de.heikoseeberger.akkahttpplayjson
 
 import akka.http.scaladsl.marshalling.{ Marshaller, ToEntityMarshaller }
 import akka.http.scaladsl.model.MediaTypes.`application/json`
+import akka.http.scaladsl.server.{ RejectionError, ValidationRejection }
 import akka.http.scaladsl.unmarshalling.{
   FromEntityUnmarshaller,
   Unmarshaller
@@ -61,7 +62,9 @@ trait PlayJsonSupport {
         .reads(json)
         .recoverTotal(
           error =>
-            throw new IllegalArgumentException(JsError.toJson(error).toString)
+            throw new RejectionError(
+              ValidationRejection(JsError.toJson(error).toString,
+                                  Some(PlayJsonError(error))))
         )
     jsonStringUnmarshaller.map(data => read(Json.parse(data)))
   }
@@ -79,4 +82,8 @@ trait PlayJsonSupport {
       printer: JsValue => String = Json.prettyPrint
   ): ToEntityMarshaller[A] =
     jsonStringMarshaller.compose(printer).compose(writes.writes)
+}
+
+case class PlayJsonError(error: JsError) extends RuntimeException {
+  override def getMessage: String = JsError.toJson(error).toString()
 }
