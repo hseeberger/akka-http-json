@@ -2,7 +2,7 @@ libraryDependencies ++= List(
   Library.akkaHttp,
   Library.circe,
   Library.circeJawn,
-  Library.circeGeneric % "test",
+  Library.circeGeneric,
   Library.scalaTest    % "test"
 )
 
