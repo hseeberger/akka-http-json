@@ -23,6 +23,7 @@ import akka.http.scaladsl.unmarshalling.{
   Unmarshaller
 }
 import akka.util.ByteString
+import cats.syntax.either._
 import io.circe.{ Decoder, Encoder, Json, Printer, jawn }
 
 /**
