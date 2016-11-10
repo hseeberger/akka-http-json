@@ -60,8 +60,7 @@ trait CirceSupport {
   implicit def circeUnmarshaller[A](
       implicit decoder: Decoder[A]
   ): FromEntityUnmarshaller[A] =
-    jsonStringUnmarshaller.map(data =>
-      jawn.decode(data).fold(throw _, identity))
+    jsonStringUnmarshaller.map(jawn.decode(_).fold(throw _, identity))
 
   /**
     * `A` => HTTP entity
