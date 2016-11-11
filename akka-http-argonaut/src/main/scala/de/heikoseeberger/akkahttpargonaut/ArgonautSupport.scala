@@ -24,7 +24,6 @@ import akka.http.scaladsl.unmarshalling.{
 }
 import akka.util.ByteString
 import argonaut.{ DecodeJson, EncodeJson, Json, Parse, PrettyParams }
-import scalaz.Scalaz.ToShowOps
 
 /**
   * Automatic to and from JSON marshalling/unmarshalling using an in-scope *Argonaut* protocol.
@@ -60,19 +59,19 @@ trait ArgonautSupport {
     */
   implicit def argonautUnmarshaller[A](
       implicit decoder: DecodeJson[A]
-  ): FromEntityUnmarshaller[A] =
-    jsonStringUnmarshaller.map { data =>
-      Parse.parse(data).toEither match {
+  ): FromEntityUnmarshaller[A] = {
+    def parse(s: String) =
+      Parse.parse(s) match {
         case Right(json)   => json
         case Left(message) => sys.error(message)
       }
-    }.map { json =>
-      decoder.decodeJson(json).result.toEither match {
+    def decode(json: Json) =
+      decoder.decodeJson(json).result match {
         case Right(entity) => entity
-        case Left((message, history)) =>
-          sys.error(message + " - " + history.shows)
+        case Left((m, h))  => sys.error(m + " - " + h)
       }
-    }
+    jsonStringUnmarshaller.map(parse).map(decode)
+  }
 
   /**
     * `A` => HTTP entity
@@ -87,5 +86,4 @@ trait ArgonautSupport {
       printer: Json => String = PrettyParams.nospace.pretty
   ): ToEntityMarshaller[A] =
     jsonStringMarshaller.compose(printer).compose(encoder.apply)
-
 }
