@@ -26,7 +26,7 @@ object Build extends AutoPlugin {
       organization := "de.heikoseeberger",
       licenses += ("Apache-2.0", url("http://www.apache.org/licenses/LICENSE-2.0")),
       scalaVersion := Version.Scala,
-      crossScalaVersions := Vector(scalaVersion.value),
+      crossScalaVersions := Vector(scalaVersion.value, "2.11.8"),
       scalacOptions ++= Vector(
         "-unchecked",
         "-deprecation",
@@ -53,6 +53,7 @@ object Build extends AutoPlugin {
       // scalafmt settings
       formatSbtFiles := false,
       scalafmtConfig := Some(baseDirectory.in(ThisBuild).value / ".scalafmt.conf"),
+      ivyScala       := ivyScala.value.map(_.copy(overrideScalaVersion = sbtPlugin.value)), // TODO Remove once this workaround no longer needed (https://github.com/sbt/sbt/issues/2786)!
 
       // Git settings
       git.useGitDescribe := true,
