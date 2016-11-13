@@ -44,7 +44,7 @@ object Build extends AutoPlugin {
       // POM settings for Sonatype
       homepage := Some(url("https://github.com/hseeberger/akka-http-json")),
       scmInfo := Some(ScmInfo(url("https://github.com/hseeberger/akka-http-json"),
-                                  "git@github.com:hseeberger/akka-http-json.git")),
+                              "git@github.com:hseeberger/akka-http-json.git")),
       developers += Developer("hseeberger",
                               "Heiko Seeberger",
                               "mail@heikoseeberger.de",
