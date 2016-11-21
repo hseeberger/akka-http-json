@@ -4,8 +4,8 @@ lazy val `akka-http-json` =
     .aggregate(
       `akka-http-argonaut`,
       `akka-http-circe`,
-    //  `akka-http-jackson`,
-    //  `akka-http-json4s`,
+     `akka-http-jackson`,
+     `akka-http-json4s`,
     //  `akka-http-play-json`,
       `akka-http-upickle`
     )
@@ -13,8 +13,8 @@ lazy val `akka-http-json` =
 
 lazy val `akka-http-argonaut`  = project.enablePlugins(AutomateHeaderPlugin)
 lazy val `akka-http-circe`     = project.enablePlugins(AutomateHeaderPlugin)
-// lazy val `akka-http-jackson`   = project.enablePlugins(AutomateHeaderPlugin)
-// lazy val `akka-http-json4s`    = project.enablePlugins(AutomateHeaderPlugin)
+lazy val `akka-http-jackson`   = project.enablePlugins(AutomateHeaderPlugin)
+lazy val `akka-http-json4s`    = project.enablePlugins(AutomateHeaderPlugin)
 // lazy val `akka-http-play-json` = project.enablePlugins(AutomateHeaderPlugin)
 lazy val `akka-http-upickle`   = project.enablePlugins(AutomateHeaderPlugin)
 
