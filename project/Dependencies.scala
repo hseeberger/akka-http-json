@@ -4,7 +4,7 @@ object Version {
   final val Akka         = "2.4.14"
   final val AkkaHttp     = "10.0.0"
   final val Argonaut     = "6.2-RC2"
-  final val Circe        = "0.7.0-M1"
+  final val Circe        = "0.7.0"
   final val JacksonScala = "2.8.4"
   final val Json4s       = "3.5.0"
   final val Play         = "2.6.0-M1"
