@@ -9,7 +9,7 @@ akka-http-json provides JSON (un)marshalling support for [Akka](http://akka.io) 
 - [circe](https://github.com/travisbrown/circe)
 - [Jackson](https://github.com/FasterXML/jackson) via [Scala Module](https://github.com/FasterXML/jackson-module-scala) by default
 - [Json4s](https://github.com/json4s/json4s)
-- [Play JSON](https://www.playframework.com/documentation/2.5.x/ScalaJson) (currently not available, because no support for Scala 2.12)
+- [Play JSON](https://www.playframework.com/documentation/2.6.x/ScalaJson)
 - [uPickle](https://github.com/lihaoyi/upickle-pprint)
 
 ## Installation
@@ -22,7 +22,7 @@ Grab it while it's hot:
 resolvers += Resolver.bintrayRepo("hseeberger", "maven")
 
 libraryDependencies ++= List(
-  "de.heikoseeberger" %% "akka-http-circe" % "1.11.0",
+  "de.heikoseeberger" %% "akka-http-circe" % "1.12.0",
   ...
 )
 ```
