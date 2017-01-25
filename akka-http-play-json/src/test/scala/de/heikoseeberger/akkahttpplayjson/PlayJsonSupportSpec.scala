@@ -20,10 +20,15 @@ import akka.actor.ActorSystem
 import akka.http.scaladsl.marshalling.Marshal
 import akka.http.scaladsl.model.ContentTypes.`application/json`
 import akka.http.scaladsl.model.{ HttpEntity, MediaTypes, RequestEntity }
-import akka.http.scaladsl.server.{ RejectionError, ValidationRejection }
+import akka.http.scaladsl.server.{
+  MalformedRequestContentRejection,
+  RejectionError,
+  ValidationRejection
+}
 import akka.http.scaladsl.unmarshalling.Unmarshaller.UnsupportedContentTypeException
 import akka.http.scaladsl.unmarshalling.{ Unmarshal, Unmarshaller }
 import akka.stream.ActorMaterializer
+import com.fasterxml.jackson.core.JsonParseException
 import org.scalatest.{ AsyncWordSpec, BeforeAndAfterAll, Matchers }
 import play.api.libs.json.Json
 
@@ -69,7 +74,7 @@ class PlayJsonSupportSpec
         .map(_ should have message "requirement failed: bar must be 'bar'!")
     }
 
-    "provide stringified error representation for parsing errors" in {
+    "provide error representation for parsing errors" in {
       val entity =
         HttpEntity(MediaTypes.`application/json`, """{ "bar": 5 }""")
       Unmarshal(entity)
@@ -105,6 +110,24 @@ class PlayJsonSupportSpec
         .to[Foo]
         .failed
         .map(_ shouldBe UnsupportedContentTypeException(`application/json`))
+    }
+
+    "fail when the content is not valid JSON" in {
+      val entity =
+        HttpEntity(MediaTypes.`application/json`, """{ bar: 5 }""")
+      Unmarshal(entity)
+        .to[Foo]
+        .failed
+        .map({ err =>
+          err shouldBe a[RejectionError]
+          err match {
+            case RejectionError(
+                MalformedRequestContentRejection(message, cause)) =>
+              message should be("Invalid JSON body")
+              cause shouldBe a[JsonParseException]
+            case _ => fail("Did not throw correct validation error.")
+          }
+        })
     }
   }
 

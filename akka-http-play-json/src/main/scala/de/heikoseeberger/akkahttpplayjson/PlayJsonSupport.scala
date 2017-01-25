@@ -18,13 +18,20 @@ package de.heikoseeberger.akkahttpplayjson
 
 import akka.http.scaladsl.marshalling.{ Marshaller, ToEntityMarshaller }
 import akka.http.scaladsl.model.MediaTypes.`application/json`
-import akka.http.scaladsl.server.{ RejectionError, ValidationRejection }
+import akka.http.scaladsl.server.{
+  MalformedRequestContentRejection,
+  RejectionError,
+  ValidationRejection
+}
 import akka.http.scaladsl.unmarshalling.{
   FromEntityUnmarshaller,
   Unmarshaller
 }
 import akka.util.ByteString
+import com.fasterxml.jackson.core.JsonParseException
 import play.api.libs.json.{ JsError, JsValue, Json, Reads, Writes }
+
+import scala.util.{ Failure, Success, Try }
 
 /**
   * Automatic to and from JSON marshalling/unmarshalling using an in-scope *play-json* protocol.
@@ -66,7 +73,15 @@ trait PlayJsonSupport {
               ValidationRejection(JsError.toJson(error).toString,
                                   Some(PlayJsonError(error))))
         )
-    jsonStringUnmarshaller.map(data => read(Json.parse(data)))
+    jsonStringUnmarshaller.map({ data =>
+      Try(read(Json.parse(data))) match {
+        case Success(a) => a
+        case Failure(ex: JsonParseException) =>
+          throw new RejectionError(
+            MalformedRequestContentRejection("Invalid JSON body", ex))
+        case Failure(e) => throw e
+      }
+    })
   }
 
   /**
