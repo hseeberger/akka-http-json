@@ -27,8 +27,8 @@ object Build extends AutoPlugin {
                    url("http://www.apache.org/licenses/LICENSE-2.0")),
       mappings.in(Compile, packageBin) +=
         baseDirectory.in(ThisBuild).value / "LICENSE" -> "LICENSE",
-      scalaVersion := Version.Scala,
-      crossScalaVersions := Vector(scalaVersion.value, "2.11.8"),
+      // scalaVersion from .travis.yml
+      // crossScalaVersions from .travis.yml
       scalacOptions ++= Vector(
         "-unchecked",
         "-deprecation",
