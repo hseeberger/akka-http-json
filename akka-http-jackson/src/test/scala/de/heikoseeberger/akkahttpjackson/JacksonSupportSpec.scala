@@ -33,10 +33,7 @@ object JacksonSupportSpec {
   }
 }
 
-class JacksonSupportSpec
-    extends AsyncWordSpec
-    with Matchers
-    with BeforeAndAfterAll {
+class JacksonSupportSpec extends AsyncWordSpec with Matchers with BeforeAndAfterAll {
   import JacksonSupport._
   import JacksonSupportSpec._
 

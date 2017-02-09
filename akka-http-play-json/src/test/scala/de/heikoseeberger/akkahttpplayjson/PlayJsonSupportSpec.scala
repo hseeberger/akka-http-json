@@ -39,10 +39,7 @@ object PlayJsonSupportSpec {
   implicit val fooFormat = Json.format[Foo]
 }
 
-class PlayJsonSupportSpec
-    extends AsyncWordSpec
-    with Matchers
-    with BeforeAndAfterAll {
+class PlayJsonSupportSpec extends AsyncWordSpec with Matchers with BeforeAndAfterAll {
   import PlayJsonSupport._
   import PlayJsonSupportSpec._
 
@@ -78,14 +75,11 @@ class PlayJsonSupportSpec
         .map({ err =>
           err shouldBe a[RejectionError]
           err match {
-            case RejectionError(
-                ValidationRejection(message, Some(PlayJsonError(error)))) =>
-              message should be(
-                """{"obj.bar":[{"msg":["error.expected.jsstring"],"args":[]}]}""")
+            case RejectionError(ValidationRejection(message, Some(PlayJsonError(error)))) =>
+              message should be("""{"obj.bar":[{"msg":["error.expected.jsstring"],"args":[]}]}""")
               error.errors should have length 1
               error.errors.head._1.toString() should be("/bar")
-              error.errors.head._2.flatMap(_.messages) should be(
-                Seq("error.expected.jsstring"))
+              error.errors.head._2.flatMap(_.messages) should be(Seq("error.expected.jsstring"))
             case _ => fail("Did not throw correct validation error.")
           }
         })

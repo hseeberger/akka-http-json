@@ -19,10 +19,7 @@ package de.heikoseeberger.akkahttpjackson
 import akka.http.javadsl.marshallers.jackson.Jackson
 import akka.http.scaladsl.marshalling._
 import akka.http.scaladsl.model.MediaTypes.`application/json`
-import akka.http.scaladsl.unmarshalling.{
-  FromEntityUnmarshaller,
-  Unmarshaller
-}
+import akka.http.scaladsl.unmarshalling.{ FromEntityUnmarshaller, Unmarshaller }
 import akka.util.ByteString
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
@@ -32,7 +29,7 @@ import scala.reflect.ClassTag
   * Automatic to and from JSON marshalling/unmarshalling usung an in-scope Jackon's ObjectMapper
   */
 object JacksonSupport extends JacksonSupport {
-  val defaultObjectMapper =
+  val defaultObjectMapper: ObjectMapper =
     new ObjectMapper().registerModule(DefaultScalaModule)
 }
 
@@ -53,21 +50,19 @@ trait JacksonSupport {
   /**
     * HTTP entity => `A`
     */
-  implicit def jacksonUnmarshaller[A](
+  implicit def unmarshaller[A](
       implicit ct: ClassTag[A],
       objectMapper: ObjectMapper = defaultObjectMapper
-  ): FromEntityUnmarshaller[A] = {
+  ): FromEntityUnmarshaller[A] =
     jsonStringUnmarshaller.map(
       data => objectMapper.readValue(data, ct.runtimeClass).asInstanceOf[A]
     )
-  }
 
   /**
     * `A` => HTTP entity
     */
-  implicit def jacksonToEntityMarshaller[Object](
+  implicit def marshaller[Object](
       implicit objectMapper: ObjectMapper = defaultObjectMapper
-  ): ToEntityMarshaller[Object] = {
+  ): ToEntityMarshaller[Object] =
     Jackson.marshaller[Object](objectMapper)
-  }
 }

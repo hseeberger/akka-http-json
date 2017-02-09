@@ -33,10 +33,7 @@ object ArgonautSupportSpec {
   }
 }
 
-class ArgonautSupportSpec
-    extends AsyncWordSpec
-    with Matchers
-    with BeforeAndAfterAll {
+class ArgonautSupportSpec extends AsyncWordSpec with Matchers with BeforeAndAfterAll {
   import ArgonautSupport._
   import ArgonautSupportSpec._
 

@@ -23,7 +23,7 @@ import akka.http.scaladsl.model.{ HttpEntity, MediaTypes, RequestEntity }
 import akka.http.scaladsl.unmarshalling.Unmarshaller.UnsupportedContentTypeException
 import akka.http.scaladsl.unmarshalling.{ Unmarshal, Unmarshaller }
 import akka.stream.ActorMaterializer
-import org.json4s.{ DefaultFormats, jackson, native }
+import org.json4s.{ jackson, native, DefaultFormats }
 import org.scalatest.{ AsyncWordSpec, BeforeAndAfterAll, Matchers }
 import scala.concurrent.Await
 import scala.concurrent.duration.DurationInt
@@ -34,10 +34,7 @@ object Json4sSupportSpec {
   }
 }
 
-class Json4sSupportSpec
-    extends AsyncWordSpec
-    with Matchers
-    with BeforeAndAfterAll {
+class Json4sSupportSpec extends AsyncWordSpec with Matchers with BeforeAndAfterAll {
   import Json4sSupport._
   import Json4sSupportSpec._
 

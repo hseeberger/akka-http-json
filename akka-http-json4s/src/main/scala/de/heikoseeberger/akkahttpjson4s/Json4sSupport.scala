@@ -19,10 +19,7 @@ package de.heikoseeberger.akkahttpjson4s
 import java.lang.reflect.InvocationTargetException
 import akka.http.scaladsl.marshalling.{ Marshaller, ToEntityMarshaller }
 import akka.http.scaladsl.model.MediaTypes.`application/json`
-import akka.http.scaladsl.unmarshalling.{
-  FromEntityUnmarshaller,
-  Unmarshaller
-}
+import akka.http.scaladsl.unmarshalling.{ FromEntityUnmarshaller, Unmarshaller }
 import akka.util.ByteString
 import org.json4s.{ Formats, MappingException, Serialization }
 
@@ -57,8 +54,7 @@ trait Json4sSupport {
         case (data, charset)       => data.decodeString(charset.nioCharset.name)
       }
 
-  private val jsonStringMarshaller =
-    Marshaller.stringMarshaller(`application/json`)
+  private val jsonStringMarshaller = Marshaller.stringMarshaller(`application/json`)
 
   /**
     * HTTP entity => `A`
@@ -66,20 +62,15 @@ trait Json4sSupport {
     * @tparam A type to decode
     * @return unmarshaller for `A`
     */
-  implicit def json4sUnmarshaller[A: Manifest](
+  implicit def unmarshaller[A: Manifest](
       implicit serialization: Serialization,
       formats: Formats
   ): FromEntityUnmarshaller[A] =
-    jsonStringUnmarshaller.map { data =>
-      serialization.read(data)
-    }.recover(
-      _ =>
-        _ => {
-          case MappingException("unknown error",
-                                ite: InvocationTargetException) =>
-            throw ite.getCause
+    jsonStringUnmarshaller
+      .map(s => serialization.read(s))
+      .recover { _ => _ =>
+        { case MappingException(_, ite: InvocationTargetException) => throw ite.getCause }
       }
-    )
 
   /**
     * `A` => HTTP entity
@@ -87,7 +78,7 @@ trait Json4sSupport {
     * @tparam A type to encode, must be upper bounded by `AnyRef`
     * @return marshaller for any `A` value
     */
-  implicit def json4sMarshaller[A <: AnyRef](
+  implicit def marshaller[A <: AnyRef](
       implicit serialization: Serialization,
       formats: Formats,
       shouldWritePretty: ShouldWritePretty = ShouldWritePretty.False

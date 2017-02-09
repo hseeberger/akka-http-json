@@ -18,13 +18,10 @@ package de.heikoseeberger.akkahttpupickle
 
 import akka.http.scaladsl.marshalling.{ Marshaller, ToEntityMarshaller }
 import akka.http.scaladsl.model.MediaTypes.`application/json`
-import akka.http.scaladsl.unmarshalling.{
-  FromEntityUnmarshaller,
-  Unmarshaller
-}
+import akka.http.scaladsl.unmarshalling.{ FromEntityUnmarshaller, Unmarshaller }
 import akka.util.ByteString
-import upickle.default.{ Reader, Writer, readJs, writeJs }
-import upickle.{ Js, json }
+import upickle.default.{ readJs, writeJs, Reader, Writer }
+import upickle.{ json, Js }
 
 /**
   * Automatic to and from JSON marshalling/unmarshalling using *upickle* protocol.
@@ -44,32 +41,23 @@ trait UpickleSupport {
         case (data, charset)       => data.decodeString(charset.nioCharset.name)
       }
 
-  private val jsonStringMarshaller =
-    Marshaller.stringMarshaller(`application/json`)
+  private val jsonStringMarshaller = Marshaller.stringMarshaller(`application/json`)
 
   /**
     * HTTP entity => `A`
     *
-    * @param reader reader for `A`
     * @tparam A type to decode
     * @return unmarshaller for `A`
     */
-  implicit def upickleUnmarshaller[A](
-      implicit reader: Reader[A]
-  ): FromEntityUnmarshaller[A] =
+  implicit def unmarshaller[A: Reader]: FromEntityUnmarshaller[A] =
     jsonStringUnmarshaller.map(data => readJs[A](json.read(data)))
 
   /**
     * `A` => HTTP entity
     *
-    * @param writer writer for `A`
-    * @param printer pretty printer function
     * @tparam A type to encode
     * @return marshaller for any `A` value
     */
-  implicit def upickleMarshaller[A](
-      implicit writer: Writer[A],
-      printer: Js.Value => String = json.write(_, 0)
-  ): ToEntityMarshaller[A] =
-    jsonStringMarshaller.compose(printer).compose(writeJs[A])
+  implicit def marshaller[A: Writer]: ToEntityMarshaller[A] =
+    jsonStringMarshaller.compose(json.write(_: Js.Value, 0)).compose(writeJs[A])
 }

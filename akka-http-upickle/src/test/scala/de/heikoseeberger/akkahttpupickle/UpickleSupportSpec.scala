@@ -27,10 +27,7 @@ import org.scalatest.{ AsyncWordSpec, BeforeAndAfterAll, Matchers }
 import scala.concurrent.Await
 import scala.concurrent.duration.DurationInt
 
-class UpickleSupportSpec
-    extends AsyncWordSpec
-    with Matchers
-    with BeforeAndAfterAll {
+class UpickleSupportSpec extends AsyncWordSpec with Matchers with BeforeAndAfterAll {
   import UpickleSupport._
 
   case class Foo(bar: String) { require(bar == "bar", "bar must be 'bar'!") }

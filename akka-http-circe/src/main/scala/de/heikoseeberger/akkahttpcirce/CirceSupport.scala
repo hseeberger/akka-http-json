@@ -18,12 +18,9 @@ package de.heikoseeberger.akkahttpcirce
 
 import akka.http.scaladsl.marshalling.{ Marshaller, ToEntityMarshaller }
 import akka.http.scaladsl.model.MediaTypes.`application/json`
-import akka.http.scaladsl.unmarshalling.{
-  FromEntityUnmarshaller,
-  Unmarshaller
-}
+import akka.http.scaladsl.unmarshalling.{ FromEntityUnmarshaller, Unmarshaller }
 import akka.util.ByteString
-import io.circe.{ Decoder, Encoder, Json, Printer, jawn }
+import io.circe.{ jawn, Decoder, Encoder, Json, Printer }
 
 /**
   * Automatic to and from JSON marshalling/unmarshalling using an in-scope *Circe* protocol.
@@ -47,32 +44,23 @@ trait CirceSupport {
         case (data, charset)       => data.decodeString(charset.nioCharset.name)
       }
 
-  private val jsonStringMarshaller =
-    Marshaller.stringMarshaller(`application/json`)
+  private val jsonStringMarshaller = Marshaller.stringMarshaller(`application/json`)
 
   /**
     * HTTP entity => `A`
     *
-    * @param decoder decoder for `A`, probably created by `circe.generic`
     * @tparam A type to decode
     * @return unmarshaller for `A`
     */
-  implicit def circeUnmarshaller[A](
-      implicit decoder: Decoder[A]
-  ): FromEntityUnmarshaller[A] =
+  implicit def unmarshaller[A: Decoder]: FromEntityUnmarshaller[A] =
     jsonStringUnmarshaller.map(jawn.decode(_).fold(throw _, identity))
 
   /**
     * `A` => HTTP entity
     *
-    * @param encoder encoder for `A`, probably created by `circe.generic`
-    * @param printer pretty printer function
     * @tparam A type to encode
     * @return marshaller for any `A` value
     */
-  implicit def circeToEntityMarshaller[A](
-      implicit encoder: Encoder[A],
-      printer: Json => String = Printer.noSpaces.pretty
-  ): ToEntityMarshaller[A] =
-    jsonStringMarshaller.compose(printer).compose(encoder.apply)
+  implicit def marshaller[A: Encoder]: ToEntityMarshaller[A] =
+    jsonStringMarshaller.compose(Printer.noSpaces.pretty).compose(implicitly[Encoder[A]].apply)
 }

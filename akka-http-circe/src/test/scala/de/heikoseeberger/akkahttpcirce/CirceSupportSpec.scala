@@ -33,10 +33,7 @@ object CirceSupportSpec {
   }
 }
 
-class CirceSupportSpec
-    extends AsyncWordSpec
-    with Matchers
-    with BeforeAndAfterAll {
+class CirceSupportSpec extends AsyncWordSpec with Matchers with BeforeAndAfterAll {
   import CirceSupport._
   import CirceSupportSpec._
 

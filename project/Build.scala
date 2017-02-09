@@ -5,8 +5,6 @@ import com.typesafe.sbt.GitPlugin.autoImport._
 import de.heikoseeberger.sbtheader.HeaderPlugin
 import de.heikoseeberger.sbtheader.HeaderPlugin.autoImport._
 import de.heikoseeberger.sbtheader.license.Apache2_0
-import org.scalafmt.sbt.ScalaFmtPlugin
-import org.scalafmt.sbt.ScalaFmtPlugin.autoImport._
 import sbt._
 import sbt.plugins.JvmPlugin
 import sbt.Keys._
@@ -14,12 +12,11 @@ import sbt.Keys._
 object Build extends AutoPlugin {
 
   override def requires =
-    JvmPlugin && HeaderPlugin && GitPlugin && ScalaFmtPlugin && BintrayPlugin
+    JvmPlugin && HeaderPlugin && GitPlugin && BintrayPlugin
 
   override def trigger = allRequirements
 
   override def projectSettings =
-    reformatOnCompileSettings ++
     Vector(
       // Core settings
       organization := "de.heikoseeberger",
@@ -50,11 +47,6 @@ object Build extends AutoPlugin {
                               "mail@heikoseeberger.de",
                               url("https://github.com/hseeberger")),
       pomIncludeRepository := (_ => false),
-
-      // scalafmt settings
-      formatSbtFiles := false,
-      scalafmtConfig := Some(baseDirectory.in(ThisBuild).value / ".scalafmt.conf"),
-      ivyScala := ivyScala.value.map(_.copy(overrideScalaVersion = sbtPlugin.value)), // TODO Remove once this workaround no longer needed (https://github.com/sbt/sbt/issues/2786)!
 
       // Git settings
       git.useGitDescribe := true,

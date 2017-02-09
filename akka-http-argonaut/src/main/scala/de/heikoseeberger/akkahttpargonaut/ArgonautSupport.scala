@@ -18,10 +18,7 @@ package de.heikoseeberger.akkahttpargonaut
 
 import akka.http.scaladsl.marshalling.{ Marshaller, ToEntityMarshaller }
 import akka.http.scaladsl.model.MediaTypes.`application/json`
-import akka.http.scaladsl.unmarshalling.{
-  FromEntityUnmarshaller,
-  Unmarshaller
-}
+import akka.http.scaladsl.unmarshalling.{ FromEntityUnmarshaller, Unmarshaller }
 import akka.util.ByteString
 import argonaut.{ DecodeJson, EncodeJson, Json, Parse, PrettyParams }
 
@@ -47,26 +44,22 @@ trait ArgonautSupport {
         case (data, charset)       => data.decodeString(charset.nioCharset.name)
       }
 
-  private val jsonStringMarshaller =
-    Marshaller.stringMarshaller(`application/json`)
+  private val jsonStringMarshaller = Marshaller.stringMarshaller(`application/json`)
 
   /**
     * HTTP entity => `A`
     *
-    * @param decoder decoder for `A`
     * @tparam A type to decode
     * @return unmarshaller for `A`
     */
-  implicit def argonautUnmarshaller[A](
-      implicit decoder: DecodeJson[A]
-  ): FromEntityUnmarshaller[A] = {
+  implicit def unmarshaller[A: DecodeJson]: FromEntityUnmarshaller[A] = {
     def parse(s: String) =
       Parse.parse(s) match {
         case Right(json)   => json
         case Left(message) => sys.error(message)
       }
     def decode(json: Json) =
-      decoder.decodeJson(json).result match {
+      implicitly[DecodeJson[A]].decodeJson(json).result match {
         case Right(entity) => entity
         case Left((m, h))  => sys.error(m + " - " + h)
       }
@@ -76,14 +69,11 @@ trait ArgonautSupport {
   /**
     * `A` => HTTP entity
     *
-    * @param encoder encoder for `A`
-    * @param printer pretty printer function
     * @tparam A type to encode
     * @return marshaller for any `A` value
     */
-  implicit def argonautToEntityMarshaller[A](
-      implicit encoder: EncodeJson[A],
-      printer: Json => String = PrettyParams.nospace.pretty
-  ): ToEntityMarshaller[A] =
-    jsonStringMarshaller.compose(printer).compose(encoder.apply)
+  implicit def marshaller[A: EncodeJson]: ToEntityMarshaller[A] =
+    jsonStringMarshaller
+      .compose(PrettyParams.nospace.pretty)
+      .compose(implicitly[EncodeJson[A]].apply)
 }
