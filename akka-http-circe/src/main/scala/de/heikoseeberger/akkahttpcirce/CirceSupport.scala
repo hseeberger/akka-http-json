@@ -17,43 +17,57 @@
 package de.heikoseeberger.akkahttpcirce
 
 import akka.http.scaladsl.marshalling.{ Marshaller, ToEntityMarshaller }
+import akka.http.scaladsl.model.HttpEntity
 import akka.http.scaladsl.model.MediaTypes.`application/json`
 import akka.http.scaladsl.unmarshalling.{ FromEntityUnmarshaller, Unmarshaller }
 import akka.util.ByteString
-import io.circe.{ jawn, Decoder, Encoder, Json, Printer }
+import io.circe.{ jawn, Decoder, Errors, Json, Printer, RootEncoder }
 
 /**
   * Automatic to and from JSON marshalling/unmarshalling using an in-scope *Circe* protocol.
+  * The unmarshaller fails-fast, throwing the first `Error` encountered.
   *
-  * To use automatic codec derivation, user need to import `circe.generic.auto._`.
+  * To use automatic codec derivation, user needs to import `io.circe.generic.auto._`.
   */
-object CirceSupport extends CirceSupport
+trait FailFastCirceSupport  extends BaseCirceSupport with NoSpacesPrinter with FailFastUnmarshaller
+object FailFastCirceSupport extends FailFastCirceSupport
 
 /**
-  * JSON marshalling/unmarshalling using an in-scope *Circe* protocol.
+  * Automatic to and from JSON marshalling/unmarshalling using an in-scope *Circe* protocol.
+  * The unmarshaller accumulates all errors in the exception `Errors`.
   *
-  * To use automatic codec derivation, user need to import `io.circe.generic.auto._`
+  * To use automatic codec derivation, user needs to import `io.circe.generic.auto._`.
   */
-trait CirceSupport {
+trait ErrorAccumulatingCirceSupport
+    extends BaseCirceSupport
+    with NoSpacesPrinter
+    with ErrorAccumulatingUnmarshaller
 
-  private val jsonStringUnmarshaller =
-    Unmarshaller.byteStringUnmarshaller
-      .forContentTypes(`application/json`)
-      .mapWithCharset {
-        case (ByteString.empty, _) => throw Unmarshaller.NoContentException
-        case (data, charset)       => data.decodeString(charset.nioCharset.name)
-      }
+object ErrorAccumulatingCirceSupport extends ErrorAccumulatingCirceSupport
 
-  private val jsonStringMarshaller = Marshaller.stringMarshaller(`application/json`)
+@deprecated(message = "Use either FailFastCirceSupport or ErrorAccumulatingCirceSupport",
+            since = "1.13.0")
+trait CirceSupport extends FailFastCirceSupport
+@deprecated(message = "Use either FailFastCirceSupport or ErrorAccumulatingCirceSupport",
+            since = "1.13.0")
+object CirceSupport extends FailFastCirceSupport
+
+trait BaseCirceSupport {
 
   /**
-    * HTTP entity => `A`
-    *
-    * @tparam A type to decode
-    * @return unmarshaller for `A`
+    * Printer used in the JSON marshaller.
     */
-  implicit def unmarshaller[A: Decoder]: FromEntityUnmarshaller[A] =
-    jsonStringUnmarshaller.map(jawn.decode(_).fold(throw _, identity))
+  def printer: Printer
+
+  /**
+    * `Json` => HTTP entity
+    *
+    * @return marshaller for JSON value
+    */
+  implicit final val jsonMarshaller: ToEntityMarshaller[Json] =
+    Marshaller.withFixedContentType(`application/json`) { json =>
+      HttpEntity(`application/json`, printer.pretty(json))
+    }
 
   /**
     * `A` => HTTP entity
@@ -61,6 +75,62 @@ trait CirceSupport {
     * @tparam A type to encode
     * @return marshaller for any `A` value
     */
-  implicit def marshaller[A: Encoder]: ToEntityMarshaller[A] =
-    jsonStringMarshaller.compose(Printer.noSpaces.pretty).compose(implicitly[Encoder[A]].apply)
+  implicit final def marshaller[A: RootEncoder]: ToEntityMarshaller[A] =
+    jsonMarshaller.compose(implicitly[RootEncoder[A]].apply)
+
+  /**
+    * HTTP entity => `Json`
+    *
+    * @return unmarshaller for `Json`
+    */
+  implicit final val jsonUnmarshaller: FromEntityUnmarshaller[Json] =
+    Unmarshaller.byteStringUnmarshaller
+      .forContentTypes(`application/json`)
+      .map {
+        case ByteString.empty => throw Unmarshaller.NoContentException
+        case data             => jawn.parseByteBuffer(data.asByteBuffer).fold(throw _, identity)
+      }
+
+  /**
+    * HTTP entity => `A`
+    *
+    * @tparam A type to decode
+    * @return unmarshaller for `A`
+    */
+  implicit def unmarshaller[A: Decoder]: FromEntityUnmarshaller[A]
+
+}
+
+/**
+  * Mix-in this trait to fail on the first error during unmarshalling.
+  */
+trait FailFastUnmarshaller { this: BaseCirceSupport =>
+  override implicit final def unmarshaller[A: Decoder]: FromEntityUnmarshaller[A] =
+    jsonUnmarshaller.map(
+      json =>
+        implicitly[Decoder[A]]
+          .decodeJson(json)
+          .fold(throw _, identity)
+    )
+}
+
+/**
+  * Mix-in this trait to accumulate all errors during unmarshalling.
+  */
+trait ErrorAccumulatingUnmarshaller { this: BaseCirceSupport =>
+  override implicit final def unmarshaller[A: Decoder]: FromEntityUnmarshaller[A] =
+    jsonUnmarshaller.map(
+      json =>
+        implicitly[Decoder[A]]
+          .accumulating(json.hcursor)
+          .fold(e => throw Errors(e), identity)
+    )
+}
+
+/**
+  * Mix-in this trait to use a compact JSON printer during marshalling.
+  */
+trait NoSpacesPrinter { this: BaseCirceSupport =>
+  override final def printer: Printer =
+    Printer.noSpaces
 }

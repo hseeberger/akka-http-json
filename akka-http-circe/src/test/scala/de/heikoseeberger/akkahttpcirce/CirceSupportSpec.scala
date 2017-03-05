@@ -23,6 +23,9 @@ import akka.http.scaladsl.model.{ HttpEntity, MediaTypes, RequestEntity }
 import akka.http.scaladsl.unmarshalling.Unmarshaller.UnsupportedContentTypeException
 import akka.http.scaladsl.unmarshalling.{ Unmarshal, Unmarshaller }
 import akka.stream.ActorMaterializer
+import cats.data.NonEmptyList
+import io.circe.CursorOp.DownField
+import io.circe.{ DecodingFailure, Errors }
 import org.scalatest.{ AsyncWordSpec, BeforeAndAfterAll, Matchers }
 import scala.concurrent.Await
 import scala.concurrent.duration.DurationInt
@@ -31,20 +34,24 @@ object CirceSupportSpec {
   final case class Foo(bar: String) {
     require(bar == "bar", "bar must be 'bar'!")
   }
+  final case class MultiFoo(a: String, b: String)
 }
 
 class CirceSupportSpec extends AsyncWordSpec with Matchers with BeforeAndAfterAll {
-  import CirceSupport._
   import CirceSupportSpec._
 
   private implicit val system = ActorSystem()
   private implicit val mat    = ActorMaterializer()
+  private implicit val ec     = system.dispatcher
 
-  "CirceSupport" should {
-    import system.dispatcher
+  /**
+    * Specs common to both [[FailFastCirceSupport]] and [[ErrorAccumulatingCirceSupport]]
+    */
+  def commonCirceSupport(support: BaseCirceSupport): Unit = {
+    import io.circe.generic.auto._
+    import support._
 
     "enable marshalling and unmarshalling objects for generic derivation" in {
-      import io.circe.generic.auto._
       val foo = Foo("bar")
       Marshal(foo)
         .to[RequestEntity]
@@ -53,9 +60,7 @@ class CirceSupportSpec extends AsyncWordSpec with Matchers with BeforeAndAfterAl
     }
 
     "provide proper error messages for requirement errors" in {
-      import io.circe.generic.auto._
-      val entity =
-        HttpEntity(MediaTypes.`application/json`, """{ "bar": "baz" }""")
+      val entity = HttpEntity(MediaTypes.`application/json`, """{ "bar": "baz" }""")
       Unmarshal(entity)
         .to[Foo]
         .failed
@@ -63,7 +68,6 @@ class CirceSupportSpec extends AsyncWordSpec with Matchers with BeforeAndAfterAl
     }
 
     "fail with NoContentException when unmarshalling empty entities" in {
-      import io.circe.generic.auto._
       val entity = HttpEntity.empty(`application/json`)
       Unmarshal(entity)
         .to[Foo]
@@ -72,14 +76,47 @@ class CirceSupportSpec extends AsyncWordSpec with Matchers with BeforeAndAfterAl
     }
 
     "fail with UnsupportedContentTypeException when Content-Type is not `application/json`" in {
-      import io.circe.generic.auto._
       val entity = HttpEntity("""{ "bar": "bar" }""")
       Unmarshal(entity)
         .to[Foo]
         .failed
         .map(_ shouldBe UnsupportedContentTypeException(`application/json`))
     }
+  }
 
+  "FailFastCirceSupport" should {
+    import FailFastCirceSupport._
+    import io.circe.generic.auto._
+
+    behave like commonCirceSupport(FailFastCirceSupport)
+
+    "fail-fast and return only the first unmarshalling error" in {
+      val entity = HttpEntity(MediaTypes.`application/json`, """{ "a": 1, "b": 2 }""")
+      val error  = DecodingFailure("String", List(DownField("a")))
+      Unmarshal(entity)
+        .to[MultiFoo]
+        .failed
+        .map(_ shouldBe error)
+    }
+  }
+
+  "ErrorAccumulatingCirceSupport" should {
+    import ErrorAccumulatingCirceSupport._
+    import io.circe.generic.auto._
+
+    behave like commonCirceSupport(ErrorAccumulatingCirceSupport)
+
+    "accumulate and return all unmarshalling errors" in {
+      val entity = HttpEntity(MediaTypes.`application/json`, """{ "a": 1, "b": 2 }""")
+      val errors = NonEmptyList.of(
+        DecodingFailure("String", List(DownField("a"))),
+        DecodingFailure("String", List(DownField("b")))
+      )
+      Unmarshal(entity)
+        .to[MultiFoo]
+        .failed
+        .map(_ shouldBe Errors(errors))
+    }
   }
 
   override protected def afterAll() = {
