@@ -7,7 +7,7 @@ target
 *.sc
 
 # Eclipse
-.cache
+.cache*
 .classpath
 .project
 .scala_dependencies
@@ -21,6 +21,7 @@ target
 # ENSIME
 .ensime
 .ensime_lucene
+.ensime_cache
 
 # Mac
 .DS_Store
