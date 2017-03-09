@@ -39,7 +39,7 @@ object ExampleApp {
   }
 
   def route(implicit mat: Materializer) = {
-    import CirceSupport._
+    import FailFastCirceSupport._
     import Directives._
     import io.circe.generic.auto._
 
