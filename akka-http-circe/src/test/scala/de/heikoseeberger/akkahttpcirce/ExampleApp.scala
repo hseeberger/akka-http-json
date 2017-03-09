@@ -20,8 +20,6 @@ import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.server.Directives
 import akka.stream.{ ActorMaterializer, Materializer }
-import scala.concurrent.Await
-import scala.concurrent.duration.Duration
 import scala.io.StdIn
 
 object ExampleApp {
@@ -35,12 +33,12 @@ object ExampleApp {
     Http().bindAndHandle(route, "127.0.0.1", 8000)
 
     StdIn.readLine("Hit ENTER to exit")
-    Await.ready(system.terminate(), Duration.Inf)
+    system.terminate()
   }
 
-  def route(implicit mat: Materializer) = {
-    import FailFastCirceSupport._
+  private def route(implicit mat: Materializer) = {
     import Directives._
+    import FailFastCirceSupport._
     import io.circe.generic.auto._
 
     pathSingleSlash {

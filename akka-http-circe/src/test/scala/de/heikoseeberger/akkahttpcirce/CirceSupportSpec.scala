@@ -31,13 +31,15 @@ import scala.concurrent.Await
 import scala.concurrent.duration.DurationInt
 
 object CirceSupportSpec {
+
   final case class Foo(bar: String) {
     require(bar == "bar", "bar must be 'bar'!")
   }
+
   final case class MultiFoo(a: String, b: String)
 }
 
-class CirceSupportSpec extends AsyncWordSpec with Matchers with BeforeAndAfterAll {
+final class CirceSupportSpec extends AsyncWordSpec with Matchers with BeforeAndAfterAll {
   import CirceSupportSpec._
 
   private implicit val system = ActorSystem()
@@ -47,7 +49,7 @@ class CirceSupportSpec extends AsyncWordSpec with Matchers with BeforeAndAfterAl
   /**
     * Specs common to both [[FailFastCirceSupport]] and [[ErrorAccumulatingCirceSupport]]
     */
-  def commonCirceSupport(support: BaseCirceSupport): Unit = {
+  private def commonCirceSupport(support: BaseCirceSupport) = {
     import io.circe.generic.auto._
     import support._
 
@@ -108,10 +110,11 @@ class CirceSupportSpec extends AsyncWordSpec with Matchers with BeforeAndAfterAl
 
     "accumulate and return all unmarshalling errors" in {
       val entity = HttpEntity(MediaTypes.`application/json`, """{ "a": 1, "b": 2 }""")
-      val errors = NonEmptyList.of(
-        DecodingFailure("String", List(DownField("a"))),
-        DecodingFailure("String", List(DownField("b")))
-      )
+      val errors =
+        NonEmptyList.of(
+          DecodingFailure("String", List(DownField("a"))),
+          DecodingFailure("String", List(DownField("b")))
+        )
       Unmarshal(entity)
         .to[MultiFoo]
         .failed

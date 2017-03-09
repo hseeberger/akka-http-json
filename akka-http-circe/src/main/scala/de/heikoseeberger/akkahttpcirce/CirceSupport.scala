@@ -24,34 +24,51 @@ import akka.util.ByteString
 import io.circe.{ jawn, Decoder, Errors, Json, Printer, RootEncoder }
 
 /**
-  * Automatic to and from JSON marshalling/unmarshalling using an in-scope *Circe* protocol.
-  * The unmarshaller fails-fast, throwing the first `Error` encountered.
+  * Automatic to and from JSON marshalling/unmarshalling using an in-scope circe protocol.
+  * The unmarshaller fails fast, throwing the first `Error` encountered.
   *
   * To use automatic codec derivation, user needs to import `io.circe.generic.auto._`.
   */
-trait FailFastCirceSupport  extends BaseCirceSupport with NoSpacesPrinter with FailFastUnmarshaller
 object FailFastCirceSupport extends FailFastCirceSupport
 
 /**
-  * Automatic to and from JSON marshalling/unmarshalling using an in-scope *Circe* protocol.
+  * Automatic to and from JSON marshalling/unmarshalling using an in-scope circe protocol.
+  * The unmarshaller fails fast, throwing the first `Error` encountered.
+  *
+  * To use automatic codec derivation import `io.circe.generic.auto._`.
+  */
+trait FailFastCirceSupport extends BaseCirceSupport with NoSpacesPrinter with FailFastUnmarshaller
+
+/**
+  * Automatic to and from JSON marshalling/unmarshalling using an in-scope circe protocol.
   * The unmarshaller accumulates all errors in the exception `Errors`.
   *
   * To use automatic codec derivation, user needs to import `io.circe.generic.auto._`.
+  */
+object ErrorAccumulatingCirceSupport extends ErrorAccumulatingCirceSupport
+
+/**
+  * Automatic to and from JSON marshalling/unmarshalling using an in-scope circe protocol.
+  * The unmarshaller accumulates all errors in the exception `Errors`.
+  *
+  * To use automatic codec derivation import `io.circe.generic.auto._`.
   */
 trait ErrorAccumulatingCirceSupport
     extends BaseCirceSupport
     with NoSpacesPrinter
     with ErrorAccumulatingUnmarshaller
 
-object ErrorAccumulatingCirceSupport extends ErrorAccumulatingCirceSupport
-
-@deprecated(message = "Use either FailFastCirceSupport or ErrorAccumulatingCirceSupport",
-            since = "1.13.0")
-trait CirceSupport extends FailFastCirceSupport
 @deprecated(message = "Use either FailFastCirceSupport or ErrorAccumulatingCirceSupport",
             since = "1.13.0")
 object CirceSupport extends FailFastCirceSupport
 
+@deprecated(message = "Use either FailFastCirceSupport or ErrorAccumulatingCirceSupport",
+            since = "1.13.0")
+trait CirceSupport extends FailFastCirceSupport
+
+/**
+  * Automatic to and from JSON marshalling/unmarshalling using an in-scope circe protocol.
+  */
 trait BaseCirceSupport {
 
   /**
@@ -98,39 +115,38 @@ trait BaseCirceSupport {
     * @return unmarshaller for `A`
     */
   implicit def unmarshaller[A: Decoder]: FromEntityUnmarshaller[A]
-
 }
 
 /**
   * Mix-in this trait to fail on the first error during unmarshalling.
   */
 trait FailFastUnmarshaller { this: BaseCirceSupport =>
-  override implicit final def unmarshaller[A: Decoder]: FromEntityUnmarshaller[A] =
-    jsonUnmarshaller.map(
-      json =>
-        implicitly[Decoder[A]]
-          .decodeJson(json)
-          .fold(throw _, identity)
-    )
+
+  override implicit final def unmarshaller[A: Decoder]: FromEntityUnmarshaller[A] = {
+    def decode(json: Json) = implicitly[Decoder[A]].decodeJson(json).fold(throw _, identity)
+    jsonUnmarshaller.map(decode)
+  }
 }
 
 /**
   * Mix-in this trait to accumulate all errors during unmarshalling.
   */
 trait ErrorAccumulatingUnmarshaller { this: BaseCirceSupport =>
-  override implicit final def unmarshaller[A: Decoder]: FromEntityUnmarshaller[A] =
-    jsonUnmarshaller.map(
-      json =>
-        implicitly[Decoder[A]]
-          .accumulating(json.hcursor)
-          .fold(e => throw Errors(e), identity)
-    )
+
+  override implicit final def unmarshaller[A: Decoder]: FromEntityUnmarshaller[A] = {
+    def decode(json: Json) =
+      implicitly[Decoder[A]]
+        .accumulating(json.hcursor)
+        .fold(decodingFailure => throw Errors(decodingFailure), identity)
+    jsonUnmarshaller.map(decode)
+  }
 }
 
 /**
   * Mix-in this trait to use a compact JSON printer during marshalling.
   */
 trait NoSpacesPrinter { this: BaseCirceSupport =>
+
   override final def printer: Printer =
     Printer.noSpaces
 }
