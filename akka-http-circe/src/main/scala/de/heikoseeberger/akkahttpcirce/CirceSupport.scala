@@ -21,7 +21,7 @@ import akka.http.scaladsl.model.HttpEntity
 import akka.http.scaladsl.model.MediaTypes.`application/json`
 import akka.http.scaladsl.unmarshalling.{ FromEntityUnmarshaller, Unmarshaller }
 import akka.util.ByteString
-import io.circe.{ jawn, Decoder, Errors, Json, Printer, RootEncoder }
+import io.circe.{ jawn, Decoder, Encoder, Errors, Json, Printer }
 
 /**
   * Automatic to and from JSON marshalling/unmarshalling using an in-scope circe protocol.
@@ -92,8 +92,8 @@ trait BaseCirceSupport {
     * @tparam A type to encode
     * @return marshaller for any `A` value
     */
-  implicit final def marshaller[A: RootEncoder]: ToEntityMarshaller[A] =
-    jsonMarshaller.compose(implicitly[RootEncoder[A]].apply)
+  implicit final def marshaller[A: Encoder]: ToEntityMarshaller[A] =
+    jsonMarshaller.compose(implicitly[Encoder[A]].apply)
 
   /**
     * HTTP entity => `Json`
