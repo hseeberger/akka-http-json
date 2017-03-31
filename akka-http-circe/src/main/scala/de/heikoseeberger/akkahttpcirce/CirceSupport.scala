@@ -37,7 +37,7 @@ object FailFastCirceSupport extends FailFastCirceSupport
   *
   * To use automatic codec derivation import `io.circe.generic.auto._`.
   */
-trait FailFastCirceSupport extends BaseCirceSupport with NoSpacesPrinter with FailFastUnmarshaller
+trait FailFastCirceSupport extends BaseCirceSupport with FailFastUnmarshaller
 
 /**
   * Automatic to and from JSON marshalling/unmarshalling using an in-scope circe protocol.
@@ -55,7 +55,6 @@ object ErrorAccumulatingCirceSupport extends ErrorAccumulatingCirceSupport
   */
 trait ErrorAccumulatingCirceSupport
     extends BaseCirceSupport
-    with NoSpacesPrinter
     with ErrorAccumulatingUnmarshaller
 
 @deprecated(message = "Use either FailFastCirceSupport or ErrorAccumulatingCirceSupport",
@@ -72,16 +71,11 @@ trait CirceSupport extends FailFastCirceSupport
 trait BaseCirceSupport {
 
   /**
-    * Printer used in the JSON marshaller.
-    */
-  def printer: Printer
-
-  /**
     * `Json` => HTTP entity
     *
     * @return marshaller for JSON value
     */
-  implicit final val jsonMarshaller: ToEntityMarshaller[Json] =
+  implicit final def jsonMarshaller(implicit printer: Printer = Printer.noSpaces): ToEntityMarshaller[Json] =
     Marshaller.withFixedContentType(`application/json`) { json =>
       HttpEntity(`application/json`, printer.pretty(json))
     }
@@ -92,8 +86,8 @@ trait BaseCirceSupport {
     * @tparam A type to encode
     * @return marshaller for any `A` value
     */
-  implicit final def marshaller[A: Encoder]: ToEntityMarshaller[A] =
-    jsonMarshaller.compose(implicitly[Encoder[A]].apply)
+  implicit final def marshaller[A: Encoder](implicit printer: Printer = Printer.noSpaces): ToEntityMarshaller[A] =
+    jsonMarshaller(printer).compose(implicitly[Encoder[A]].apply)
 
   /**
     * HTTP entity => `Json`
@@ -140,13 +134,4 @@ trait ErrorAccumulatingUnmarshaller { this: BaseCirceSupport =>
         .fold(decodingFailure => throw Errors(decodingFailure), identity)
     jsonUnmarshaller.map(decode)
   }
-}
-
-/**
-  * Mix-in this trait to use a compact JSON printer during marshalling.
-  */
-trait NoSpacesPrinter { this: BaseCirceSupport =>
-
-  override final def printer: Printer =
-    Printer.noSpaces
 }
