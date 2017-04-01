@@ -19,7 +19,7 @@ package de.heikoseeberger.akkahttpplayjson
 import akka.actor.ActorSystem
 import akka.http.scaladsl.marshalling.Marshal
 import akka.http.scaladsl.model.ContentTypes.`application/json`
-import akka.http.scaladsl.model.{ HttpEntity, MediaTypes, RequestEntity }
+import akka.http.scaladsl.model._
 import akka.http.scaladsl.server.{ RejectionError, ValidationRejection }
 import akka.http.scaladsl.unmarshalling.Unmarshaller.UnsupportedContentTypeException
 import akka.http.scaladsl.unmarshalling.{ Unmarshal, Unmarshaller }
@@ -27,6 +27,7 @@ import akka.stream.ActorMaterializer
 import org.scalatest.{ AsyncWordSpec, BeforeAndAfterAll, Matchers }
 import play.api.libs.json.Json
 
+import scala.collection.immutable.Seq
 import scala.concurrent.Await
 import scala.concurrent.duration.DurationInt
 
@@ -99,6 +100,25 @@ class PlayJsonSupportSpec extends AsyncWordSpec with Matchers with BeforeAndAfte
         .to[Foo]
         .failed
         .map(_ shouldBe UnsupportedContentTypeException(`application/json`))
+    }
+
+    "allow unmarshalling with passed in Content-Types" in {
+      val foo = Foo("bar")
+      val `application/json-home` =
+        MediaType.applicationWithFixedCharset("json-home", HttpCharsets.`UTF-8`, "json-home")
+
+      object CustomPlayJsonSupport extends PlayJsonSupport {
+        override def unmarshallerContentTypes: Seq[ContentTypeRange] =
+          Seq(`application/json`, `application/json-home`)
+      }
+
+      import CustomPlayJsonSupport._
+
+      val entity =
+        HttpEntity(`application/json-home`, """{ "bar": "bar" }""")
+      Unmarshal(entity)
+        .to[Foo]
+        .map(_ shouldBe foo)
     }
   }
 

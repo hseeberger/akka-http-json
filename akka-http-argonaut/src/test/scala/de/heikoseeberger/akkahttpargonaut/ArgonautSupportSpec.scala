@@ -19,33 +19,39 @@ package de.heikoseeberger.akkahttpargonaut
 import akka.actor.ActorSystem
 import akka.http.scaladsl.marshalling.Marshal
 import akka.http.scaladsl.model.ContentTypes.`application/json`
-import akka.http.scaladsl.model.{ HttpEntity, MediaTypes, RequestEntity }
+import akka.http.scaladsl.model._
 import akka.http.scaladsl.unmarshalling.Unmarshaller.UnsupportedContentTypeException
 import akka.http.scaladsl.unmarshalling.{ Unmarshal, Unmarshaller }
 import akka.stream.ActorMaterializer
+import argonaut.Argonaut._
 import org.scalatest.{ AsyncWordSpec, BeforeAndAfterAll, Matchers }
+import scala.collection.immutable.Seq
+
 import scala.concurrent.Await
 import scala.concurrent.duration.DurationInt
 
 object ArgonautSupportSpec {
+
   final case class Foo(bar: String) {
     require(bar == "bar", "bar must be 'bar'!")
   }
+
 }
 
 class ArgonautSupportSpec extends AsyncWordSpec with Matchers with BeforeAndAfterAll {
-  import ArgonautSupport._
+
   import ArgonautSupportSpec._
 
   private implicit val system = ActorSystem()
   private implicit val mat    = ActorMaterializer()
 
+  implicit def FooCodec = casecodec1(Foo.apply, Foo.unapply)("bar")
+
   "ArgonautSupport" should {
     import system.dispatcher
 
     "enable marshalling and unmarshalling objects for generic derivation" in {
-      import argonaut.Argonaut._
-      implicit def FooCodec = casecodec1(Foo.apply, Foo.unapply)("bar")
+      import ArgonautSupport._
 
       val foo = Foo("bar")
       Marshal(foo)
@@ -55,8 +61,7 @@ class ArgonautSupportSpec extends AsyncWordSpec with Matchers with BeforeAndAfte
     }
 
     "provide proper error messages for requirement errors" in {
-      import argonaut.Argonaut._
-      implicit def FooCodec = casecodec1(Foo.apply, Foo.unapply)("bar")
+      import ArgonautSupport._
 
       val entity =
         HttpEntity(MediaTypes.`application/json`, """{ "bar": "baz" }""")
@@ -67,8 +72,7 @@ class ArgonautSupportSpec extends AsyncWordSpec with Matchers with BeforeAndAfte
     }
 
     "fail with NoContentException when unmarshalling empty entities" in {
-      import argonaut.Argonaut._
-      implicit def FooCodec = casecodec1(Foo.apply, Foo.unapply)("bar")
+      import ArgonautSupport._
 
       val entity = HttpEntity.empty(`application/json`)
       Unmarshal(entity)
@@ -78,14 +82,32 @@ class ArgonautSupportSpec extends AsyncWordSpec with Matchers with BeforeAndAfte
     }
 
     "fail with UnsupportedContentTypeException when Content-Type is not `application/json`" in {
-      import argonaut.Argonaut._
-      implicit def FooCodec = casecodec1(Foo.apply, Foo.unapply)("bar")
+      import ArgonautSupport._
 
       val entity = HttpEntity("""{ "bar": "bar" }""")
       Unmarshal(entity)
         .to[Foo]
         .failed
         .map(_ shouldBe UnsupportedContentTypeException(`application/json`))
+    }
+
+    "allow unmarshalling with passed in Content-Types" in {
+      val foo = Foo("bar")
+      val `application/json-home` =
+        MediaType.applicationWithFixedCharset("json-home", HttpCharsets.`UTF-8`, "json-home")
+
+      object CustomArgonautSupport extends ArgonautSupport {
+        override def unmarshallerContentTypes: Seq[ContentTypeRange] =
+          Seq(`application/json`, `application/json-home`)
+      }
+
+      import CustomArgonautSupport._
+
+      val entity =
+        HttpEntity(`application/json-home`, """{ "bar": "bar" }""")
+      Unmarshal(entity)
+        .to[Foo]
+        .map(_ shouldBe foo)
     }
   }
 

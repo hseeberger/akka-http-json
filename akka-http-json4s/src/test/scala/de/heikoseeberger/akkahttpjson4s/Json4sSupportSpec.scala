@@ -19,12 +19,14 @@ package de.heikoseeberger.akkahttpjson4s
 import akka.actor.ActorSystem
 import akka.http.scaladsl.marshalling.Marshal
 import akka.http.scaladsl.model.ContentTypes.`application/json`
-import akka.http.scaladsl.model.{ HttpEntity, MediaTypes, RequestEntity }
+import akka.http.scaladsl.model._
 import akka.http.scaladsl.unmarshalling.Unmarshaller.UnsupportedContentTypeException
 import akka.http.scaladsl.unmarshalling.{ Unmarshal, Unmarshaller }
 import akka.stream.ActorMaterializer
 import org.json4s.{ jackson, native, DefaultFormats }
 import org.scalatest.{ AsyncWordSpec, BeforeAndAfterAll, Matchers }
+
+import scala.collection.immutable.Seq
 import scala.concurrent.Await
 import scala.concurrent.duration.DurationInt
 
@@ -89,6 +91,26 @@ class Json4sSupportSpec extends AsyncWordSpec with Matchers with BeforeAndAfterA
         .to[Foo]
         .failed
         .map(_ shouldBe UnsupportedContentTypeException(`application/json`))
+    }
+
+    "allow unmarshalling with passed in Content-Types" in {
+      implicit val serialization = native.Serialization
+      val foo                    = Foo("bar")
+      val `application/json-home` =
+        MediaType.applicationWithFixedCharset("json-home", HttpCharsets.`UTF-8`, "json-home")
+
+      object CustomJson4sSupport extends Json4sSupport {
+        override def unmarshallerContentTypes: Seq[ContentTypeRange] =
+          Seq(`application/json`, `application/json-home`)
+      }
+
+      import CustomJson4sSupport._
+
+      val entity =
+        HttpEntity(`application/json-home`, """{ "bar": "bar" }""")
+      Unmarshal(entity)
+        .to[Foo]
+        .map(_ shouldBe foo)
     }
   }
 

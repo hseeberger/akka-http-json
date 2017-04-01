@@ -19,7 +19,7 @@ package de.heikoseeberger.akkahttpcirce
 import akka.actor.ActorSystem
 import akka.http.scaladsl.marshalling.Marshal
 import akka.http.scaladsl.model.ContentTypes.`application/json`
-import akka.http.scaladsl.model.{ HttpEntity, MediaTypes, RequestEntity }
+import akka.http.scaladsl.model._
 import akka.http.scaladsl.unmarshalling.Unmarshaller.UnsupportedContentTypeException
 import akka.http.scaladsl.unmarshalling.{ Unmarshal, Unmarshaller }
 import akka.stream.ActorMaterializer
@@ -27,6 +27,8 @@ import cats.data.NonEmptyList
 import io.circe.CursorOp.DownField
 import io.circe.{ DecodingFailure, Errors }
 import org.scalatest.{ AsyncWordSpec, BeforeAndAfterAll, Matchers }
+
+import scala.collection.immutable.Seq
 import scala.concurrent.Await
 import scala.concurrent.duration.DurationInt
 
@@ -84,6 +86,7 @@ final class CirceSupportSpec extends AsyncWordSpec with Matchers with BeforeAndA
         .failed
         .map(_ shouldBe UnsupportedContentTypeException(`application/json`))
     }
+
   }
 
   "FailFastCirceSupport" should {
@@ -99,6 +102,25 @@ final class CirceSupportSpec extends AsyncWordSpec with Matchers with BeforeAndA
         .to[MultiFoo]
         .failed
         .map(_ shouldBe error)
+    }
+
+    "allow unmarshalling with passed in Content-Types" in {
+      val foo = Foo("bar")
+      val `application/json-home` =
+        MediaType.applicationWithFixedCharset("json-home", HttpCharsets.`UTF-8`, "json-home")
+
+      object CustomCirceSupport extends FailFastCirceSupport {
+        override def unmarshallerContentTypes: Seq[ContentTypeRange] =
+          Seq(`application/json`, `application/json-home`)
+      }
+
+      import CustomCirceSupport._
+
+      val entity =
+        HttpEntity(MediaTypes.`application/json`, """{ "bar": "bar" }""")
+      Unmarshal(entity)
+        .to[Foo]
+        .map(_ shouldBe foo)
     }
   }
 
@@ -119,6 +141,25 @@ final class CirceSupportSpec extends AsyncWordSpec with Matchers with BeforeAndA
         .to[MultiFoo]
         .failed
         .map(_ shouldBe Errors(errors))
+    }
+
+    "allow unmarshalling with passed in Content-Types" in {
+      val foo = Foo("bar")
+      val `application/json-home` =
+        MediaType.applicationWithFixedCharset("json-home", HttpCharsets.`UTF-8`, "json-home")
+
+      object CustomCirceSupport extends ErrorAccumulatingCirceSupport {
+        override def unmarshallerContentTypes: Seq[ContentTypeRange] =
+          Seq(`application/json`, `application/json-home`)
+      }
+
+      import CustomCirceSupport._
+
+      val entity =
+        HttpEntity(`application/json-home`, """{ "bar": "bar" }""")
+      Unmarshal(entity)
+        .to[Foo]
+        .map(_ shouldBe foo)
     }
   }
 

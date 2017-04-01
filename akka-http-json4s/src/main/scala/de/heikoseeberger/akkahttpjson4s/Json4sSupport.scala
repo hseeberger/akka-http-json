@@ -17,11 +17,14 @@
 package de.heikoseeberger.akkahttpjson4s
 
 import java.lang.reflect.InvocationTargetException
+
 import akka.http.scaladsl.marshalling.{ Marshaller, ToEntityMarshaller }
+import akka.http.scaladsl.model.ContentTypeRange
 import akka.http.scaladsl.model.MediaTypes.`application/json`
 import akka.http.scaladsl.unmarshalling.{ FromEntityUnmarshaller, Unmarshaller }
 import akka.util.ByteString
 import org.json4s.{ Formats, MappingException, Serialization }
+import scala.collection.immutable.Seq
 
 /**
   * Automatic to and from JSON marshalling/unmarshalling using an in-scope *Json4s* protocol.
@@ -46,9 +49,12 @@ object Json4sSupport extends Json4sSupport {
 trait Json4sSupport {
   import Json4sSupport._
 
+  def unmarshallerContentTypes: Seq[ContentTypeRange] =
+    Seq(`application/json`)
+
   private val jsonStringUnmarshaller =
     Unmarshaller.byteStringUnmarshaller
-      .forContentTypes(`application/json`)
+      .forContentTypes(unmarshallerContentTypes: _*)
       .mapWithCharset {
         case (ByteString.empty, _) => throw Unmarshaller.NoContentException
         case (data, charset)       => data.decodeString(charset.nioCharset.name)
