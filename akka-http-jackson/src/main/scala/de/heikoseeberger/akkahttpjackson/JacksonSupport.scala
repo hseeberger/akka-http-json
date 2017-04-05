@@ -25,13 +25,13 @@ import akka.util.ByteString
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import scala.collection.immutable.Seq
-
 import scala.reflect.ClassTag
 
 /**
   * Automatic to and from JSON marshalling/unmarshalling usung an in-scope Jackon's ObjectMapper
   */
 object JacksonSupport extends JacksonSupport {
+
   val defaultObjectMapper: ObjectMapper =
     new ObjectMapper().registerModule(DefaultScalaModule)
 }
@@ -43,7 +43,7 @@ trait JacksonSupport {
   import JacksonSupport._
 
   def unmarshallerContentTypes: Seq[ContentTypeRange] =
-    Seq(`application/json`)
+    List(`application/json`)
 
   private val jsonStringUnmarshaller =
     Unmarshaller.byteStringUnmarshaller

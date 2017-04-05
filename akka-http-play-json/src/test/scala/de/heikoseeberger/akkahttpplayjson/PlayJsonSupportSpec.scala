@@ -25,8 +25,7 @@ import akka.http.scaladsl.unmarshalling.Unmarshaller.UnsupportedContentTypeExcep
 import akka.http.scaladsl.unmarshalling.{ Unmarshal, Unmarshaller }
 import akka.stream.ActorMaterializer
 import org.scalatest.{ AsyncWordSpec, BeforeAndAfterAll, Matchers }
-import play.api.libs.json.Json
-
+import play.api.libs.json.{ Format, Json }
 import scala.collection.immutable.Seq
 import scala.concurrent.Await
 import scala.concurrent.duration.DurationInt
@@ -37,10 +36,11 @@ object PlayJsonSupportSpec {
     require(bar == "bar", "bar must be 'bar'!")
   }
 
-  implicit val fooFormat = Json.format[Foo]
+  implicit val fooFormat: Format[Foo] =
+    Json.format[Foo]
 }
 
-class PlayJsonSupportSpec extends AsyncWordSpec with Matchers with BeforeAndAfterAll {
+final class PlayJsonSupportSpec extends AsyncWordSpec with Matchers with BeforeAndAfterAll {
   import PlayJsonSupport._
   import PlayJsonSupportSpec._
 
@@ -59,8 +59,7 @@ class PlayJsonSupportSpec extends AsyncWordSpec with Matchers with BeforeAndAfte
     }
 
     "provide proper error messages for requirement errors" in {
-      val entity =
-        HttpEntity(MediaTypes.`application/json`, """{ "bar": "baz" }""")
+      val entity = HttpEntity(MediaTypes.`application/json`, """{ "bar": "baz" }""")
       Unmarshal(entity)
         .to[Foo]
         .failed
@@ -68,8 +67,7 @@ class PlayJsonSupportSpec extends AsyncWordSpec with Matchers with BeforeAndAfte
     }
 
     "provide stringified error representation for parsing errors" in {
-      val entity =
-        HttpEntity(MediaTypes.`application/json`, """{ "bar": 5 }""")
+      val entity = HttpEntity(MediaTypes.`application/json`, """{ "bar": 5 }""")
       Unmarshal(entity)
         .to[Foo]
         .failed
@@ -107,18 +105,13 @@ class PlayJsonSupportSpec extends AsyncWordSpec with Matchers with BeforeAndAfte
       val `application/json-home` =
         MediaType.applicationWithFixedCharset("json-home", HttpCharsets.`UTF-8`, "json-home")
 
-      object CustomPlayJsonSupport extends PlayJsonSupport {
-        override def unmarshallerContentTypes: Seq[ContentTypeRange] =
-          Seq(`application/json`, `application/json-home`)
+      final object CustomPlayJsonSupport extends PlayJsonSupport {
+        override def unmarshallerContentTypes = List(`application/json`, `application/json-home`)
       }
-
       import CustomPlayJsonSupport._
 
-      val entity =
-        HttpEntity(`application/json-home`, """{ "bar": "bar" }""")
-      Unmarshal(entity)
-        .to[Foo]
-        .map(_ shouldBe foo)
+      val entity = HttpEntity(`application/json-home`, """{ "bar": "bar" }""")
+      Unmarshal(entity).to[Foo].map(_ shouldBe foo)
     }
   }
 

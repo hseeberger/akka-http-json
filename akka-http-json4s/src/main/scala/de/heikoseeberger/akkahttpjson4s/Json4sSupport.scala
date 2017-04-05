@@ -35,9 +35,9 @@ object Json4sSupport extends Json4sSupport {
 
   sealed abstract class ShouldWritePretty
 
-  object ShouldWritePretty {
-    object True  extends ShouldWritePretty
-    object False extends ShouldWritePretty
+  final object ShouldWritePretty {
+    final object True  extends ShouldWritePretty
+    final object False extends ShouldWritePretty
   }
 }
 
@@ -50,7 +50,7 @@ trait Json4sSupport {
   import Json4sSupport._
 
   def unmarshallerContentTypes: Seq[ContentTypeRange] =
-    Seq(`application/json`)
+    List(`application/json`)
 
   private val jsonStringUnmarshaller =
     Unmarshaller.byteStringUnmarshaller
@@ -68,10 +68,8 @@ trait Json4sSupport {
     * @tparam A type to decode
     * @return unmarshaller for `A`
     */
-  implicit def unmarshaller[A: Manifest](
-      implicit serialization: Serialization,
-      formats: Formats
-  ): FromEntityUnmarshaller[A] =
+  implicit def unmarshaller[A: Manifest](implicit serialization: Serialization,
+                                         formats: Formats): FromEntityUnmarshaller[A] =
     jsonStringUnmarshaller
       .map(s => serialization.read(s))
       .recover { _ => _ =>
@@ -84,11 +82,10 @@ trait Json4sSupport {
     * @tparam A type to encode, must be upper bounded by `AnyRef`
     * @return marshaller for any `A` value
     */
-  implicit def marshaller[A <: AnyRef](
-      implicit serialization: Serialization,
-      formats: Formats,
-      shouldWritePretty: ShouldWritePretty = ShouldWritePretty.False
-  ): ToEntityMarshaller[A] =
+  implicit def marshaller[A <: AnyRef](implicit serialization: Serialization,
+                                       formats: Formats,
+                                       shouldWritePretty: ShouldWritePretty =
+                                         ShouldWritePretty.False): ToEntityMarshaller[A] =
     shouldWritePretty match {
       case ShouldWritePretty.False =>
         jsonStringMarshaller.compose(serialization.write[A])
