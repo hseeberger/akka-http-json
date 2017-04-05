@@ -24,18 +24,17 @@ import akka.http.scaladsl.unmarshalling.Unmarshaller.UnsupportedContentTypeExcep
 import akka.http.scaladsl.unmarshalling.{ Unmarshal, Unmarshaller }
 import akka.stream.ActorMaterializer
 import org.scalatest.{ AsyncWordSpec, BeforeAndAfterAll, Matchers }
-
-import scala.collection.immutable.Seq
 import scala.concurrent.Await
 import scala.concurrent.duration.DurationInt
 
 object JacksonSupportSpec {
+
   final case class Foo(bar: String) {
     require(bar == "bar", "bar must be 'bar'!")
   }
 }
 
-class JacksonSupportSpec extends AsyncWordSpec with Matchers with BeforeAndAfterAll {
+final class JacksonSupportSpec extends AsyncWordSpec with Matchers with BeforeAndAfterAll {
   import JacksonSupport._
   import JacksonSupportSpec._
 
@@ -54,14 +53,11 @@ class JacksonSupportSpec extends AsyncWordSpec with Matchers with BeforeAndAfter
     }
 
     "provide proper error messages for requirement errors" in {
-      val entity =
-        HttpEntity(MediaTypes.`application/json`, """{ "bar": "baz" }""")
+      val entity = HttpEntity(MediaTypes.`application/json`, """{ "bar": "baz" }""")
       Unmarshal(entity)
         .to[Foo]
         .failed
-        .map(
-          _.getMessage should include("requirement failed: bar must be 'bar'!")
-        )
+        .map(_.getMessage should include("requirement failed: bar must be 'bar'!"))
     }
 
     "fail with NoContentException when unmarshalling empty entities" in {
@@ -85,18 +81,13 @@ class JacksonSupportSpec extends AsyncWordSpec with Matchers with BeforeAndAfter
       val `application/json-home` =
         MediaType.applicationWithFixedCharset("json-home", HttpCharsets.`UTF-8`, "json-home")
 
-      object CustomJacksonSupport extends JacksonSupport {
-        override def unmarshallerContentTypes: Seq[ContentTypeRange] =
-          Seq(`application/json`, `application/json-home`)
+      final object CustomJacksonSupport extends JacksonSupport {
+        override def unmarshallerContentTypes = List(`application/json`, `application/json-home`)
       }
-
       import CustomJacksonSupport._
 
-      val entity =
-        HttpEntity(`application/json-home`, """{ "bar": "bar" }""")
-      Unmarshal(entity)
-        .to[Foo]
-        .map(_ shouldBe foo)
+      val entity = HttpEntity(`application/json-home`, """{ "bar": "bar" }""")
+      Unmarshal(entity).to[Foo].map(_ shouldBe foo)
     }
   }
 

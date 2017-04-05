@@ -43,7 +43,7 @@ trait PlayJsonSupport {
   import PlayJsonSupport._
 
   def unmarshallerContentTypes: Seq[ContentTypeRange] =
-    Seq(`application/json`)
+    List(`application/json`)
 
   private val jsonStringUnmarshaller =
     Unmarshaller.byteStringUnmarshaller

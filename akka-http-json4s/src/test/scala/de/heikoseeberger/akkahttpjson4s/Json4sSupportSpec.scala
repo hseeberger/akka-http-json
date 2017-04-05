@@ -25,18 +25,17 @@ import akka.http.scaladsl.unmarshalling.{ Unmarshal, Unmarshaller }
 import akka.stream.ActorMaterializer
 import org.json4s.{ jackson, native, DefaultFormats }
 import org.scalatest.{ AsyncWordSpec, BeforeAndAfterAll, Matchers }
-
-import scala.collection.immutable.Seq
 import scala.concurrent.Await
 import scala.concurrent.duration.DurationInt
 
 object Json4sSupportSpec {
+
   final case class Foo(bar: String) {
     require(bar == "bar", "bar must be 'bar'!")
   }
 }
 
-class Json4sSupportSpec extends AsyncWordSpec with Matchers with BeforeAndAfterAll {
+final class Json4sSupportSpec extends AsyncWordSpec with Matchers with BeforeAndAfterAll {
   import Json4sSupport._
   import Json4sSupportSpec._
 
@@ -99,18 +98,13 @@ class Json4sSupportSpec extends AsyncWordSpec with Matchers with BeforeAndAfterA
       val `application/json-home` =
         MediaType.applicationWithFixedCharset("json-home", HttpCharsets.`UTF-8`, "json-home")
 
-      object CustomJson4sSupport extends Json4sSupport {
-        override def unmarshallerContentTypes: Seq[ContentTypeRange] =
-          Seq(`application/json`, `application/json-home`)
+      final object CustomJson4sSupport extends Json4sSupport {
+        override def unmarshallerContentTypes = List(`application/json`, `application/json-home`)
       }
-
       import CustomJson4sSupport._
 
-      val entity =
-        HttpEntity(`application/json-home`, """{ "bar": "bar" }""")
-      Unmarshal(entity)
-        .to[Foo]
-        .map(_ shouldBe foo)
+      val entity = HttpEntity(`application/json-home`, """{ "bar": "bar" }""")
+      Unmarshal(entity).to[Foo].map(_ shouldBe foo)
     }
   }
 

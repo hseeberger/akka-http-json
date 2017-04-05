@@ -73,7 +73,7 @@ trait CirceSupport extends FailFastCirceSupport
 trait BaseCirceSupport {
 
   def unmarshallerContentTypes: Seq[ContentTypeRange] =
-    Seq(`application/json`)
+    List(`application/json`)
 
   /**
     * Printer used in the JSON marshaller.
@@ -150,7 +150,5 @@ trait ErrorAccumulatingUnmarshaller { this: BaseCirceSupport =>
   * Mix-in this trait to use a compact JSON printer during marshalling.
   */
 trait NoSpacesPrinter { this: BaseCirceSupport =>
-
-  override final def printer: Printer =
-    Printer.noSpaces
+  override final def printer = Printer.noSpaces
 }
