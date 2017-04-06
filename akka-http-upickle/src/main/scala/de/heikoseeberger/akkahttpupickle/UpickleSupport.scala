@@ -17,11 +17,13 @@
 package de.heikoseeberger.akkahttpupickle
 
 import akka.http.scaladsl.marshalling.{ Marshaller, ToEntityMarshaller }
+import akka.http.scaladsl.model.ContentTypeRange
 import akka.http.scaladsl.model.MediaTypes.`application/json`
 import akka.http.scaladsl.unmarshalling.{ FromEntityUnmarshaller, Unmarshaller }
 import akka.util.ByteString
 import upickle.default.{ readJs, writeJs, Reader, Writer }
 import upickle.{ json, Js }
+import scala.collection.immutable.Seq
 
 /**
   * Automatic to and from JSON marshalling/unmarshalling using *upickle* protocol.
@@ -33,9 +35,12 @@ object UpickleSupport extends UpickleSupport
   */
 trait UpickleSupport {
 
+  def unmarshallerContentTypes: Seq[ContentTypeRange] =
+    List(`application/json`)
+
   private val jsonStringUnmarshaller =
     Unmarshaller.byteStringUnmarshaller
-      .forContentTypes(`application/json`)
+      .forContentTypes(unmarshallerContentTypes: _*)
       .mapWithCharset {
         case (ByteString.empty, _) => throw Unmarshaller.NoContentException
         case (data, charset)       => data.decodeString(charset.nioCharset.name)

@@ -17,11 +17,12 @@
 package de.heikoseeberger.akkahttpcirce
 
 import akka.http.scaladsl.marshalling.{ Marshaller, ToEntityMarshaller }
-import akka.http.scaladsl.model.HttpEntity
+import akka.http.scaladsl.model.{ ContentTypeRange, HttpEntity }
 import akka.http.scaladsl.model.MediaTypes.`application/json`
 import akka.http.scaladsl.unmarshalling.{ FromEntityUnmarshaller, Unmarshaller }
 import akka.util.ByteString
 import io.circe.{ jawn, Decoder, Encoder, Errors, Json, Printer }
+import scala.collection.immutable.Seq
 
 /**
   * Automatic to and from JSON marshalling/unmarshalling using an in-scope circe protocol.
@@ -70,6 +71,9 @@ trait CirceSupport extends FailFastCirceSupport
   */
 trait BaseCirceSupport {
 
+  def unmarshallerContentTypes: Seq[ContentTypeRange] =
+    List(`application/json`)
+
   /**
     * `Json` => HTTP entity
     *
@@ -96,7 +100,7 @@ trait BaseCirceSupport {
     */
   implicit final val jsonUnmarshaller: FromEntityUnmarshaller[Json] =
     Unmarshaller.byteStringUnmarshaller
-      .forContentTypes(`application/json`)
+      .forContentTypes(unmarshallerContentTypes: _*)
       .map {
         case ByteString.empty => throw Unmarshaller.NoContentException
         case data             => jawn.parseByteBuffer(data.asByteBuffer).fold(throw _, identity)

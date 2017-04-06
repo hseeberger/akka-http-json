@@ -17,11 +17,13 @@
 package de.heikoseeberger.akkahttpplayjson
 
 import akka.http.scaladsl.marshalling.{ Marshaller, ToEntityMarshaller }
+import akka.http.scaladsl.model.ContentTypeRange
 import akka.http.scaladsl.model.MediaTypes.`application/json`
 import akka.http.scaladsl.server.{ RejectionError, ValidationRejection }
 import akka.http.scaladsl.unmarshalling.{ FromEntityUnmarshaller, Unmarshaller }
 import akka.util.ByteString
 import play.api.libs.json.{ JsError, JsValue, Json, Reads, Writes }
+import scala.collection.immutable.Seq
 
 /**
   * Automatic to and from JSON marshalling/unmarshalling using an in-scope *play-json* protocol.
@@ -40,9 +42,12 @@ object PlayJsonSupport extends PlayJsonSupport {
 trait PlayJsonSupport {
   import PlayJsonSupport._
 
+  def unmarshallerContentTypes: Seq[ContentTypeRange] =
+    List(`application/json`)
+
   private val jsonStringUnmarshaller =
     Unmarshaller.byteStringUnmarshaller
-      .forContentTypes(`application/json`)
+      .forContentTypes(unmarshallerContentTypes: _*)
       .mapWithCharset {
         case (ByteString.empty, _) => throw Unmarshaller.NoContentException
         case (data, charset)       => data.decodeString(charset.nioCharset.name)

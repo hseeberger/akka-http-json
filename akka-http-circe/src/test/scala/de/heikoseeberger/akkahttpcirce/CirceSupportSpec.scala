@@ -19,7 +19,7 @@ package de.heikoseeberger.akkahttpcirce
 import akka.actor.ActorSystem
 import akka.http.scaladsl.marshalling.Marshal
 import akka.http.scaladsl.model.ContentTypes.`application/json`
-import akka.http.scaladsl.model.{ HttpEntity, MediaTypes, RequestEntity }
+import akka.http.scaladsl.model._
 import akka.http.scaladsl.unmarshalling.Unmarshaller.UnsupportedContentTypeException
 import akka.http.scaladsl.unmarshalling.{ Unmarshal, Unmarshaller }
 import akka.stream.ActorMaterializer
@@ -48,6 +48,9 @@ final class CirceSupportSpec extends AsyncWordSpec with Matchers with BeforeAndA
   private implicit val system = ActorSystem()
   private implicit val mat    = ActorMaterializer()
   private implicit val ec     = system.dispatcher
+
+  private val `application/json-home` =
+    MediaType.applicationWithFixedCharset("json-home", HttpCharsets.`UTF-8`, "json-home")
 
   /**
     * Specs common to both [[FailFastCirceSupport]] and [[ErrorAccumulatingCirceSupport]]
@@ -118,6 +121,18 @@ final class CirceSupportSpec extends AsyncWordSpec with Matchers with BeforeAndA
         .failed
         .map(_ shouldBe error)
     }
+
+    "allow unmarshalling with passed in Content-Types" in {
+      val foo = Foo("bar")
+
+      final object CustomCirceSupport extends FailFastCirceSupport {
+        override def unmarshallerContentTypes = List(`application/json`, `application/json-home`)
+      }
+      import CustomCirceSupport._
+
+      val entity = HttpEntity(MediaTypes.`application/json`, """{ "bar": "bar" }""")
+      Unmarshal(entity).to[Foo].map(_ shouldBe foo)
+    }
   }
 
   "ErrorAccumulatingCirceSupport" should {
@@ -137,6 +152,18 @@ final class CirceSupportSpec extends AsyncWordSpec with Matchers with BeforeAndA
         .to[MultiFoo]
         .failed
         .map(_ shouldBe Errors(errors))
+    }
+
+    "allow unmarshalling with passed in Content-Types" in {
+      val foo = Foo("bar")
+
+      final object CustomCirceSupport extends ErrorAccumulatingCirceSupport {
+        override def unmarshallerContentTypes = List(`application/json`, `application/json-home`)
+      }
+      import CustomCirceSupport._
+
+      val entity = HttpEntity(`application/json-home`, """{ "bar": "bar" }""")
+      Unmarshal(entity).to[Foo].map(_ shouldBe foo)
     }
   }
 

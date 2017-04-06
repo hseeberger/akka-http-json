@@ -17,10 +17,12 @@
 package de.heikoseeberger.akkahttpargonaut
 
 import akka.http.scaladsl.marshalling.{ Marshaller, ToEntityMarshaller }
+import akka.http.scaladsl.model.ContentTypeRange
 import akka.http.scaladsl.model.MediaTypes.`application/json`
 import akka.http.scaladsl.unmarshalling.{ FromEntityUnmarshaller, Unmarshaller }
 import akka.util.ByteString
 import argonaut.{ DecodeJson, EncodeJson, Json, Parse, PrettyParams }
+import scala.collection.immutable.Seq
 
 /**
   * Automatic to and from JSON marshalling/unmarshalling using an in-scope *Argonaut* protocol.
@@ -36,9 +38,12 @@ object ArgonautSupport extends ArgonautSupport
   */
 trait ArgonautSupport {
 
+  def unmarshallerContentTypes: Seq[ContentTypeRange] =
+    List(`application/json`)
+
   private val jsonStringUnmarshaller =
     Unmarshaller.byteStringUnmarshaller
-      .forContentTypes(`application/json`)
+      .forContentTypes(unmarshallerContentTypes: _*)
       .mapWithCharset {
         case (ByteString.empty, _) => throw Unmarshaller.NoContentException
         case (data, charset)       => data.decodeString(charset.nioCharset.name)

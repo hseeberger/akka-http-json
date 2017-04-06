@@ -19,7 +19,7 @@ package de.heikoseeberger.akkahttpupickle
 import akka.actor.ActorSystem
 import akka.http.scaladsl.marshalling.Marshal
 import akka.http.scaladsl.model.ContentTypes.`application/json`
-import akka.http.scaladsl.model.{ HttpEntity, MediaTypes, RequestEntity }
+import akka.http.scaladsl.model._
 import akka.http.scaladsl.unmarshalling.Unmarshaller.UnsupportedContentTypeException
 import akka.http.scaladsl.unmarshalling.{ Unmarshal, Unmarshaller }
 import akka.stream.ActorMaterializer
@@ -27,10 +27,12 @@ import org.scalatest.{ AsyncWordSpec, BeforeAndAfterAll, Matchers }
 import scala.concurrent.Await
 import scala.concurrent.duration.DurationInt
 
-class UpickleSupportSpec extends AsyncWordSpec with Matchers with BeforeAndAfterAll {
+final class UpickleSupportSpec extends AsyncWordSpec with Matchers with BeforeAndAfterAll {
   import UpickleSupport._
 
-  case class Foo(bar: String) { require(bar == "bar", "bar must be 'bar'!") }
+  final case class Foo(bar: String) {
+    require(bar == "bar", "bar must be 'bar'!")
+  }
 
   implicit val system = ActorSystem()
   implicit val mat    = ActorMaterializer()
@@ -47,8 +49,7 @@ class UpickleSupportSpec extends AsyncWordSpec with Matchers with BeforeAndAfter
     }
 
     "provide proper error messages for requirement errors" in {
-      val entity =
-        HttpEntity(MediaTypes.`application/json`, """{ "bar": "baz" }""")
+      val entity = HttpEntity(MediaTypes.`application/json`, """{ "bar": "baz" }""")
       Unmarshal(entity)
         .to[Foo]
         .failed
@@ -69,6 +70,20 @@ class UpickleSupportSpec extends AsyncWordSpec with Matchers with BeforeAndAfter
         .to[Foo]
         .failed
         .map(_ shouldBe UnsupportedContentTypeException(`application/json`))
+    }
+
+    "allow unmarshalling with passed in Content-Types" in {
+      val foo = Foo("bar")
+      val `application/json-home` =
+        MediaType.applicationWithFixedCharset("json-home", HttpCharsets.`UTF-8`, "json-home")
+
+      final object CustomUpickleSupport extends UpickleSupport {
+        override def unmarshallerContentTypes = List(`application/json`, `application/json-home`)
+      }
+      import CustomUpickleSupport._
+
+      val entity = HttpEntity(`application/json-home`, """{ "bar": "bar" }""")
+      Unmarshal(entity).to[Foo].map(_ shouldBe foo)
     }
   }
 

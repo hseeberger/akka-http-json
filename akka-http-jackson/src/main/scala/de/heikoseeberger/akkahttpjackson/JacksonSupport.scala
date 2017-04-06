@@ -18,17 +18,20 @@ package de.heikoseeberger.akkahttpjackson
 
 import akka.http.javadsl.marshallers.jackson.Jackson
 import akka.http.scaladsl.marshalling._
+import akka.http.scaladsl.model.ContentTypeRange
 import akka.http.scaladsl.model.MediaTypes.`application/json`
 import akka.http.scaladsl.unmarshalling.{ FromEntityUnmarshaller, Unmarshaller }
 import akka.util.ByteString
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
+import scala.collection.immutable.Seq
 import scala.reflect.ClassTag
 
 /**
   * Automatic to and from JSON marshalling/unmarshalling usung an in-scope Jackon's ObjectMapper
   */
 object JacksonSupport extends JacksonSupport {
+
   val defaultObjectMapper: ObjectMapper =
     new ObjectMapper().registerModule(DefaultScalaModule)
 }
@@ -39,9 +42,12 @@ object JacksonSupport extends JacksonSupport {
 trait JacksonSupport {
   import JacksonSupport._
 
+  def unmarshallerContentTypes: Seq[ContentTypeRange] =
+    List(`application/json`)
+
   private val jsonStringUnmarshaller =
     Unmarshaller.byteStringUnmarshaller
-      .forContentTypes(`application/json`)
+      .forContentTypes(unmarshallerContentTypes: _*)
       .mapWithCharset {
         case (ByteString.empty, _) => throw Unmarshaller.NoContentException
         case (data, charset)       => data.decodeString(charset.nioCharset.name)

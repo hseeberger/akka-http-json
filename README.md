@@ -4,7 +4,7 @@
 [![Build Status](https://travis-ci.org/hseeberger/akka-http-json.svg?branch=master)](https://travis-ci.org/hseeberger/akka-http-json)
 [![Maven Central](https://img.shields.io/maven-central/v/de.heikoseeberger/akka-http-circe_2.12.svg)](https://maven-badges.herokuapp.com/maven-central/de.heikoseeberger/akka-http-circe_2.12)
 
-akka-http-json provides JSON (un)marshalling support for [Akka](http://akka.io) HTTP. It offers support for the following JSON libraries:
+akka-http-json provides JSON (un)marshalling support for [Akka HTTP](https://github.com/akka/akka-http) via the following JSON libraries:
 - [Argonaut](http://argonaut.io)
 - [circe](https://github.com/travisbrown/circe)
 - [Jackson](https://github.com/FasterXML/jackson) via [Scala Module](https://github.com/FasterXML/jackson-module-scala) by default
