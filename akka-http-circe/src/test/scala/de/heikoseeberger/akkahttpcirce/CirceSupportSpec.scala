@@ -25,8 +25,9 @@ import akka.http.scaladsl.unmarshalling.{ Unmarshal, Unmarshaller }
 import akka.stream.ActorMaterializer
 import cats.data.NonEmptyList
 import io.circe.CursorOp.DownField
-import io.circe.{ DecodingFailure, Errors }
+import io.circe.{ DecodingFailure, Errors, Printer }
 import org.scalatest.{ AsyncWordSpec, BeforeAndAfterAll, Matchers }
+
 import scala.concurrent.Await
 import scala.concurrent.duration.DurationInt
 
@@ -37,6 +38,8 @@ object CirceSupportSpec {
   }
 
   final case class MultiFoo(a: String, b: String)
+
+  final case class OptionFoo(a: Option[String])
 }
 
 final class CirceSupportSpec extends AsyncWordSpec with Matchers with BeforeAndAfterAll {
@@ -88,6 +91,20 @@ final class CirceSupportSpec extends AsyncWordSpec with Matchers with BeforeAndA
         .map(_ shouldBe UnsupportedContentTypeException(`application/json`))
     }
 
+    "write None as null by default" in {
+      val optionFoo = OptionFoo(None)
+      Marshal(optionFoo)
+        .to[RequestEntity]
+      .map(_.asInstanceOf[HttpEntity.Strict].data.decodeString("UTF-8") shouldBe "{\"a\":null}")
+    }
+
+    "not write None" in {
+      implicit val printer = Printer.noSpaces.copy(dropNullKeys = true)
+      val optionFoo = OptionFoo(None)
+      Marshal(optionFoo)
+        .to[RequestEntity]
+        .map(_.asInstanceOf[HttpEntity.Strict].data.decodeString("UTF-8") shouldBe "{}")
+    }
   }
 
   "FailFastCirceSupport" should {
