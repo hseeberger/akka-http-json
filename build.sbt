@@ -107,9 +107,9 @@ lazy val library =
     object Version {
       final val akka         = "2.4.17"
       final val akkaHttp     = "10.0.5"
-      final val argonaut     = "6.2-RC2"
+      final val argonaut     = "6.2"
       final val circe        = "0.7.1"
-      final val jacksonScala = "2.8.7"
+      final val jacksonScala = "2.8.8"
       final val json4s       = "3.5.1"
       final val play         = "2.6.0-M6"
       final val scala        = "2.12.1"
