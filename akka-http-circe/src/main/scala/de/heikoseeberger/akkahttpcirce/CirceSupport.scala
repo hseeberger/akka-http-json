@@ -54,9 +54,7 @@ object ErrorAccumulatingCirceSupport extends ErrorAccumulatingCirceSupport
   *
   * To use automatic codec derivation import `io.circe.generic.auto._`.
   */
-trait ErrorAccumulatingCirceSupport
-    extends BaseCirceSupport
-    with ErrorAccumulatingUnmarshaller
+trait ErrorAccumulatingCirceSupport extends BaseCirceSupport with ErrorAccumulatingUnmarshaller
 
 @deprecated(message = "Use either FailFastCirceSupport or ErrorAccumulatingCirceSupport",
             since = "1.13.0")
@@ -79,7 +77,9 @@ trait BaseCirceSupport {
     *
     * @return marshaller for JSON value
     */
-  implicit final def jsonMarshaller(implicit printer: Printer = Printer.noSpaces): ToEntityMarshaller[Json] =
+  implicit final def jsonMarshaller(
+      implicit printer: Printer = Printer.noSpaces
+  ): ToEntityMarshaller[Json] =
     Marshaller.withFixedContentType(`application/json`) { json =>
       HttpEntity(`application/json`, printer.pretty(json))
     }
@@ -90,7 +90,9 @@ trait BaseCirceSupport {
     * @tparam A type to encode
     * @return marshaller for any `A` value
     */
-  implicit final def marshaller[A: Encoder](implicit printer: Printer = Printer.noSpaces): ToEntityMarshaller[A] =
+  implicit final def marshaller[A: Encoder](
+      implicit printer: Printer = Printer.noSpaces
+  ): ToEntityMarshaller[A] =
     jsonMarshaller(printer).compose(implicitly[Encoder[A]].apply)
 
   /**

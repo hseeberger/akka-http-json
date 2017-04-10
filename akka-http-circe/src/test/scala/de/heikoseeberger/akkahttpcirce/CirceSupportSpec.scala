@@ -95,12 +95,12 @@ final class CirceSupportSpec extends AsyncWordSpec with Matchers with BeforeAndA
       val optionFoo = OptionFoo(None)
       Marshal(optionFoo)
         .to[RequestEntity]
-      .map(_.asInstanceOf[HttpEntity.Strict].data.decodeString("UTF-8") shouldBe "{\"a\":null}")
+        .map(_.asInstanceOf[HttpEntity.Strict].data.decodeString("UTF-8") shouldBe "{\"a\":null}")
     }
 
     "not write None" in {
       implicit val printer = Printer.noSpaces.copy(dropNullKeys = true)
-      val optionFoo = OptionFoo(None)
+      val optionFoo        = OptionFoo(None)
       Marshal(optionFoo)
         .to[RequestEntity]
         .map(_.asInstanceOf[HttpEntity.Strict].data.decodeString("UTF-8") shouldBe "{}")
