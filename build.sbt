@@ -105,7 +105,6 @@ lazy val `akka-http-upickle` =
 lazy val library =
   new {
     object Version {
-      final val akka         = "2.4.17"
       final val akkaHttp     = "10.0.5"
       final val argonaut     = "6.2"
       final val circe        = "0.7.1"
@@ -156,10 +155,6 @@ lazy val commonSettings =
       "-language:_",
       "-target:jvm-1.8",
       "-encoding", "UTF-8"
-    ),
-    javacOptions ++= Seq(
-      "-source", "1.8",
-      "-target", "1.8"
     ),
     unmanagedSourceDirectories.in(Compile) := Seq(scalaSource.in(Compile).value),
     unmanagedSourceDirectories.in(Test) := Seq(scalaSource.in(Test).value),
