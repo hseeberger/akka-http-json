@@ -6,7 +6,7 @@
 
 akka-http-json provides JSON (un)marshalling support for [Akka HTTP](https://github.com/akka/akka-http) via the following JSON libraries:
 - [Argonaut](http://argonaut.io)
-- [circe](https://github.com/travisbrown/circe)
+- [circe](https://circe.github.io/circe/)
 - [Jackson](https://github.com/FasterXML/jackson) via [Scala Module](https://github.com/FasterXML/jackson-module-scala) by default
 - [Json4s](https://github.com/json4s/json4s)
 - [Play JSON](https://www.playframework.com/documentation/2.6.x/ScalaJson)
