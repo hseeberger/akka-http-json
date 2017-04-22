@@ -105,14 +105,14 @@ lazy val `akka-http-upickle` =
 lazy val library =
   new {
     object Version {
-      final val akkaHttp     = "10.0.5"
-      final val argonaut     = "6.2"
-      final val circe        = "0.7.1"
-      final val jacksonScala = "2.8.8"
-      final val json4s       = "3.5.1"
-      final val play         = "2.6.0-M6"
-      final val scalaTest    = "3.0.3"
-      final val upickle      = "0.4.4"
+      val akkaHttp     = "10.0.5"
+      val argonaut     = "6.2"
+      val circe        = "0.7.1"
+      val jacksonScala = "2.8.8"
+      val json4s       = "3.5.1"
+      val play         = "2.6.0-M7"
+      val scalaTest    = "3.0.3"
+      val upickle      = "0.4.4"
     }
     val akkaHttp            = "com.typesafe.akka"            %% "akka-http"            % Version.akkaHttp
     val akkaHttpJacksonJava = "com.typesafe.akka"            %% "akka-http-jackson"    % Version.akkaHttp
