@@ -46,8 +46,6 @@ final class Json4sSupportSpec extends AsyncWordSpec with Matchers with BeforeAnd
   private val foo = Foo("bar")
 
   "Json4sSupport" should {
-    import system.dispatcher
-
     "enable marshalling and unmarshalling objects for `DefaultFormats` and `jackson.Serialization`" in {
       implicit val serialization = jackson.Serialization
       Marshal(foo)

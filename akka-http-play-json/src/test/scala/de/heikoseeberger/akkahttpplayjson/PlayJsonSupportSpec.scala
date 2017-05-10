@@ -48,8 +48,6 @@ final class PlayJsonSupportSpec extends AsyncWordSpec with Matchers with BeforeA
   private implicit val mat    = ActorMaterializer()
 
   "PlayJsonSupport" should {
-    import system.dispatcher
-
     "enable marshalling and unmarshalling objects for which `Writes` and `Reads` exist" in {
       val foo = Foo("bar")
       Marshal(foo)

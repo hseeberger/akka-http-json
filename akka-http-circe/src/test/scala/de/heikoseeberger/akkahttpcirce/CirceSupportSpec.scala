@@ -47,7 +47,6 @@ final class CirceSupportSpec extends AsyncWordSpec with Matchers with BeforeAndA
 
   private implicit val system = ActorSystem()
   private implicit val mat    = ActorMaterializer()
-  private implicit val ec     = system.dispatcher
 
   private val `application/json-home` =
     MediaType.applicationWithFixedCharset("json-home", HttpCharsets.`UTF-8`, "json-home")

@@ -105,11 +105,11 @@ lazy val `akka-http-upickle` =
 lazy val library =
   new {
     object Version {
-      val akkaHttp     = "10.0.5"
+      val akkaHttp     = "10.0.6"
       val argonaut     = "6.2"
-      val circe        = "0.7.1"
+      val circe        = "0.8.0"
       val jacksonScala = "2.8.8"
-      val json4s       = "3.5.1"
+      val json4s       = "3.5.2"
       val play         = "2.6.0-M7"
       val scalaTest    = "3.0.3"
       val upickle      = "0.4.4"
@@ -136,7 +136,6 @@ lazy val library =
 lazy val settings =
   commonSettings ++
   gitSettings ++
-  headerSettings ++
   publishSettings
 
 lazy val commonSettings =
@@ -145,9 +144,9 @@ lazy val commonSettings =
     // scalaVersion := "2.12.2",
     // crossScalaVersions := Seq(scalaVersion.value, "2.11.11"),
     organization := "de.heikoseeberger",
-    licenses += ("Apache 2.0",
-                 url("http://www.apache.org/licenses/LICENSE-2.0")),
-    mappings.in(Compile, packageBin) += baseDirectory.in(ThisBuild).value / "LICENSE" -> "LICENSE",
+    organizationName := "Heiko Seeberger",
+    startYear := Some(2015),
+    licenses += ("Apache-2.0", url("http://www.apache.org/licenses/LICENSE-2.0")),
     scalacOptions ++= Seq(
       "-unchecked",
       "-deprecation",
@@ -167,12 +166,6 @@ lazy val commonSettings =
 lazy val gitSettings =
   Seq(
     git.useGitDescribe := true
-  )
-
-import de.heikoseeberger.sbtheader.license._
-lazy val headerSettings =
-  Seq(
-    headers := Map("scala" -> Apache2_0("2015", "Heiko Seeberger"))
   )
 
 lazy val publishSettings =

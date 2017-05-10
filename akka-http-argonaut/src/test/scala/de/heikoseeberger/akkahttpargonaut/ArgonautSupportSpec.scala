@@ -44,8 +44,6 @@ final class ArgonautSupportSpec extends AsyncWordSpec with Matchers with BeforeA
   private implicit def fooCodec = casecodec1(Foo.apply, Foo.unapply)("bar")
 
   "ArgonautSupport" should {
-    import system.dispatcher
-
     "enable marshalling and unmarshalling objects for generic derivation" in {
       import ArgonautSupport._
 
