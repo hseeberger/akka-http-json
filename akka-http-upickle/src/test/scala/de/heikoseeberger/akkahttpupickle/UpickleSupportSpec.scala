@@ -27,19 +27,21 @@ import org.scalatest.{ AsyncWordSpec, BeforeAndAfterAll, Matchers }
 import scala.concurrent.Await
 import scala.concurrent.duration.DurationInt
 
-final class UpickleSupportSpec extends AsyncWordSpec with Matchers with BeforeAndAfterAll {
-  import UpickleSupport._
+object UpickleSupportSpec {
 
   final case class Foo(bar: String) {
     require(bar == "bar", "bar must be 'bar'!")
   }
+}
 
-  implicit val system = ActorSystem()
-  implicit val mat    = ActorMaterializer()
+final class UpickleSupportSpec extends AsyncWordSpec with Matchers with BeforeAndAfterAll {
+  import UpickleSupport._
+  import UpickleSupportSpec._
+
+  private implicit val system = ActorSystem()
+  private implicit val mat    = ActorMaterializer()
 
   "UpickleSupport" should {
-    import system.dispatcher
-
     "enable marshalling and unmarshalling of case classes" in {
       val foo = Foo("bar")
       Marshal(foo)

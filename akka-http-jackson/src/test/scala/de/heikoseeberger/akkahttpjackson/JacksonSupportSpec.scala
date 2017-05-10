@@ -42,8 +42,6 @@ final class JacksonSupportSpec extends AsyncWordSpec with Matchers with BeforeAn
   private implicit val mat    = ActorMaterializer()
 
   "JacksonSupport" should {
-    import system.dispatcher
-
     "should enable marshalling and unmarshalling of case classes" in {
       val foo = Foo("bar")
       Marshal(foo)
