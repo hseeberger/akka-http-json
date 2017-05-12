@@ -160,7 +160,6 @@ lazy val commonSettings =
       val project = Project.extract(state).currentRef.project
       s"[$project]> "
     }
-
 )
 
 lazy val gitSettings =
