@@ -21,7 +21,8 @@ import akka.http.scaladsl.model.{ ContentTypeRange, HttpEntity }
 import akka.http.scaladsl.model.MediaTypes.`application/json`
 import akka.http.scaladsl.unmarshalling.{ FromEntityUnmarshaller, Unmarshaller }
 import akka.util.ByteString
-import io.circe.{ jawn, Decoder, Encoder, Errors, Json, Printer }
+import cats.data.NonEmptyList
+import io.circe.{ jawn, Decoder, DecodingFailure, Encoder, Errors, Json, Printer }
 import scala.collection.immutable.Seq
 
 /**
@@ -128,6 +129,13 @@ trait FailFastUnmarshaller { this: BaseCirceSupport =>
   }
 }
 
+private object ErrorAccumulatingUnmarshaller {
+
+  final class DecodingFailures(failures: NonEmptyList[DecodingFailure]) extends Exception {
+    override def getMessage = failures.toList.map(_.getMessage).mkString("\n")
+  }
+}
+
 /**
   * Mix-in this trait to accumulate all errors during unmarshalling.
   */
@@ -137,7 +145,8 @@ trait ErrorAccumulatingUnmarshaller { this: BaseCirceSupport =>
     def decode(json: Json) =
       implicitly[Decoder[A]]
         .accumulating(json.hcursor)
-        .fold(decodingFailure => throw Errors(decodingFailure), identity)
+        .fold(failures => throw new ErrorAccumulatingUnmarshaller.DecodingFailures(failures),
+              identity)
     jsonUnmarshaller.map(decode)
   }
 }

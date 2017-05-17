@@ -147,10 +147,11 @@ final class CirceSupportSpec extends AsyncWordSpec with Matchers with BeforeAndA
           DecodingFailure("String", List(DownField("a"))),
           DecodingFailure("String", List(DownField("b")))
         )
+      val errorMessage = new ErrorAccumulatingUnmarshaller.DecodingFailures(errors).getMessage
       Unmarshal(entity)
         .to[MultiFoo]
         .failed
-        .map(_ shouldBe Errors(errors))
+        .map(_.getMessage shouldBe errorMessage)
     }
 
     "allow unmarshalling with passed in Content-Types" in {
