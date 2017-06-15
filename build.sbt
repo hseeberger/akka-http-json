@@ -136,6 +136,7 @@ lazy val library =
 lazy val settings =
   commonSettings ++
   gitSettings ++
+  scalafmtSettings ++
   publishSettings
 
 lazy val commonSettings =
@@ -165,6 +166,12 @@ lazy val commonSettings =
 lazy val gitSettings =
   Seq(
     git.useGitDescribe := true
+  )
+
+lazy val scalafmtSettings =
+  Seq(
+    scalafmtOnCompile := true,
+    scalafmtVersion := "1.0.0-RC3"
   )
 
 lazy val publishSettings =
