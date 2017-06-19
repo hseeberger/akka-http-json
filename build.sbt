@@ -108,7 +108,7 @@ lazy val library =
       val akkaHttp     = "10.0.7"
       val argonaut     = "6.2"
       val circe        = "0.8.0"
-      val jacksonScala = "2.8.8"
+      val jacksonScala = "2.8.9"
       val json4s       = "3.5.2"
       val play         = "2.6.0-RC2"
       val scalaTest    = "3.0.3"
@@ -171,7 +171,7 @@ lazy val gitSettings =
 lazy val scalafmtSettings =
   Seq(
     scalafmtOnCompile := true,
-    scalafmtVersion := "1.0.0-RC3"
+    scalafmtVersion := "1.0.0-RC4"
   )
 
 lazy val publishSettings =
