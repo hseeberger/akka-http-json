@@ -105,12 +105,12 @@ lazy val `akka-http-upickle` =
 lazy val library =
   new {
     object Version {
-      val akkaHttp     = "10.0.7"
+      val akkaHttp     = "10.0.8"
       val argonaut     = "6.2"
       val circe        = "0.8.0"
       val jacksonScala = "2.8.9"
       val json4s       = "3.5.2"
-      val play         = "2.6.0-RC2"
+      val play         = "2.6.0"
       val scalaTest    = "3.0.3"
       val upickle      = "0.4.4"
     }
