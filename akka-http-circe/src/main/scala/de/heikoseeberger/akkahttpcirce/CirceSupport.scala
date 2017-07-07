@@ -57,14 +57,6 @@ object ErrorAccumulatingCirceSupport extends ErrorAccumulatingCirceSupport
   */
 trait ErrorAccumulatingCirceSupport extends BaseCirceSupport with ErrorAccumulatingUnmarshaller
 
-@deprecated(message = "Use either FailFastCirceSupport or ErrorAccumulatingCirceSupport",
-            since = "1.13.0")
-object CirceSupport extends FailFastCirceSupport
-
-@deprecated(message = "Use either FailFastCirceSupport or ErrorAccumulatingCirceSupport",
-            since = "1.13.0")
-trait CirceSupport extends FailFastCirceSupport
-
 /**
   * Automatic to and from JSON marshalling/unmarshalling using an in-scope circe protocol.
   */
