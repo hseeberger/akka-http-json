@@ -47,7 +47,11 @@ trait FailFastCirceSupport extends BaseCirceSupport with FailFastUnmarshaller
   *
   * To use automatic codec derivation, user needs to import `io.circe.generic.auto._`.
   */
-object ErrorAccumulatingCirceSupport extends ErrorAccumulatingCirceSupport
+object ErrorAccumulatingCirceSupport extends ErrorAccumulatingCirceSupport {
+  final case class DecodingFailures(failures: NonEmptyList[DecodingFailure]) extends Exception {
+    override def getMessage = failures.toList.map(_.getMessage).mkString("\n")
+  }
+}
 
 /**
   * Automatic to and from JSON marshalling/unmarshalling using an in-scope circe protocol.
@@ -121,13 +125,6 @@ trait FailFastUnmarshaller { this: BaseCirceSupport =>
   }
 }
 
-private object ErrorAccumulatingUnmarshaller {
-
-  final class DecodingFailures(failures: NonEmptyList[DecodingFailure]) extends Exception {
-    override def getMessage = failures.toList.map(_.getMessage).mkString("\n")
-  }
-}
-
 /**
   * Mix-in this trait to accumulate all errors during unmarshalling.
   */
@@ -137,8 +134,7 @@ trait ErrorAccumulatingUnmarshaller { this: BaseCirceSupport =>
     def decode(json: Json) =
       implicitly[Decoder[A]]
         .accumulating(json.hcursor)
-        .fold(failures => throw new ErrorAccumulatingUnmarshaller.DecodingFailures(failures),
-              identity)
+        .fold(failures => throw ErrorAccumulatingCirceSupport.DecodingFailures(failures), identity)
     jsonUnmarshaller.map(decode)
   }
 }
