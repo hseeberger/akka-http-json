@@ -22,7 +22,8 @@ import akka.http.scaladsl.model.MediaTypes.`application/json`
 import akka.http.scaladsl.unmarshalling.{ FromEntityUnmarshaller, Unmarshaller }
 import akka.util.ByteString
 import cats.data.NonEmptyList
-import io.circe.{ jawn, Decoder, DecodingFailure, Encoder, Errors, Json, Printer }
+import cats.syntax.show.toShowOps
+import io.circe.{ jawn, Decoder, DecodingFailure, Encoder, Json, Printer }
 import scala.collection.immutable.Seq
 
 /**
@@ -49,7 +50,7 @@ trait FailFastCirceSupport extends BaseCirceSupport with FailFastUnmarshaller
   */
 object ErrorAccumulatingCirceSupport extends ErrorAccumulatingCirceSupport {
   final case class DecodingFailures(failures: NonEmptyList[DecodingFailure]) extends Exception {
-    override def getMessage = failures.toList.map(_.getMessage).mkString("\n")
+    override def getMessage: String = failures.toList.map(_.show).mkString("\n")
   }
 }
 
