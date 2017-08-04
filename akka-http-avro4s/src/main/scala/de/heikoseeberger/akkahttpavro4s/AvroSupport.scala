@@ -16,7 +16,7 @@
 
 package de.heikoseeberger.akkahttpavro4s
 
-import java.io.ByteArrayOutputStream
+import java.io.{ ByteArrayOutputStream, IOException }
 
 import akka.http.scaladsl.marshalling.{ Marshaller, ToEntityMarshaller }
 import akka.http.scaladsl.model.ContentTypeRange
@@ -27,7 +27,7 @@ import com.sksamuel.avro4s._
 import org.apache.commons.compress.utils.CharsetNames
 
 import scala.collection.immutable.Seq
-import scala.util.{ Failure, Success, Try }
+import scala.util.{ Failure, Success }
 
 /**
   * Automatic to and from JSON marshalling/unmarshalling using *avro4s* protocol.
@@ -81,13 +81,17 @@ trait AvroSupport {
         try {
           output.write(data)
         } finally {
-          // Ignoring closing exception
-          Try(output.close())
+          try output.close()
+          catch {
+            case _: IOException => // Ignoring closing exceptions
+          }
         }
         baos.toString(CharsetNames.UTF_8)
       } finally {
-        // Ignoring closing exception
-        Try(baos.close())
+        try baos.close()
+        catch {
+          case _: IOException => // Ignoring closing exceptions
+        }
       }
     }
 
