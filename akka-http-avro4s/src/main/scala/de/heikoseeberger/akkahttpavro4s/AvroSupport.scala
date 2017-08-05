@@ -81,17 +81,11 @@ trait AvroSupport {
         try {
           output.write(data)
         } finally {
-          try output.close()
-          catch {
-            case _: IOException => // Ignoring closing exceptions
-          }
+          output.close()
         }
         baos.toString(CharsetNames.UTF_8)
       } finally {
-        try baos.close()
-        catch {
-          case _: IOException => // Ignoring closing exceptions
-        }
+        baos.close()
       }
     }
 
