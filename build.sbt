@@ -12,7 +12,8 @@ lazy val `akka-http-json` =
       `akka-http-jackson`,
       `akka-http-json4s`,
       `akka-http-play-json`,
-      `akka-http-upickle`
+      `akka-http-upickle`,
+      `akka-http-avro4s`
     )
     .settings(settings)
     .settings(
@@ -98,6 +99,18 @@ lazy val `akka-http-upickle` =
       )
     )
 
+lazy val `akka-http-avro4s` =
+  project
+    .enablePlugins(AutomateHeaderPlugin)
+    .settings(settings)
+    .settings(
+      libraryDependencies ++= Seq(
+        library.akkaHttp,
+        library.avro4sJson,
+        library.scalaTest     % Test
+      )
+    )
+
 // *****************************************************************************
 // Library dependencies
 // *****************************************************************************
@@ -113,6 +126,7 @@ lazy val library =
       val play         = "2.6.2"
       val scalaTest    = "3.0.3"
       val upickle      = "0.4.4"
+      val avro4s       = "1.7.0"
     }
     val akkaHttp            = "com.typesafe.akka"            %% "akka-http"            % Version.akkaHttp
     val akkaHttpJacksonJava = "com.typesafe.akka"            %% "akka-http-jackson"    % Version.akkaHttp
@@ -127,6 +141,7 @@ lazy val library =
     val playJson            = "com.typesafe.play"            %% "play-json"            % Version.play
     val scalaTest           = "org.scalatest"                %% "scalatest"            % Version.scalaTest
     val upickle             = "com.lihaoyi"                  %% "upickle"              % Version.upickle
+    val avro4sJson          = "com.sksamuel.avro4s"          %% "avro4s-json"          % Version.avro4s
   }
 
 // *****************************************************************************

@@ -11,6 +11,7 @@ akka-http-json provides JSON (un)marshalling support for [Akka HTTP](https://git
 - [Json4s](https://github.com/json4s/json4s)
 - [Play JSON](https://www.playframework.com/documentation/2.6.x/ScalaJson)
 - [uPickle](https://github.com/lihaoyi/upickle-pprint)
+- [avro4s](https://github.com/sksamuel/avro4s)
 
 ## Installation
 
@@ -29,7 +30,7 @@ libraryDependencies ++= List(
 
 ## Usage
 
-Mix `ArgonautSupport`, `FailFastCirceSupport` or `ErrorAccumulatingCirceSupport`, `JacksonSupport`, `Json4sSupport`, `PlayJsonSupport` or `UpickleSupport` into your Akka HTTP code which is supposed to (un)marshal from/to JSON. Don't forget to provide the type class instances for the respective JSON libraries, if needed.
+Mix `ArgonautSupport`, `FailFastCirceSupport` or `ErrorAccumulatingCirceSupport`, `JacksonSupport`, `Json4sSupport`, `PlayJsonSupport`, `UpickleSupport` or `AvroSupport` into your Akka HTTP code which is supposed to (un)marshal from/to JSON. Don't forget to provide the type class instances for the respective JSON libraries, if needed.
 
 ## Contribution policy ##
 
