@@ -171,11 +171,7 @@ lazy val commonSettings =
       "-encoding", "UTF-8"
     ),
     unmanagedSourceDirectories.in(Compile) := Seq(scalaSource.in(Compile).value),
-    unmanagedSourceDirectories.in(Test) := Seq(scalaSource.in(Test).value),
-    shellPrompt in ThisBuild := { state =>
-      val project = Project.extract(state).currentRef.project
-      s"[$project]> "
-    }
+    unmanagedSourceDirectories.in(Test) := Seq(scalaSource.in(Test).value)
 )
 
 lazy val gitSettings =
