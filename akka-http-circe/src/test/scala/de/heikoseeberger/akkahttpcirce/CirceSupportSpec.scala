@@ -98,7 +98,7 @@ final class CirceSupportSpec extends AsyncWordSpec with Matchers with BeforeAndA
     }
 
     "not write None" in {
-      implicit val printer = Printer.noSpaces.copy(dropNullKeys = true)
+      implicit val printer = Printer.noSpaces.copy(dropNullValues = true)
       val optionFoo        = OptionFoo(None)
       Marshal(optionFoo)
         .to[RequestEntity]
