@@ -50,6 +50,14 @@ final class JacksonSupportSpec extends AsyncWordSpec with Matchers with BeforeAn
         .map(_ shouldBe foo)
     }
 
+    "should enable marshalling and unmarshalling of arrays of values" in {
+      val foo = Seq(Foo("bar"))
+      Marshal(foo)
+        .to[RequestEntity]
+        .flatMap(Unmarshal(_).to[Seq[Foo]])
+        .map(_ shouldBe foo)
+    }
+
     "provide proper error messages for requirement errors" in {
       val entity = HttpEntity(MediaTypes.`application/json`, """{ "bar": "baz" }""")
       Unmarshal(entity)
