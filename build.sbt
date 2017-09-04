@@ -118,15 +118,15 @@ lazy val `akka-http-avro4s` =
 lazy val library =
   new {
     object Version {
-      val akkaHttp     = "10.0.9"
+      val akkaHttp     = "10.0.10"
       val argonaut     = "6.2"
       val circe        = "0.9.0-M1"
       val jacksonScala = "2.9.0"
       val json4s       = "3.5.3"
       val play         = "2.6.3"
-      val scalaTest    = "3.0.3"
+      val scalaTest    = "3.0.4"
       val upickle      = "0.4.4"
-      val avro4s       = "1.7.0"
+      val avro4s       = "1.8.0"
     }
     val akkaHttp            = "com.typesafe.akka"            %% "akka-http"            % Version.akkaHttp
     val akkaHttpJacksonJava = "com.typesafe.akka"            %% "akka-http-jackson"    % Version.akkaHttp
