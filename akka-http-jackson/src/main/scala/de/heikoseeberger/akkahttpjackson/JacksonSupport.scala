@@ -16,16 +16,20 @@
 
 package de.heikoseeberger.akkahttpjackson
 
+import java.lang.reflect.{ ParameterizedType, Type => JType }
+
 import akka.http.javadsl.marshallers.jackson.Jackson
 import akka.http.scaladsl.marshalling._
 import akka.http.scaladsl.model.ContentTypeRange
 import akka.http.scaladsl.model.MediaTypes.`application/json`
 import akka.http.scaladsl.unmarshalling.{ FromEntityUnmarshaller, Unmarshaller }
 import akka.util.ByteString
+import com.fasterxml.jackson.core.`type`.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
+
 import scala.collection.immutable.Seq
-import scala.reflect.ClassTag
+import scala.reflect.runtime.universe._
 
 /**
   * Automatic to and from JSON marshalling/unmarshalling usung an in-scope Jackon's ObjectMapper
@@ -53,15 +57,36 @@ trait JacksonSupport {
         case (data, charset)       => data.decodeString(charset.nioCharset.name)
       }
 
+  private def typeReference[T: TypeTag] = {
+    val t      = typeTag[T]
+    val mirror = t.mirror
+    def mapType(t: Type): JType =
+      if (t.typeArgs.isEmpty) {
+        mirror.runtimeClass(t)
+      } else {
+        new ParameterizedType {
+          def getRawType = mirror.runtimeClass(t)
+
+          def getActualTypeArguments = t.typeArgs.map(mapType).toArray
+
+          def getOwnerType = null
+        }
+      }
+
+    new TypeReference[T] {
+      override def getType = mapType(t.tpe)
+    }
+  }
+
   /**
     * HTTP entity => `A`
     */
   implicit def unmarshaller[A](
-      implicit ct: ClassTag[A],
+      implicit ct: TypeTag[A],
       objectMapper: ObjectMapper = defaultObjectMapper
   ): FromEntityUnmarshaller[A] =
     jsonStringUnmarshaller.map(
-      data => objectMapper.readValue(data, ct.runtimeClass).asInstanceOf[A]
+      data => objectMapper.readValue(data, typeReference[A]).asInstanceOf[A]
     )
 
   /**
@@ -71,4 +96,5 @@ trait JacksonSupport {
       implicit objectMapper: ObjectMapper = defaultObjectMapper
   ): ToEntityMarshaller[Object] =
     Jackson.marshaller[Object](objectMapper)
+
 }
