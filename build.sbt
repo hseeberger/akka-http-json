@@ -123,7 +123,7 @@ lazy val library =
       val circe        = "0.9.0-M1"
       val jacksonScala = "2.9.1"
       val json4s       = "3.5.3"
-      val play         = "2.6.5"
+      val play         = "2.6.6"
       val scalaTest    = "3.0.4"
       val upickle      = "0.4.4"
       val avro4s       = "1.8.0"
@@ -182,7 +182,7 @@ lazy val scalafmtSettings =
   Seq(
     scalafmtOnCompile := true,
     scalafmtOnCompile.in(Sbt) := false,
-    scalafmtVersion := "1.2.0"
+    scalafmtVersion := "1.3.0"
   )
 
 lazy val publishSettings =
