@@ -22,7 +22,7 @@ import akka.http.scaladsl.model.MediaTypes.`application/json`
 import akka.http.scaladsl.unmarshalling.{ FromEntityUnmarshaller, Unmarshaller }
 import akka.util.ByteString
 import cats.data.NonEmptyList
-import cats.syntax.show.toShowOps
+import cats.syntax.show.toShow
 import io.circe.{ jawn, Decoder, DecodingFailure, Encoder, Json, Printer }
 import scala.collection.immutable.Seq
 
