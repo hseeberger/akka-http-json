@@ -26,8 +26,13 @@ import akka.stream.ActorMaterializer
 import org.scalatest.{ AsyncWordSpec, BeforeAndAfterAll, Matchers }
 import scala.concurrent.Await
 import scala.concurrent.duration.DurationInt
+import upickle.default.{ ReadWriter, macroRW }
 
 object UpickleSupportSpec {
+
+  final object Foo {
+    implicit val rw: ReadWriter[Foo] = macroRW
+  }
 
   final case class Foo(bar: String) {
     require(bar == "bar", "bar must be 'bar'!")

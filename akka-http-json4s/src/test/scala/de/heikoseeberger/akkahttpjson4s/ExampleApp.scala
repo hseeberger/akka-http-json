@@ -20,7 +20,7 @@ import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.server.Directives
 import akka.stream.{ ActorMaterializer, Materializer }
-import org.json4s.{ jackson, DefaultFormats }
+import org.json4s.{ DefaultFormats, jackson }
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
 import scala.io.StdIn
