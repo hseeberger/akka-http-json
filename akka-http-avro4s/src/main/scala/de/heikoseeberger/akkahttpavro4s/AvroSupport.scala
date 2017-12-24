@@ -20,6 +20,7 @@ import java.io.{ ByteArrayOutputStream, IOException }
 
 import akka.http.scaladsl.marshalling.{ Marshaller, ToEntityMarshaller }
 import akka.http.scaladsl.model.ContentTypeRange
+import akka.http.scaladsl.model.MediaType
 import akka.http.scaladsl.model.MediaTypes.`application/json`
 import akka.http.scaladsl.unmarshalling.{ FromEntityUnmarshaller, Unmarshaller }
 import akka.util.ByteString
@@ -40,6 +41,9 @@ object AvroSupport extends AvroSupport
 trait AvroSupport {
 
   def unmarshallerContentTypes: Seq[ContentTypeRange] =
+    mediaTypes.map(ContentTypeRange.apply)
+
+  def mediaTypes: Seq[MediaType.WithFixedCharset] =
     List(`application/json`)
 
   private val jsonStringUnmarshaller =
@@ -50,7 +54,8 @@ trait AvroSupport {
         case (data, charset)       => data.decodeString(charset.nioCharset.name)
       }
 
-  private val jsonStringMarshaller = Marshaller.stringMarshaller(`application/json`)
+  private val jsonStringMarshaller =
+    Marshaller.oneOf(mediaTypes: _*)(Marshaller.stringMarshaller)
 
   /**
     * HTTP entity => `A`

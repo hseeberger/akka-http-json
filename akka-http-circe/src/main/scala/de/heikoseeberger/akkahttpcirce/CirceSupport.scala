@@ -17,7 +17,8 @@
 package de.heikoseeberger.akkahttpcirce
 
 import akka.http.scaladsl.marshalling.{ Marshaller, ToEntityMarshaller }
-import akka.http.scaladsl.model.{ ContentTypeRange, HttpEntity }
+import akka.http.scaladsl.model.{ ContentType, ContentTypeRange, HttpEntity }
+import akka.http.scaladsl.model.MediaType
 import akka.http.scaladsl.model.MediaTypes.`application/json`
 import akka.http.scaladsl.unmarshalling.{ FromEntityUnmarshaller, Unmarshaller }
 import akka.util.ByteString
@@ -68,6 +69,9 @@ trait ErrorAccumulatingCirceSupport extends BaseCirceSupport with ErrorAccumulat
 trait BaseCirceSupport {
 
   def unmarshallerContentTypes: Seq[ContentTypeRange] =
+    mediaTypes.map(ContentTypeRange.apply)
+
+  def mediaTypes: Seq[MediaType.WithFixedCharset] =
     List(`application/json`)
 
   /**
@@ -78,8 +82,10 @@ trait BaseCirceSupport {
   implicit final def jsonMarshaller(
       implicit printer: Printer = Printer.noSpaces
   ): ToEntityMarshaller[Json] =
-    Marshaller.withFixedContentType(`application/json`) { json =>
-      HttpEntity(`application/json`, printer.pretty(json))
+    Marshaller.oneOf(mediaTypes: _*) { mediaType =>
+      Marshaller.withFixedContentType(ContentType(mediaType)) { json =>
+        HttpEntity(`application/json`, printer.pretty(json))
+      }
     }
 
   /**
