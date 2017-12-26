@@ -23,8 +23,13 @@ import akka.stream.{ ActorMaterializer, Materializer }
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
 import scala.io.StdIn
+import upickle.default.{ ReadWriter, macroRW }
 
 object ExampleApp {
+
+  final object Foo {
+    implicit val rw: ReadWriter[Foo] = macroRW
+  }
 
   final case class Foo(bar: String)
 

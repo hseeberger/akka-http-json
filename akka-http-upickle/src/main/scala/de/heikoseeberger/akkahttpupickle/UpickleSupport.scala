@@ -22,8 +22,8 @@ import akka.http.scaladsl.model.MediaType
 import akka.http.scaladsl.model.MediaTypes.`application/json`
 import akka.http.scaladsl.unmarshalling.{ FromEntityUnmarshaller, Unmarshaller }
 import akka.util.ByteString
-import upickle.default.{ readJs, writeJs, Reader, Writer }
-import upickle.{ json, Js }
+import upickle.default.{ Reader, Writer, readJs, writeJs }
+import upickle.{ Js, json }
 import scala.collection.immutable.Seq
 
 /**
