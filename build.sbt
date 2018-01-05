@@ -119,7 +119,7 @@ lazy val library =
   new {
     object Version {
       val akkaHttp     = "10.0.11"
-      val argonaut     = "6.2"
+      val argonaut     = "6.2.1"
       val circe        = "0.9.0"
       val jacksonScala = "2.9.2"
       val json4s       = "3.5.3"
@@ -180,9 +180,7 @@ lazy val gitSettings =
 
 lazy val scalafmtSettings =
   Seq(
-    scalafmtOnCompile := true,
-    scalafmtOnCompile.in(Sbt) := false,
-    scalafmtVersion := "1.3.0"
+    scalafmtOnCompile := true
   )
 
 lazy val publishSettings =
