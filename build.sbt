@@ -17,8 +17,8 @@ lazy val `akka-http-json` =
     )
     .settings(settings)
     .settings(
-      unmanagedSourceDirectories.in(Compile) := Seq.empty,
-      unmanagedSourceDirectories.in(Test)    := Seq.empty,
+      Compile / unmanagedSourceDirectories := Seq.empty,
+      Test / unmanagedSourceDirectories    := Seq.empty,
       publishArtifact := false
     )
 
@@ -169,8 +169,8 @@ lazy val commonSettings =
       "-target:jvm-1.8",
       "-encoding", "UTF-8"
     ),
-    unmanagedSourceDirectories.in(Compile) := Seq(scalaSource.in(Compile).value),
-    unmanagedSourceDirectories.in(Test) := Seq(scalaSource.in(Test).value)
+    Compile / unmanagedSourceDirectories := Seq((Compile / scalaSource).value),
+    Test / unmanagedSourceDirectories := Seq((Test / scalaSource).value)
 )
 
 lazy val gitSettings =
