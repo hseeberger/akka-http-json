@@ -29,6 +29,7 @@ lazy val `akka-http-argonaut`=
     .settings(
       libraryDependencies ++= Seq(
         library.akkaHttp,
+        library.akkaStream,
         library.argonaut,
         library.scalaTest % Test
       )
@@ -41,6 +42,7 @@ lazy val `akka-http-circe` =
     .settings(
       libraryDependencies ++= Seq(
         library.akkaHttp,
+        library.akkaStream,
         library.circe,
         library.circeJawn,
         library.circeGeneric % Test,
@@ -55,6 +57,7 @@ lazy val `akka-http-jackson` =
     .settings(
       libraryDependencies ++= Seq(
         library.akkaHttp,
+        library.akkaStream,
         library.akkaHttpJacksonJava,
         library.jacksonScala,
         library.scalaTest % Test
@@ -68,6 +71,7 @@ lazy val `akka-http-json4s` =
     .settings(
       libraryDependencies ++= Seq(
         library.akkaHttp,
+        library.akkaStream,
         library.json4sCore,
         library.json4sJackson % Test,
         library.json4sNative  % Test,
@@ -82,6 +86,7 @@ lazy val `akka-http-play-json` =
     .settings(
       libraryDependencies ++= Seq(
         library.akkaHttp,
+        library.akkaStream,
         library.playJson,
         library.scalaTest % Test
       )
@@ -94,6 +99,7 @@ lazy val `akka-http-upickle` =
     .settings(
       libraryDependencies ++= Seq(
         library.akkaHttp,
+        library.akkaStream,
         library.upickle,
         library.scalaTest % Test
       )
@@ -106,6 +112,7 @@ lazy val `akka-http-avro4s` =
     .settings(
       libraryDependencies ++= Seq(
         library.akkaHttp,
+        library.akkaStream,
         library.avro4sJson,
         library.scalaTest     % Test
       )
@@ -118,18 +125,20 @@ lazy val `akka-http-avro4s` =
 lazy val library =
   new {
     object Version {
-      val akkaHttp     = "10.0.11"
+      val akka         = "2.5.8"
+      val akkaHttp     = "10.1.0-RC1"
       val argonaut     = "6.2.1"
+      val avro4s       = "1.8.0"
       val circe        = "0.9.0"
       val jacksonScala = "2.9.2"
       val json4s       = "3.5.3"
       val play         = "2.6.8"
       val scalaTest    = "3.0.4"
       val upickle      = "0.5.1"
-      val avro4s       = "1.8.0"
     }
     val akkaHttp            = "com.typesafe.akka"            %% "akka-http"            % Version.akkaHttp
     val akkaHttpJacksonJava = "com.typesafe.akka"            %% "akka-http-jackson"    % Version.akkaHttp
+    val akkaStream          = "com.typesafe.akka"            %% "akka-stream"          % Version.akka
     val argonaut            = "io.argonaut"                  %% "argonaut"             % Version.argonaut
     val circe               = "io.circe"                     %% "circe-core"           % Version.circe
     val circeJawn           = "io.circe"                     %% "circe-jawn"           % Version.circe
