@@ -97,7 +97,7 @@ trait BaseCirceSupport {
   implicit final def marshaller[A: Encoder](
       implicit printer: Printer = Printer.noSpaces
   ): ToEntityMarshaller[A] =
-    jsonMarshaller(printer).compose(implicitly[Encoder[A]].apply)
+    jsonMarshaller(printer).compose(Encoder[A].apply)
 
   /**
     * HTTP entity => `Json`
@@ -127,7 +127,7 @@ trait BaseCirceSupport {
 trait FailFastUnmarshaller { this: BaseCirceSupport =>
 
   override implicit final def unmarshaller[A: Decoder]: FromEntityUnmarshaller[A] = {
-    def decode(json: Json) = implicitly[Decoder[A]].decodeJson(json).fold(throw _, identity)
+    def decode(json: Json) = Decoder[A].decodeJson(json).fold(throw _, identity)
     jsonUnmarshaller.map(decode)
   }
 }
@@ -139,7 +139,7 @@ trait ErrorAccumulatingUnmarshaller { this: BaseCirceSupport =>
 
   override implicit final def unmarshaller[A: Decoder]: FromEntityUnmarshaller[A] = {
     def decode(json: Json) =
-      implicitly[Decoder[A]]
+      Decoder[A]
         .accumulating(json.hcursor)
         .fold(failures => throw ErrorAccumulatingCirceSupport.DecodingFailures(failures), identity)
     jsonUnmarshaller.map(decode)
