@@ -69,7 +69,7 @@ trait ArgonautSupport {
         case Left(message) => sys.error(message)
       }
     def decode(json: Json) =
-      implicitly[DecodeJson[A]].decodeJson(json).result match {
+      DecodeJson.of[A].decodeJson(json).result match {
         case Right(entity) => entity
         case Left((m, h))  => sys.error(m + " - " + h)
       }
@@ -85,5 +85,5 @@ trait ArgonautSupport {
   implicit def marshaller[A: EncodeJson]: ToEntityMarshaller[A] =
     jsonStringMarshaller
       .compose(PrettyParams.nospace.pretty)
-      .compose(implicitly[EncodeJson[A]].apply)
+      .compose(EncodeJson.of[A].apply)
 }
