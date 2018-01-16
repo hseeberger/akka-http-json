@@ -84,7 +84,7 @@ trait BaseCirceSupport {
   ): ToEntityMarshaller[Json] =
     Marshaller.oneOf(mediaTypes: _*) { mediaType =>
       Marshaller.withFixedContentType(ContentType(mediaType)) { json =>
-        HttpEntity(`application/json`, printer.pretty(json))
+        HttpEntity(mediaType, printer.pretty(json))
       }
     }
 
