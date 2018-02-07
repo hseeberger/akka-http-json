@@ -128,12 +128,12 @@ lazy val library =
       val akka         = "2.5.9"
       val akkaHttp     = "10.1.0-RC1"
       val argonaut     = "6.2.1"
-      val avro4s       = "1.8.0"
+      val avro4s       = "1.8.1"
       val circe        = "0.9.1"
-      val jacksonScala = "2.9.2"
+      val jacksonScala = "2.9.4"
       val json4s       = "3.5.3"
       val play         = "2.6.8"
-      val scalaTest    = "3.0.4"
+      val scalaTest    = "3.0.5"
       val upickle      = "0.5.1"
     }
     val akkaHttp            = "com.typesafe.akka"            %% "akka-http"            % Version.akkaHttp
