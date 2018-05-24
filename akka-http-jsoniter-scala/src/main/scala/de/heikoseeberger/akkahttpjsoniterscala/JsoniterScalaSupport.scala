@@ -20,7 +20,7 @@ import akka.http.scaladsl.marshalling._
 import akka.http.scaladsl.model.{ ContentType, ContentTypeRange, HttpEntity, MediaType }
 import akka.http.scaladsl.model.MediaTypes.`application/json`
 import akka.http.scaladsl.unmarshalling.{ FromEntityUnmarshaller, Unmarshaller }
-import akka.util.FastByteString
+import akka.util.ByteString
 import com.github.plokhotnyuk.jsoniter_scala.core._
 
 import scala.collection.immutable.Seq
@@ -72,7 +72,7 @@ trait JsoniterScalaSupport {
     val mediaType   = mediaTypes.head
     val contentType = ContentType.WithFixedCharset(mediaType)
     Marshaller.withFixedContentType(contentType) { obj =>
-      HttpEntity.Strict(contentType, FastByteString(writeToArray(obj, config)))
+      HttpEntity.Strict(contentType, ByteString.fromArrayUnsafe(writeToArray(obj, config)))
     }
   }
 }
