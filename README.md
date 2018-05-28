@@ -31,7 +31,7 @@ libraryDependencies ++= List(
 
 ## Usage
 
-Mix `ArgonautSupport`, `FailFastCirceSupport` or `ErrorAccumulatingCirceSupport`, `JacksonSupport`, `Json4sSupport`, `JsoniterSupport`, `PlayJsonSupport`, `UpickleSupport` or `AvroSupport` into your Akka HTTP code which is supposed to (un)marshal from/to JSON. Don't forget to provide the type class instances for the respective JSON libraries, if needed.
+Mix `ArgonautSupport`, `FailFastCirceSupport` or `ErrorAccumulatingCirceSupport`, `JacksonSupport`, `Json4sSupport`, `JsoniterScalaSupport`, `PlayJsonSupport`, `UpickleSupport` or `AvroSupport` into your Akka HTTP code which is supposed to (un)marshal from/to JSON. Don't forget to provide the type class instances for the respective JSON libraries, if needed.
 
 ## Contribution policy ##
 
