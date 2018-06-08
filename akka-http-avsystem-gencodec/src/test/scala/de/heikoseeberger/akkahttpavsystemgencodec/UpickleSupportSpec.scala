@@ -40,14 +40,14 @@ object GenCodecSupportSpec {
   }
 }
 
-final class UpickleSupportSpec extends AsyncWordSpec with Matchers with BeforeAndAfterAll {
+final class GenCodecSupportSpec extends AsyncWordSpec with Matchers with BeforeAndAfterAll {
   import GenCodecSupport._
   import GenCodecSupportSpec._
 
   private implicit val system = ActorSystem()
   private implicit val mat    = ActorMaterializer()
 
-  "UpickleSupport" should {
+  "GenCodecSupport" should {
     "enable marshalling and unmarshalling of case classes" in {
       val foo = Foo("bar")
       Marshal(foo)
