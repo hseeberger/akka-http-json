@@ -132,6 +132,19 @@ lazy val `akka-http-avro4s` =
       )
     )
 
+lazy val `akka-http-avsystem-gencodec` =
+  project
+  .enablePlugins(AutomateHeaderPlugin)
+  .settings(settings)
+  .settings(
+    libraryDependencies ++= Seq(
+      library.akkaHttp,
+      library.akkaStream,
+      library.avsystemGenCodec,
+      library.scalaTest % Test
+    )
+  )
+
 // *****************************************************************************
 // Library dependencies
 // *****************************************************************************
@@ -150,6 +163,7 @@ lazy val library =
       val play          = "2.6.9"
       val scalaTest     = "3.0.5"
       val upickle       = "0.6.6"
+      val avsystemGenCodec = "1.27.7"
     }
     val akkaHttp            = "com.typesafe.akka"                     %% "akka-http"            % Version.akkaHttp
     val akkaHttpJacksonJava = "com.typesafe.akka"                     %% "akka-http-jackson"    % Version.akkaHttp
@@ -167,6 +181,7 @@ lazy val library =
     val scalaTest           = "org.scalatest"                         %% "scalatest"            % Version.scalaTest
     val upickle             = "com.lihaoyi"                           %% "upickle"              % Version.upickle
     val avro4sJson          = "com.sksamuel.avro4s"                   %% "avro4s-json"          % Version.avro4s
+    val avsystemGenCodec    = "com.avsystem.commons"                  %% "commons-core"    % Version.avsystemGenCodec
   }
 
 // *****************************************************************************
