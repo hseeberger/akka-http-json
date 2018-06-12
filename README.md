@@ -13,6 +13,7 @@ akka-http-json provides JSON (un)marshalling support for [Akka HTTP](https://git
 - [Play JSON](https://www.playframework.com/documentation/2.6.x/ScalaJson)
 - [uPickle](https://github.com/lihaoyi/upickle-pprint)
 - [avro4s](https://github.com/sksamuel/avro4s)
+- [AVSystem GenCodec](https://github.com/AVSystem/scala-commons/blob/master/docs/GenCodec.md)
 
 ## Installation
 
