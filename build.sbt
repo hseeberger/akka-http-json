@@ -159,11 +159,11 @@ lazy val library =
       val circe            = "0.9.3"
       val jacksonScala     = "2.9.6"
       val jsoniterScala    = "0.29.2"
-      val json4s           = "3.5.4"
+      val json4s           = "3.6.0"
       val play             = "2.6.9"
       val scalaTest        = "3.0.5"
       val upickle          = "0.6.6"
-      val avsystemGenCodec = "1.28.2"
+      val avsystemGenCodec = "1.29.0"
     }
     val akkaHttp            = "com.typesafe.akka"                     %% "akka-http"             % Version.akkaHttp
     val akkaHttpJacksonJava = "com.typesafe.akka"                     %% "akka-http-jackson"     % Version.akkaHttp
