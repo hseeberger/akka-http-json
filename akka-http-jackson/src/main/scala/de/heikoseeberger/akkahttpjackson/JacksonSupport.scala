@@ -61,9 +61,9 @@ trait JacksonSupport {
     val t      = typeTag[T]
     val mirror = t.mirror
     def mapType(t: Type): JType =
-      if (t.typeArgs.isEmpty) {
+      if (t.typeArgs.isEmpty)
         mirror.runtimeClass(t)
-      } else {
+      else
         new ParameterizedType {
           def getRawType = mirror.runtimeClass(t)
 
@@ -71,7 +71,6 @@ trait JacksonSupport {
 
           def getOwnerType = null
         }
-      }
 
     new TypeReference[T] {
       override def getType = mapType(t.tpe)

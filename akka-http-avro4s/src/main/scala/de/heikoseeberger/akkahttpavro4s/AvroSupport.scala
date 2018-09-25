@@ -83,15 +83,10 @@ trait AvroSupport {
       val baos = new ByteArrayOutputStream()
       try {
         val output = AvroOutputStream.json[A](baos)
-        try {
-          output.write(data)
-        } finally {
-          output.close()
-        }
+        try output.write(data)
+        finally output.close()
         baos.toString(CharsetNames.UTF_8)
-      } finally {
-        baos.close()
-      }
+      } finally baos.close()
     }
 
     jsonStringMarshaller.compose(encode)
