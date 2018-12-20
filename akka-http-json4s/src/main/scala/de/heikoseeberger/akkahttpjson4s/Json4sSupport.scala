@@ -17,15 +17,16 @@
 package de.heikoseeberger.akkahttpjson4s
 
 import java.lang.reflect.InvocationTargetException
-
 import akka.http.scaladsl.marshalling.{ Marshaller, ToEntityMarshaller }
 import akka.http.scaladsl.model.ContentTypeRange
 import akka.http.scaladsl.model.MediaType
 import akka.http.scaladsl.model.MediaTypes.`application/json`
 import akka.http.scaladsl.unmarshalling.{ FromEntityUnmarshaller, Unmarshaller }
+import akka.stream.Materializer
 import akka.util.ByteString
 import org.json4s.{ Formats, MappingException, Serialization }
 import scala.collection.immutable.Seq
+import scala.concurrent.ExecutionContext
 
 /**
   * Automatic to and from JSON marshalling/unmarshalling using an in-scope *Json4s* protocol.
@@ -77,9 +78,7 @@ trait Json4sSupport {
                                          formats: Formats): FromEntityUnmarshaller[A] =
     jsonStringUnmarshaller
       .map(s => serialization.read(s))
-      .recover { _ => _ =>
-        { case MappingException(_, ite: InvocationTargetException) => throw ite.getCause }
-      }
+      .recover(throwCause)
 
   /**
     * `A` => HTTP entity
@@ -97,4 +96,10 @@ trait Json4sSupport {
       case ShouldWritePretty.True =>
         jsonStringMarshaller.compose(serialization.writePretty[A])
     }
+
+  private def throwCause[A](
+      ec: ExecutionContext
+  )(mat: Materializer): PartialFunction[Throwable, A] = {
+    case MappingException(_, e: InvocationTargetException) => throw e.getCause
+  }
 }
