@@ -60,7 +60,7 @@ lazy val `akka-http-jackson` =
         library.akkaHttp,
         library.akkaStream,
         library.akkaHttpJacksonJava,
-        library.jacksonScala,
+        library.jacksonModuleScala,
         library.scalaTest % Test
       )
     )
@@ -88,7 +88,7 @@ lazy val `akka-http-jsoniter-scala` =
       libraryDependencies ++= Seq(
         library.akkaHttp,
         library.akkaStream,
-        library.jsoniterScala,
+        library.jsoniterScalaMacros,
         library.scalaTest % Test
       )
     )
@@ -140,7 +140,7 @@ lazy val `akka-http-avsystem-gencodec` =
     libraryDependencies ++= Seq(
       library.akkaHttp,
       library.akkaStream,
-      library.avsystemGenCodec,
+      library.avsystemCommons,
       library.scalaTest % Test
     )
   )
@@ -152,18 +152,18 @@ lazy val `akka-http-avsystem-gencodec` =
 lazy val library =
   new {
     object Version {
-      val akka             = "2.5.19"
-      val akkaHttp         = "10.1.6"
-      val argonaut         = "6.2.2"
-      val avro4s           = "1.9.0"
-      val circe            = "0.11.0"
-      val jacksonScala     = "2.9.6"
-      val jsoniterScala    = "0.37.6"
-      val json4s           = "3.6.2"
-      val play             = "2.6.13"
-      val scalaTest        = "3.0.5"
-      val upickle          = "0.6.7"
-      val avsystemGenCodec = "1.34.6"
+      val akka                = "2.5.19"
+      val akkaHttp            = "10.1.6"
+      val argonaut            = "6.2.2"
+      val avro4s              = "1.9.0"
+      val circe               = "0.11.0"
+      val jacksonModuleScala  = "2.9.6"
+      val jsoniterScalaMacros = "0.37.6"
+      val json4s              = "3.6.2"
+      val play                = "2.6.13"
+      val scalaTest           = "3.0.5"
+      val upickle             = "0.6.7"
+      val avsystemCommons     = "1.34.6"
     }
     val akkaHttp            = "com.typesafe.akka"                     %% "akka-http"             % Version.akkaHttp
     val akkaHttpJacksonJava = "com.typesafe.akka"                     %% "akka-http-jackson"     % Version.akkaHttp
@@ -172,16 +172,16 @@ lazy val library =
     val circe               = "io.circe"                              %% "circe-core"            % Version.circe
     val circeJawn           = "io.circe"                              %% "circe-jawn"            % Version.circe
     val circeGeneric        = "io.circe"                              %% "circe-generic"         % Version.circe
-    val jacksonScala        = "com.fasterxml.jackson.module"          %% "jackson-module-scala"  % Version.jacksonScala
+    val jacksonModuleScala  = "com.fasterxml.jackson.module"          %% "jackson-module-scala"  % Version.jacksonModuleScala
     val json4sCore          = "org.json4s"                            %% "json4s-core"           % Version.json4s
     val json4sJackson       = "org.json4s"                            %% "json4s-jackson"        % Version.json4s
     val json4sNative        = "org.json4s"                            %% "json4s-native"         % Version.json4s
-    val jsoniterScala       = "com.github.plokhotnyuk.jsoniter-scala" %% "jsoniter-scala-macros" % Version.jsoniterScala
+    val jsoniterScalaMacros = "com.github.plokhotnyuk.jsoniter-scala" %% "jsoniter-scala-macros" % Version.jsoniterScalaMacros
     val playJson            = "com.typesafe.play"                     %% "play-json"             % Version.play
     val scalaTest           = "org.scalatest"                         %% "scalatest"             % Version.scalaTest
     val upickle             = "com.lihaoyi"                           %% "upickle"               % Version.upickle
     val avro4sJson          = "com.sksamuel.avro4s"                   %% "avro4s-json"           % Version.avro4s
-    val avsystemGenCodec    = "com.avsystem.commons"                  %% "commons-core"          % Version.avsystemGenCodec
+    val avsystemCommons     = "com.avsystem.commons"                  %% "commons-core"          % Version.avsystemCommons
   }
 
 // *****************************************************************************
