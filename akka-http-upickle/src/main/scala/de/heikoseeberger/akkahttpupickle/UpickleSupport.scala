@@ -22,8 +22,7 @@ import akka.http.scaladsl.model.MediaType
 import akka.http.scaladsl.model.MediaTypes.`application/json`
 import akka.http.scaladsl.unmarshalling.{ FromEntityUnmarshaller, Unmarshaller }
 import akka.util.ByteString
-import upickle.default.{ Reader, Writer, readJs, writeJs }
-import upickle.{ Js, json }
+import upickle.default.{ Reader, Writer, read, write }
 import scala.collection.immutable.Seq
 
 /**
@@ -60,7 +59,7 @@ trait UpickleSupport {
     * @return unmarshaller for `A`
     */
   implicit def unmarshaller[A: Reader]: FromEntityUnmarshaller[A] =
-    jsonStringUnmarshaller.map(data => readJs[A](json.read(data)))
+    jsonStringUnmarshaller.map(read(_))
 
   /**
     * `A` => HTTP entity
@@ -69,5 +68,5 @@ trait UpickleSupport {
     * @return marshaller for any `A` value
     */
   implicit def marshaller[A: Writer]: ToEntityMarshaller[A] =
-    jsonStringMarshaller.compose(json.write(_: Js.Value, 0)).compose(writeJs[A])
+    jsonStringMarshaller.compose(write(_))
 }

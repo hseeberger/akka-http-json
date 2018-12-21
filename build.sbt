@@ -61,6 +61,7 @@ lazy val `akka-http-jackson` =
         library.akkaStream,
         library.akkaHttpJacksonJava,
         library.jacksonModuleScala,
+        "org.scala-lang" % "scala-reflect" % scalaVersion.value,
         library.scalaTest % Test
       )
     )
@@ -157,12 +158,12 @@ lazy val library =
       val argonaut            = "6.2.2"
       val avro4s              = "1.9.0"
       val circe               = "0.11.0"
-      val jacksonModuleScala  = "2.9.6"
+      val jacksonModuleScala  = "2.9.8"
       val jsoniterScalaMacros = "0.37.6"
       val json4s              = "3.6.2"
       val play                = "2.6.13"
       val scalaTest           = "3.0.5"
-      val upickle             = "0.6.7"
+      val upickle             = "0.7.1"
       val avsystemCommons     = "1.34.6"
     }
     val akkaHttp            = "com.typesafe.akka"                     %% "akka-http"             % Version.akkaHttp
