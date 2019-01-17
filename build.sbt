@@ -23,7 +23,6 @@ inThisBuild(
 lazy val `akka-http-json` =
   project
     .in(file("."))
-    .enablePlugins(GitVersioning)
     .aggregate(
       `akka-http-argonaut`,
       `akka-http-circe`,
