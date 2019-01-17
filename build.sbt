@@ -1,6 +1,6 @@
 inThisBuild(
   List(
-    organization := "de.hseeberger",
+    organization := "de.heikoseeberger",
     homepage := Some(url("https://github.com/hseeberger/akka-http-json")),
     licenses := List("Apache-2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0")),
     scmInfo := Some(
