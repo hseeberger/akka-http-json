@@ -25,7 +25,7 @@ Grab it while it's hot:
 resolvers += Resolver.bintrayRepo("hseeberger", "maven")
 
 libraryDependencies ++= List(
-  "de.heikoseeberger" %% "akka-http-circe" % "1.24.0",
+  "de.heikoseeberger" %% "akka-http-circe" % "1.24.1",
   ...
 )
 ```
