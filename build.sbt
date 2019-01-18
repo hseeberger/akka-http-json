@@ -1,5 +1,5 @@
 inThisBuild(
-  List(
+  Seq(
     organization := "de.heikoseeberger",
     homepage := Some(url("https://github.com/hseeberger/akka-http-json")),
     licenses := List("Apache-2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0")),
@@ -12,7 +12,7 @@ inThisBuild(
                 "Heiko Seeberger",
                 "mail@heikoseeberger.de",
                 url("https://github.com/hseeberger"))
-    )
+    ),
   )
 )
 
@@ -214,8 +214,8 @@ lazy val settings =
 
 lazy val commonSettings =
   Seq(
-    // scalaVersion from .travis.yml via sbt-travisci
-    // scalaVersion := "2.12.3",
+    scalaVersion := "2.12.8",
+    crossScalaVersions := Seq(scalaVersion.value, "2.11.12"),
     organizationName := "Heiko Seeberger",
     startYear := Some(2015),
     scalacOptions ++= Seq(
