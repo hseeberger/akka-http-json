@@ -1,3 +1,21 @@
+inThisBuild(
+  List(
+    organization := "de.heikoseeberger",
+    homepage := Some(url("https://github.com/hseeberger/akka-http-json")),
+    licenses := List("Apache-2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0")),
+    scmInfo := Some(
+      ScmInfo(url("https://github.com/hseeberger/akka-http-json"),
+              "git@github.com:hseeberger/akka-http-json.git")
+    ),
+    developers := List(
+      Developer("hseeberger",
+                "Heiko Seeberger",
+                "mail@heikoseeberger.de",
+                url("https://github.com/hseeberger"))
+    )
+  )
+)
+
 // *****************************************************************************
 // Projects
 // *****************************************************************************
@@ -5,7 +23,6 @@
 lazy val `akka-http-json` =
   project
     .in(file("."))
-    .enablePlugins(GitVersioning)
     .aggregate(
       `akka-http-argonaut`,
       `akka-http-circe`,
@@ -199,10 +216,8 @@ lazy val commonSettings =
   Seq(
     // scalaVersion from .travis.yml via sbt-travisci
     // scalaVersion := "2.12.3",
-    organization := "de.heikoseeberger",
     organizationName := "Heiko Seeberger",
     startYear := Some(2015),
-    licenses += ("Apache-2.0", url("http://www.apache.org/licenses/LICENSE-2.0")),
     scalacOptions ++= Seq(
       "-unchecked",
       "-deprecation",
@@ -226,13 +241,5 @@ lazy val scalafmtSettings =
 
 lazy val publishSettings =
   Seq(
-    homepage := Some(url("https://github.com/hseeberger/akka-http-json")),
-    scmInfo := Some(ScmInfo(url("https://github.com/hseeberger/akka-http-json"),
-                            "git@github.com:hseeberger/akka-http-json.git")),
-    developers += Developer("hseeberger",
-                            "Heiko Seeberger",
-                            "mail@heikoseeberger.de",
-                            url("https://github.com/hseeberger")),
     pomIncludeRepository := (_ => false),
-    bintrayPackage := "akka-http-json"
   )
