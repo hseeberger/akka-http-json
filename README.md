@@ -17,14 +17,10 @@ akka-http-json provides JSON (un)marshalling support for [Akka HTTP](https://git
 
 ## Installation
 
-Grab it while it's hot:
+The artifacts are published to Maven Central.
 
 ``` scala
-// All releases including intermediate ones are published here,
-// final ones are also published to Maven Central.
-resolvers += Resolver.bintrayRepo("hseeberger", "maven")
-
-libraryDependencies ++= List(
+libraryDependencies ++= Seq(
   "de.heikoseeberger" %% "akka-http-circe" % "1.24.3",
   ...
 )
