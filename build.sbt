@@ -170,7 +170,7 @@ lazy val `akka-http-avsystem-gencodec` =
 lazy val library =
   new {
     object Version {
-      val akka                = "2.5.20"
+      val akka                = "2.5.21"
       val akkaHttp            = "10.1.7"
       val argonaut            = "6.2.2"
       val avro4s              = "1.9.0"
