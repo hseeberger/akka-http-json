@@ -29,9 +29,8 @@ import scala.collection.immutable.Seq
   * Automatic to and from JSON marshalling/unmarshalling using an in-scope instance of JsonValueCodec
   */
 object JsoniterScalaSupport extends JsoniterScalaSupport {
-  val defaultReaderConfig: ReaderConfig = ReaderConfig(throwParseExceptionWithStackTrace = false,
-                                                       preferredBufSize = 100 * 1024,
-                                                       preferredCharBufSize = 10 * 1024)
+  val defaultReaderConfig: ReaderConfig =
+    ReaderConfig(preferredBufSize = 100 * 1024, preferredCharBufSize = 10 * 1024)
   val defaultWriterConfig: WriterConfig = WriterConfig(preferredBufSize = 100 * 1024)
 }
 
