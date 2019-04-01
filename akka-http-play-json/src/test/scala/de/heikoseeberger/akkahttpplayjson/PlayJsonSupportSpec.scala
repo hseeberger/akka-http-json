@@ -20,13 +20,11 @@ import akka.actor.ActorSystem
 import akka.http.scaladsl.marshalling.Marshal
 import akka.http.scaladsl.model.ContentTypes.`application/json`
 import akka.http.scaladsl.model._
-import akka.http.scaladsl.server.{ RejectionError, ValidationRejection }
 import akka.http.scaladsl.unmarshalling.Unmarshaller.UnsupportedContentTypeException
 import akka.http.scaladsl.unmarshalling.{ Unmarshal, Unmarshaller }
 import akka.stream.ActorMaterializer
 import org.scalatest.{ AsyncWordSpec, BeforeAndAfterAll, Matchers }
 import play.api.libs.json.{ Format, Json }
-import scala.collection.immutable.Seq
 import scala.concurrent.Await
 import scala.concurrent.duration.DurationInt
 
@@ -69,17 +67,9 @@ final class PlayJsonSupportSpec extends AsyncWordSpec with Matchers with BeforeA
       Unmarshal(entity)
         .to[Foo]
         .failed
-        .map({ err =>
-          err shouldBe a[RejectionError]
-          err match {
-            case RejectionError(ValidationRejection(message, Some(PlayJsonError(error)))) =>
-              message should be("""{"obj.bar":[{"msg":["error.expected.jsstring"],"args":[]}]}""")
-              error.errors should have length 1
-              error.errors.head._1.toString() should be("/bar")
-              error.errors.head._2.flatMap(_.messages) should be(Seq("error.expected.jsstring"))
-            case _ => fail("Did not throw correct validation error.")
-          }
-        })
+        .map(
+          _ should have message """{"obj.bar":[{"msg":["error.expected.jsstring"],"args":[]}]}"""
+        )
     }
 
     "fail with NoContentException when unmarshalling empty entities" in {

@@ -20,7 +20,6 @@ import akka.http.scaladsl.marshalling.{ Marshaller, ToEntityMarshaller }
 import akka.http.scaladsl.model.ContentTypeRange
 import akka.http.scaladsl.model.MediaType
 import akka.http.scaladsl.model.MediaTypes.`application/json`
-import akka.http.scaladsl.server.{ RejectionError, ValidationRejection }
 import akka.http.scaladsl.unmarshalling.{ FromEntityUnmarshaller, Unmarshaller }
 import akka.util.ByteString
 import play.api.libs.json.{ JsError, JsValue, Json, Reads, Writes }
@@ -29,19 +28,12 @@ import scala.collection.immutable.Seq
 /**
   * Automatic to and from JSON marshalling/unmarshalling using an in-scope *play-json* protocol.
   */
-object PlayJsonSupport extends PlayJsonSupport {
-
-  final case class PlayJsonError(error: JsError) extends RuntimeException {
-    override def getMessage: String =
-      JsError.toJson(error).toString()
-  }
-}
+object PlayJsonSupport extends PlayJsonSupport
 
 /**
   * Automatic to and from JSON marshalling/unmarshalling using an in-scope *play-json* protocol.
   */
 trait PlayJsonSupport {
-  import PlayJsonSupport._
 
   def unmarshallerContentTypes: Seq[ContentTypeRange] =
     mediaTypes.map(ContentTypeRange.apply)
@@ -71,9 +63,7 @@ trait PlayJsonSupport {
       implicitly[Reads[A]]
         .reads(json)
         .recoverTotal { e =>
-          throw RejectionError(
-            ValidationRejection(JsError.toJson(e).toString, Some(PlayJsonError(e)))
-          )
+          throw new IllegalArgumentException(JsError.toJson(e).toString)
         }
     jsonStringUnmarshaller.map(data => read(Json.parse(data)))
   }
