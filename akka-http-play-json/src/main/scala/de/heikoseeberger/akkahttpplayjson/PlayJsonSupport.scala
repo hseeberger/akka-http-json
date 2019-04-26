@@ -28,12 +28,18 @@ import scala.collection.immutable.Seq
 /**
   * Automatic to and from JSON marshalling/unmarshalling using an in-scope *play-json* protocol.
   */
-object PlayJsonSupport extends PlayJsonSupport
+object PlayJsonSupport extends PlayJsonSupport {
+  final case class PlayJsonError(error: JsError) extends IllegalArgumentException {
+    override def getMessage: String =
+      JsError.toJson(error).toString()
+  }
+}
 
 /**
   * Automatic to and from JSON marshalling/unmarshalling using an in-scope *play-json* protocol.
   */
 trait PlayJsonSupport {
+  import PlayJsonSupport._
 
   def unmarshallerContentTypes: Seq[ContentTypeRange] =
     mediaTypes.map(ContentTypeRange.apply)
@@ -63,7 +69,7 @@ trait PlayJsonSupport {
       implicitly[Reads[A]]
         .reads(json)
         .recoverTotal { e =>
-          throw new IllegalArgumentException(JsError.toJson(e).toString)
+          throw PlayJsonError(e)
         }
     jsonStringUnmarshaller.map(data => read(Json.parse(data)))
   }
