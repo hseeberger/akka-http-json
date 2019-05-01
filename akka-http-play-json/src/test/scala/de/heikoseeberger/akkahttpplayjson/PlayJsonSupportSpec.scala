@@ -25,6 +25,7 @@ import akka.http.scaladsl.unmarshalling.{ Unmarshal, Unmarshaller }
 import akka.stream.ActorMaterializer
 import org.scalatest.{ AsyncWordSpec, BeforeAndAfterAll, Matchers }
 import play.api.libs.json.{ Format, Json }
+import scala.collection.immutable.Seq
 import scala.concurrent.Await
 import scala.concurrent.duration.DurationInt
 
@@ -67,9 +68,14 @@ final class PlayJsonSupportSpec extends AsyncWordSpec with Matchers with BeforeA
       Unmarshal(entity)
         .to[Foo]
         .failed
-        .map(
-          _ should have message """{"obj.bar":[{"msg":["error.expected.jsstring"],"args":[]}]}"""
-        )
+        .map { err =>
+          err shouldBe a[PlayJsonError]
+          err should have message """{"obj.bar":[{"msg":["error.expected.jsstring"],"args":[]}]}"""
+          val errors = err.asInstanceOf[PlayJsonError].error.errors
+          errors should have length 1
+          errors.head._1.toString should be("/bar")
+          errors.head._2.flatMap(_.messages) should be(Seq("error.expected.jsstring"))
+        }
     }
 
     "fail with NoContentException when unmarshalling empty entities" in {
