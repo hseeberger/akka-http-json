@@ -62,6 +62,7 @@ lazy val `akka-http-circe` =
         library.akkaHttp,
         library.akkaStream,
         library.circe,
+        library.circeParser,
         library.circeJawn,
         library.circeGeneric % Test,
         library.scalaTest    % Test
@@ -188,6 +189,7 @@ lazy val library =
     val akkaStream          = "com.typesafe.akka"                     %% "akka-stream"           % Version.akka
     val argonaut            = "io.argonaut"                           %% "argonaut"              % Version.argonaut
     val circe               = "io.circe"                              %% "circe-core"            % Version.circe
+    val circeParser         = "io.circe"                              %% "circe-parser"          % Version.circe
     val circeJawn           = "io.circe"                              %% "circe-jawn"            % Version.circe
     val circeGeneric        = "io.circe"                              %% "circe-generic"         % Version.circe
     val jacksonModuleScala  = "com.fasterxml.jackson.module"          %% "jackson-module-scala"  % Version.jacksonModuleScala
