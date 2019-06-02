@@ -22,9 +22,11 @@ import akka.http.scaladsl.model.MediaType
 import akka.http.scaladsl.model.MediaTypes.`application/json`
 import akka.http.scaladsl.unmarshalling.{ FromEntityUnmarshaller, Unmarshaller }
 import akka.util.ByteString
-import cats.data.NonEmptyList
+import cats.data.{ NonEmptyList, ValidatedNel }
 import cats.syntax.show.toShow
+import cats.syntax.either.catsSyntaxEither
 import io.circe.{ Decoder, DecodingFailure, Encoder, Json, Printer, jawn }
+import io.circe.parser.parse
 import scala.collection.immutable.Seq
 
 /**
@@ -114,6 +116,17 @@ trait BaseCirceSupport {
       }
 
   /**
+    * HTTP entity => `Either[io.circe.ParsingFailure, Json]`
+    *
+    * @return unmarshaller for `Either[io.circe.ParsingFailure, Json]`
+    */
+  implicit final val safeJsonUnmarshaller
+    : FromEntityUnmarshaller[Either[io.circe.ParsingFailure, Json]] =
+    Unmarshaller.stringUnmarshaller
+      .forContentTypes(unmarshallerContentTypes: _*)
+      .map(parse)
+
+  /**
     * HTTP entity => `A`
     *
     * @tparam A type to decode
@@ -131,6 +144,12 @@ trait FailFastUnmarshaller { this: BaseCirceSupport =>
     def decode(json: Json) = Decoder[A].decodeJson(json).fold(throw _, identity)
     jsonUnmarshaller.map(decode)
   }
+
+  implicit final def safeUnmarshaller[A: Decoder]
+    : FromEntityUnmarshaller[Either[io.circe.Error, A]] = {
+    def decode(json: Json) = Decoder[A].decodeJson(json)
+    safeJsonUnmarshaller.map(_.flatMap(decode))
+  }
 }
 
 /**
@@ -144,5 +163,13 @@ trait ErrorAccumulatingUnmarshaller { this: BaseCirceSupport =>
         .accumulating(json.hcursor)
         .fold(failures => throw ErrorAccumulatingCirceSupport.DecodingFailures(failures), identity)
     jsonUnmarshaller.map(decode)
+  }
+
+  implicit final def safeUnmarshaller[A: Decoder]
+    : FromEntityUnmarshaller[ValidatedNel[io.circe.Error, A]] = {
+    def decode(json: Json): ValidatedNel[io.circe.Error, A] =
+      Decoder[A]
+        .accumulating(json.hcursor)
+    safeJsonUnmarshaller.map(_.toValidatedNel andThen decode)
   }
 }

@@ -23,10 +23,11 @@ import akka.http.scaladsl.model._
 import akka.http.scaladsl.unmarshalling.Unmarshaller.UnsupportedContentTypeException
 import akka.http.scaladsl.unmarshalling.{ Unmarshal, Unmarshaller }
 import akka.stream.ActorMaterializer
-import cats.data.NonEmptyList
+import cats.data.{ NonEmptyList, ValidatedNel }
 import io.circe.CursorOp.DownField
-import io.circe.{ DecodingFailure, Errors, Printer }
-import org.scalatest.{ AsyncWordSpec, BeforeAndAfterAll, Matchers }
+import io.circe.{ DecodingFailure, Errors, ParsingFailure, Printer }
+import org.scalatest.{ AsyncWordSpec, BeforeAndAfterAll, EitherValues, Matchers }
+import org.scalatest.concurrent.ScalaFutures
 
 import scala.concurrent.Await
 import scala.concurrent.duration.DurationInt
@@ -42,7 +43,12 @@ object CirceSupportSpec {
   final case class OptionFoo(a: Option[String])
 }
 
-final class CirceSupportSpec extends AsyncWordSpec with Matchers with BeforeAndAfterAll {
+final class CirceSupportSpec
+    extends AsyncWordSpec
+    with Matchers
+    with BeforeAndAfterAll
+    with ScalaFutures
+    with EitherValues {
   import CirceSupportSpec._
 
   private implicit val system = ActorSystem()
@@ -112,6 +118,15 @@ final class CirceSupportSpec extends AsyncWordSpec with Matchers with BeforeAndA
 
     behave like commonCirceSupport(FailFastCirceSupport)
 
+    "fail with a ParsingFailure when unmarshalling empty entities with safeUnmarshaller" in {
+      val entity = HttpEntity.empty(`application/json`)
+      Unmarshal(entity)
+        .to[Either[io.circe.Error, Foo]]
+        .futureValue
+        .left
+        .value shouldBe a[ParsingFailure]
+    }
+
     "fail-fast and return only the first unmarshalling error" in {
       val entity = HttpEntity(MediaTypes.`application/json`, """{ "a": 1, "b": 2 }""")
       val error  = DecodingFailure("String", List(DownField("a")))
@@ -119,6 +134,16 @@ final class CirceSupportSpec extends AsyncWordSpec with Matchers with BeforeAndA
         .to[MultiFoo]
         .failed
         .map(_ shouldBe error)
+    }
+
+    "fail-fast and return only the first unmarshalling error with safeUnmarshaller" in {
+      val entity = HttpEntity(MediaTypes.`application/json`, """{ "a": 1, "b": 2 }""")
+      val error  = DecodingFailure("String", List(DownField("a")))
+      Unmarshal(entity)
+        .to[Either[io.circe.Error, MultiFoo]]
+        .futureValue
+        .left
+        .value shouldBe error
     }
 
     "allow unmarshalling with passed in Content-Types" in {
@@ -140,6 +165,16 @@ final class CirceSupportSpec extends AsyncWordSpec with Matchers with BeforeAndA
 
     behave like commonCirceSupport(ErrorAccumulatingCirceSupport)
 
+    "fail with a NonEmptyList of Errors when unmarshalling empty entities with safeUnmarshaller" in {
+      val entity = HttpEntity.empty(`application/json`)
+      Unmarshal(entity)
+        .to[ValidatedNel[io.circe.Error, Foo]]
+        .futureValue
+        .toEither
+        .left
+        .value shouldBe a[NonEmptyList[_]]
+    }
+
     "accumulate and return all unmarshalling errors" in {
       val entity = HttpEntity(MediaTypes.`application/json`, """{ "a": 1, "b": 2 }""")
       val errors =
@@ -152,6 +187,22 @@ final class CirceSupportSpec extends AsyncWordSpec with Matchers with BeforeAndA
         .to[MultiFoo]
         .failed
         .map(_.getMessage shouldBe errorMessage)
+    }
+
+    "accumulate and return all unmarshalling errors with safeUnmarshaller" in {
+      val entity = HttpEntity(MediaTypes.`application/json`, """{ "a": 1, "b": 2 }""")
+      val errors =
+        NonEmptyList.of(
+          DecodingFailure("String", List(DownField("a"))),
+          DecodingFailure("String", List(DownField("b")))
+        )
+      val errorMessage = ErrorAccumulatingCirceSupport.DecodingFailures(errors).getMessage
+      Unmarshal(entity)
+        .to[ValidatedNel[io.circe.Error, MultiFoo]]
+        .futureValue
+        .toEither
+        .left
+        .value shouldBe errors
     }
 
     "allow unmarshalling with passed in Content-Types" in {
