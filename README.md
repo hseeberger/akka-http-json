@@ -21,7 +21,7 @@ The artifacts are published to Maven Central.
 
 ``` scala
 libraryDependencies ++= Seq(
-  "de.heikoseeberger" %% "akka-http-circe" % "1.25.2",
+  "de.heikoseeberger" %% "akka-http-circe" % "1.26.0",
   ...
 )
 ```
