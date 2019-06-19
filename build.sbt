@@ -37,7 +37,8 @@ lazy val `akka-http-json` =
     .settings(
       Compile / unmanagedSourceDirectories := Seq.empty,
       Test / unmanagedSourceDirectories    := Seq.empty,
-      publishArtifact := false
+      publishArtifact := false,
+      crossScalaVersions := Seq.empty,
     )
 
 lazy val `akka-http-argonaut`=
@@ -148,7 +149,10 @@ lazy val `akka-http-avro4s` =
         library.akkaStream,
         library.avro4sJson,
         library.scalaTest     % Test
-      )
+      ),
+      // avro4s-json is not yet out for Scala 2.13
+      // https://mvnrepository.com/artifact/com.sksamuel.avro4s/avro4s-json
+      crossScalaVersions -= "2.13.0",
     )
 
 lazy val `akka-http-avsystem-gencodec` =
@@ -175,13 +179,13 @@ lazy val library =
       val akkaHttp            = "10.1.8"
       val argonaut            = "6.2.3"
       val avro4s              = "1.9.0"
-      val circe               = "0.11.1"
+      val circe               = "0.12.0-M3"
       val jacksonModuleScala  = "2.9.9"
       val jsoniterScalaMacros = "0.51.0"
       val json4s              = "3.6.6"
       val play                = "2.7.4"
       val scalaTest           = "3.0.8"
-      val upickle             = "0.7.4"
+      val upickle             = "0.7.5"
       val avsystemCommons     = "1.34.17"
     }
     val akkaHttp            = "com.typesafe.akka"                     %% "akka-http"             % Version.akkaHttp
@@ -216,8 +220,8 @@ lazy val settings =
 
 lazy val commonSettings =
   Seq(
-    scalaVersion := "2.12.8",
-    crossScalaVersions := Seq(scalaVersion.value, "2.11.12"),
+    scalaVersion := "2.13.0",
+    crossScalaVersions := Seq(scalaVersion.value, "2.12.8"),
     organizationName := "Heiko Seeberger",
     startYear := Some(2015),
     scalacOptions ++= Seq(
