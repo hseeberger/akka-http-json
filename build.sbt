@@ -74,6 +74,7 @@ lazy val `akka-http-jackson` =
     .enablePlugins(AutomateHeaderPlugin)
     .settings(settings)
     .settings(
+      crossScalaVersions := Seq("2.13.0", scalaVersion.value, "2.11.12"),
       libraryDependencies ++= Seq(
         library.akkaHttp,
         library.akkaStream,
@@ -89,6 +90,7 @@ lazy val `akka-http-json4s` =
     .enablePlugins(AutomateHeaderPlugin)
     .settings(settings)
     .settings(
+      crossScalaVersions := Seq("2.13.0", scalaVersion.value, "2.11.12"),
       libraryDependencies ++= Seq(
         library.akkaHttp,
         library.akkaStream,
@@ -104,6 +106,7 @@ lazy val `akka-http-jsoniter-scala` =
     .enablePlugins(AutomateHeaderPlugin)
     .settings(settings)
     .settings(
+      crossScalaVersions := Seq("2.13.0", scalaVersion.value, "2.11.12"),
       libraryDependencies ++= Seq(
         library.akkaHttp,
         library.akkaStream,
@@ -117,6 +120,7 @@ lazy val `akka-http-play-json` =
     .enablePlugins(AutomateHeaderPlugin)
     .settings(settings)
     .settings(
+      crossScalaVersions := Seq("2.13.0", scalaVersion.value, "2.11.12"),
       libraryDependencies ++= Seq(
         library.akkaHttp,
         library.akkaStream,
