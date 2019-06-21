@@ -1,6 +1,5 @@
 # akka-http-json #
 
-[![Join the chat at https://gitter.im/hseeberger/akka-http-json](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/hseeberger/akka-http-json?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Build Status](https://travis-ci.org/hseeberger/akka-http-json.svg?branch=master)](https://travis-ci.org/hseeberger/akka-http-json)
 [![Maven Central](https://img.shields.io/maven-central/v/de.heikoseeberger/akka-http-circe_2.12.svg)](https://maven-badges.herokuapp.com/maven-central/de.heikoseeberger/akka-http-circe_2.12)
 
@@ -21,7 +20,7 @@ The artifacts are published to Maven Central.
 
 ``` scala
 libraryDependencies ++= Seq(
-  "de.heikoseeberger" %% "akka-http-circe" % "1.26.0",
+  "de.heikoseeberger" %% "akka-http-circe" % "1.27.0",
   ...
 )
 ```
