@@ -58,6 +58,7 @@ lazy val `akka-http-circe` =
     .enablePlugins(AutomateHeaderPlugin)
     .settings(settings)
     .settings(
+      crossScalaVersions := Seq("2.13.0", scalaVersion.value, "2.11.12"),
       libraryDependencies ++= Seq(
         library.akkaHttp,
         library.akkaStream,
@@ -179,7 +180,7 @@ lazy val library =
       val akkaHttp            = "10.1.9"
       val argonaut            = "6.2.3"
       val avro4s              = "1.9.0"
-      val circe               = "0.11.1"
+      val circe               = "0.12.0-M3"
       val jacksonModuleScala  = "2.9.9"
       val jsoniterScalaMacros = "0.51.3"
       val json4s              = "3.6.6"
