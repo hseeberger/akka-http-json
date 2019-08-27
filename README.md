@@ -5,14 +5,14 @@
 
 akka-http-json provides JSON (un)marshalling support for [Akka HTTP](https://github.com/akka/akka-http) via the following JSON libraries:
 - [Argonaut](http://argonaut.io)
+- [avro4s](https://github.com/sksamuel/avro4s)
+- [AVSystem GenCodec](https://github.com/AVSystem/scala-commons/blob/master/docs/GenCodec.md)
 - [circe](https://circe.github.io/circe/)
 - [Jackson](https://github.com/FasterXML/jackson) via [Scala Module](https://github.com/FasterXML/jackson-module-scala) by default
 - [Json4s](https://github.com/json4s/json4s)
 - [jsoniter-scala](https://github.com/plokhotnyuk/jsoniter-scala)
 - [Play JSON](https://www.playframework.com/documentation/2.6.x/ScalaJson)
 - [uPickle](https://github.com/lihaoyi/upickle-pprint)
-- [avro4s](https://github.com/sksamuel/avro4s)
-- [AVSystem GenCodec](https://github.com/AVSystem/scala-commons/blob/master/docs/GenCodec.md)
 
 ## Installation
 

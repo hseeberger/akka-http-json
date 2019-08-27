@@ -23,7 +23,7 @@ import akka.http.scaladsl.model._
 import akka.http.scaladsl.unmarshalling.Unmarshaller.UnsupportedContentTypeException
 import akka.http.scaladsl.unmarshalling.{ Unmarshal, Unmarshaller }
 import akka.stream.ActorMaterializer
-import com.sksamuel.avro4s.{ FromRecord, SchemaFor, ToRecord }
+import com.sksamuel.avro4s.{ Decoder, Encoder, SchemaFor }
 import org.scalatest.{ AsyncWordSpec, BeforeAndAfterAll, Matchers }
 
 import scala.concurrent.Await
@@ -40,11 +40,11 @@ final class AvroSupportSpec extends AsyncWordSpec with Matchers with BeforeAndAf
 
   import AvroSupportSpec._
 
-  private implicit val system     = ActorSystem()
-  private implicit val mat        = ActorMaterializer()
-  private implicit val schemaFor  = SchemaFor[Foo]
-  private implicit val toRecord   = ToRecord[Foo]
-  private implicit val fromRecord = FromRecord[Foo]
+  private implicit val system    = ActorSystem()
+  private implicit val mat       = ActorMaterializer()
+  private implicit val schemaFor = SchemaFor[Foo]
+  private implicit val encoder   = Encoder[Foo]
+  private implicit val decoder   = Decoder[Foo]
 
   "AvroSupport" should {
     "enable marshalling and unmarshalling objects for generic derivation" in {
@@ -102,7 +102,7 @@ final class AvroSupportSpec extends AsyncWordSpec with Matchers with BeforeAndAf
     }
   }
 
-  override protected def afterAll() = {
+  override protected def afterAll(): Unit = {
     Await.ready(system.terminate(), 42.seconds)
     super.afterAll()
   }

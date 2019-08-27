@@ -16,19 +16,17 @@
 
 package de.heikoseeberger.akkahttpavro4s
 
-import java.io.{ ByteArrayOutputStream, IOException }
+import java.io.ByteArrayOutputStream
 
 import akka.http.scaladsl.marshalling.{ Marshaller, ToEntityMarshaller }
-import akka.http.scaladsl.model.ContentTypeRange
-import akka.http.scaladsl.model.MediaType
+import akka.http.scaladsl.model.{ ContentType, ContentTypeRange, HttpEntity, MediaType }
 import akka.http.scaladsl.model.MediaTypes.`application/json`
 import akka.http.scaladsl.unmarshalling.{ FromEntityUnmarshaller, Unmarshaller }
 import akka.util.ByteString
 import com.sksamuel.avro4s._
-import org.apache.commons.compress.utils.CharsetNames
+import org.apache.avro.Schema
 
 import scala.collection.immutable.Seq
-import scala.util.{ Failure, Success }
 
 /**
   * Automatic to and from JSON marshalling/unmarshalling using *avro4s* protocol.
@@ -39,56 +37,45 @@ object AvroSupport extends AvroSupport
   * Automatic to and from JSON marshalling/unmarshalling using *avro4s* protocol.
   */
 trait AvroSupport {
+  private val defaultMediaTypes: Seq[MediaType.WithFixedCharset] = List(`application/json`)
+  private val defaultContentTypes: Seq[ContentTypeRange] =
+    defaultMediaTypes.map(ContentTypeRange.apply)
+  private val byteArrayUnmarshaller: FromEntityUnmarshaller[Array[Byte]] =
+    Unmarshaller.byteArrayUnmarshaller.forContentTypes(unmarshallerContentTypes: _*)
 
-  def unmarshallerContentTypes: Seq[ContentTypeRange] =
-    mediaTypes.map(ContentTypeRange.apply)
+  def unmarshallerContentTypes: Seq[ContentTypeRange] = defaultContentTypes
 
-  def mediaTypes: Seq[MediaType.WithFixedCharset] =
-    List(`application/json`)
-
-  private val jsonStringUnmarshaller =
-    Unmarshaller.byteStringUnmarshaller
-      .forContentTypes(unmarshallerContentTypes: _*)
-      .mapWithCharset {
-        case (ByteString.empty, _) => throw Unmarshaller.NoContentException
-        case (data, charset)       => data.decodeString(charset.nioCharset.name)
-      }
-
-  private val jsonStringMarshaller =
-    Marshaller.oneOf(mediaTypes: _*)(Marshaller.stringMarshaller)
+  def mediaTypes: Seq[MediaType.WithFixedCharset] = defaultMediaTypes
 
   /**
     * HTTP entity => `A`
-    *
-    * @tparam A type to decode
-    * @return unmarshaller for `A`
     */
-  implicit def unmarshaller[A: SchemaFor: FromRecord]: FromEntityUnmarshaller[A] = {
-    def parse(s: String) = AvroInputStream.json[A](s.getBytes).singleEntity match {
-      case Success(json)  => json
-      case Failure(error) => sys.error(error.getMessage)
+  implicit def unmarshaller[A: SchemaFor: Decoder]: FromEntityUnmarshaller[A] = {
+    val schema = AvroSchema[A]
+    byteArrayUnmarshaller.map { bytes =>
+      if (bytes.length == 0) throw Unmarshaller.NoContentException
+      AvroInputStream.json[A].from(bytes).build(schema).iterator.next()
     }
-
-    jsonStringUnmarshaller.map(parse)
   }
 
   /**
     * `A` => HTTP entity
-    *
-    * @tparam A type to encode
-    * @return marshaller for any `A` value
     */
-  implicit def marshaller[A: SchemaFor: ToRecord]: ToEntityMarshaller[A] = {
-    def encode(data: A): String = {
-      val baos = new ByteArrayOutputStream()
-      try {
-        val output = AvroOutputStream.json[A](baos)
-        try output.write(data)
-        finally output.close()
-        baos.toString(CharsetNames.UTF_8)
-      } finally baos.close()
+  implicit def marshaller[A: SchemaFor: Encoder]: ToEntityMarshaller[A] = {
+    val schema      = AvroSchema[A]
+    val mediaType   = mediaTypes.head
+    val contentType = ContentType.WithFixedCharset(mediaType)
+    Marshaller.withFixedContentType(contentType) { obj =>
+      HttpEntity.Strict(
+        contentType,
+        ByteString.fromArrayUnsafe {
+          val baos   = new ByteArrayOutputStream()
+          val stream = AvroOutputStream.json[A].to(baos).build(schema)
+          stream.write(obj)
+          stream.close()
+          baos.toByteArray
+        }
+      )
     }
-
-    jsonStringMarshaller.compose(encode)
   }
 }
