@@ -193,7 +193,7 @@ lazy val library =
       val play               = "2.7.4"
       val scalaTest          = "3.0.8"
       val upickle            = "0.7.5"
-      val avsystemCommons    = "1.39.0"
+      val avsystemCommons    = "1.40.0"
     }
     val akkaHttp            = "com.typesafe.akka"                     %% "akka-http"             % Version.akkaHttp
     val akkaHttpJacksonJava = "com.typesafe.akka"                     %% "akka-http-jackson"     % Version.akkaHttp
