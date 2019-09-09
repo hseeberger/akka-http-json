@@ -25,13 +25,14 @@ lazy val `akka-http-json` =
     .in(file("."))
     .aggregate(
       `akka-http-argonaut`,
+      `akka-http-avro4s`,
+      `akka-http-avsystem-gencodec`,
       `akka-http-circe`,
       `akka-http-jackson`,
-      `akka-http-jsoniter-scala`,
       `akka-http-json4s`,
+      `akka-http-jsoniter-scala`,
       `akka-http-play-json`,
       `akka-http-upickle`,
-      `akka-http-avro4s`
     )
     .settings(settings)
     .settings(
@@ -45,6 +46,7 @@ lazy val `akka-http-argonaut`=
     .enablePlugins(AutomateHeaderPlugin)
     .settings(settings)
     .settings(
+      crossScalaVersions := Seq("2.13.0", scalaVersion.value, "2.11.12"),
       libraryDependencies ++= Seq(
         library.akkaHttp,
         library.akkaStream,
@@ -58,6 +60,7 @@ lazy val `akka-http-circe` =
     .enablePlugins(AutomateHeaderPlugin)
     .settings(settings)
     .settings(
+      crossScalaVersions := Seq(scalaVersion.value, "2.11.12"),
       libraryDependencies ++= Seq(
         library.akkaHttp,
         library.akkaStream,
@@ -110,7 +113,8 @@ lazy val `akka-http-jsoniter-scala` =
       libraryDependencies ++= Seq(
         library.akkaHttp,
         library.akkaStream,
-        library.jsoniterScalaMacros,
+        library.jsoniterScalaCore,
+        library.jsoniterScalaMacros % Test,
         library.scalaTest % Test
       )
     )
@@ -134,10 +138,11 @@ lazy val `akka-http-upickle` =
     .enablePlugins(AutomateHeaderPlugin)
     .settings(settings)
     .settings(
+      crossScalaVersions := Seq("2.13.0", scalaVersion.value, "2.11.12"),
       libraryDependencies ++= Seq(
         library.akkaHttp,
         library.akkaStream,
-        library.upickle,
+        if (scalaVersion.value == "2.11.12") library.upickle.withRevision("0.7.4") else library.upickle,
         library.scalaTest % Test
       )
     )
@@ -147,6 +152,7 @@ lazy val `akka-http-avro4s` =
     .enablePlugins(AutomateHeaderPlugin)
     .settings(settings)
     .settings(
+      crossScalaVersions := Seq("2.13.0", scalaVersion.value),
       libraryDependencies ++= Seq(
         library.akkaHttp,
         library.akkaStream,
@@ -160,6 +166,7 @@ lazy val `akka-http-avsystem-gencodec` =
   .enablePlugins(AutomateHeaderPlugin)
   .settings(settings)
   .settings(
+    crossScalaVersions := Seq(scalaVersion.value, "2.11.12"),
     libraryDependencies ++= Seq(
       library.akkaHttp,
       library.akkaStream,
@@ -175,23 +182,25 @@ lazy val `akka-http-avsystem-gencodec` =
 lazy val library =
   new {
     object Version {
-      val akka                = "2.5.24"
-      val akkaHttp            = "10.1.9"
-      val argonaut            = "6.2.3"
-      val avro4s              = "1.9.0"
-      val circe               = "0.11.1"
-      val jacksonModuleScala  = "2.9.9"
-      val jsoniterScalaMacros = "0.51.3"
-      val json4s              = "3.6.6"
-      val play                = "2.7.4"
-      val scalaTest           = "3.0.8"
-      val upickle             = "0.7.4"
-      val avsystemCommons     = "1.34.17"
+      val akka               = "2.5.25"
+      val akkaHttp           = "10.1.9"
+      val argonaut           = "6.2.3"
+      val avro4s             = "3.0.1"
+      val circe              = "0.11.1"
+      val jacksonModuleScala = "2.9.9"
+      val jsoniterScala      = "0.55.0"
+      val json4s             = "3.6.7"
+      val play               = "2.7.4"
+      val scalaTest          = "3.0.8"
+      val upickle            = "0.7.5"
+      val avsystemCommons    = "1.39.0"
     }
     val akkaHttp            = "com.typesafe.akka"                     %% "akka-http"             % Version.akkaHttp
     val akkaHttpJacksonJava = "com.typesafe.akka"                     %% "akka-http-jackson"     % Version.akkaHttp
     val akkaStream          = "com.typesafe.akka"                     %% "akka-stream"           % Version.akka
     val argonaut            = "io.argonaut"                           %% "argonaut"              % Version.argonaut
+    val avro4sJson          = "com.sksamuel.avro4s"                   %% "avro4s-json"           % Version.avro4s
+    val avsystemCommons     = "com.avsystem.commons"                  %% "commons-core"          % Version.avsystemCommons
     val circe               = "io.circe"                              %% "circe-core"            % Version.circe
     val circeParser         = "io.circe"                              %% "circe-parser"          % Version.circe
     val circeJawn           = "io.circe"                              %% "circe-jawn"            % Version.circe
@@ -200,12 +209,11 @@ lazy val library =
     val json4sCore          = "org.json4s"                            %% "json4s-core"           % Version.json4s
     val json4sJackson       = "org.json4s"                            %% "json4s-jackson"        % Version.json4s
     val json4sNative        = "org.json4s"                            %% "json4s-native"         % Version.json4s
-    val jsoniterScalaMacros = "com.github.plokhotnyuk.jsoniter-scala" %% "jsoniter-scala-macros" % Version.jsoniterScalaMacros
+    val jsoniterScalaCore   = "com.github.plokhotnyuk.jsoniter-scala" %% "jsoniter-scala-core"   % Version.jsoniterScala
+    val jsoniterScalaMacros = "com.github.plokhotnyuk.jsoniter-scala" %% "jsoniter-scala-macros" % Version.jsoniterScala
     val playJson            = "com.typesafe.play"                     %% "play-json"             % Version.play
     val scalaTest           = "org.scalatest"                         %% "scalatest"             % Version.scalaTest
     val upickle             = "com.lihaoyi"                           %% "upickle"               % Version.upickle
-    val avro4sJson          = "com.sksamuel.avro4s"                   %% "avro4s-json"           % Version.avro4s
-    val avsystemCommons     = "com.avsystem.commons"                  %% "commons-core"          % Version.avsystemCommons
   }
 
 // *****************************************************************************
@@ -220,8 +228,7 @@ lazy val settings =
 
 lazy val commonSettings =
   Seq(
-    scalaVersion := "2.12.8",
-    crossScalaVersions := Seq(scalaVersion.value, "2.11.12"),
+    scalaVersion := "2.12.9",
     organizationName := "Heiko Seeberger",
     startYear := Some(2015),
     scalacOptions ++= Seq(
