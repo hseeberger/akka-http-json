@@ -60,14 +60,13 @@ lazy val `akka-http-circe` =
     .enablePlugins(AutomateHeaderPlugin)
     .settings(settings)
     .settings(
-      crossScalaVersions := Seq(scalaVersion.value, "2.11.12"),
+      crossScalaVersions := Seq("2.13.0", scalaVersion.value, "2.11.12"),
       libraryDependencies ++= Seq(
         library.akkaHttp,
         library.akkaStream,
-        library.circe,
-        library.circeParser,
-        library.circeJawn,
-        library.circeGeneric % Test,
+        if (scalaVersion.value == "2.11.12") library.circe.withRevision("0.11.1") else library.circe,
+        if (scalaVersion.value == "2.11.12") library.circeParser.withRevision("0.11.1") else library.circeParser,
+        (if (scalaVersion.value == "2.11.12") library.circeGeneric.withRevision("0.11.1") else library.circeGeneric) % Test,
         library.scalaTest    % Test
       )
     )
@@ -186,9 +185,9 @@ lazy val library =
       val akkaHttp           = "10.1.9"
       val argonaut           = "6.2.3"
       val avro4s             = "3.0.1"
-      val circe              = "0.11.1"
+      val circe              = "0.12.1"
       val jacksonModuleScala = "2.9.9"
-      val jsoniterScala      = "0.55.0"
+      val jsoniterScala      = "0.55.2"
       val json4s             = "3.6.7"
       val play               = "2.7.4"
       val scalaTest          = "3.0.8"
@@ -203,7 +202,6 @@ lazy val library =
     val avsystemCommons     = "com.avsystem.commons"                  %% "commons-core"          % Version.avsystemCommons
     val circe               = "io.circe"                              %% "circe-core"            % Version.circe
     val circeParser         = "io.circe"                              %% "circe-parser"          % Version.circe
-    val circeJawn           = "io.circe"                              %% "circe-jawn"            % Version.circe
     val circeGeneric        = "io.circe"                              %% "circe-generic"         % Version.circe
     val jacksonModuleScala  = "com.fasterxml.jackson.module"          %% "jackson-module-scala"  % Version.jacksonModuleScala
     val json4sCore          = "org.json4s"                            %% "json4s-core"           % Version.json4s
