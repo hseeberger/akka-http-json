@@ -60,13 +60,13 @@ lazy val `akka-http-circe` =
     .enablePlugins(AutomateHeaderPlugin)
     .settings(settings)
     .settings(
-      crossScalaVersions := Seq("2.13.0", scalaVersion.value, "2.11.12"),
+      crossScalaVersions := Seq("2.13.0", scalaVersion.value),
       libraryDependencies ++= Seq(
         library.akkaHttp,
         library.akkaStream,
-        if (scalaVersion.value == "2.11.12") library.circe.withRevision("0.11.1") else library.circe,
-        if (scalaVersion.value == "2.11.12") library.circeParser.withRevision("0.11.1") else library.circeParser,
-        (if (scalaVersion.value == "2.11.12") library.circeGeneric.withRevision("0.11.1") else library.circeGeneric) % Test,
+        library.circe,
+        library.circeParser,
+        library.circeGeneric % Test,
         library.scalaTest    % Test
       )
     )

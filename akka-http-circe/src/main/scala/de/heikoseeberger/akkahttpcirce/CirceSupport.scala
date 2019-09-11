@@ -87,7 +87,7 @@ trait BaseCirceSupport {
     Marshaller.oneOf(mediaTypes: _*) { mediaType =>
       Marshaller.withFixedContentType(ContentType(mediaType)) { json =>
         HttpEntity(mediaType,
-                   ByteString(printer.prettyByteBuffer(json, mediaType.charset.nioCharset())))
+                   ByteString(printer.printToByteBuffer(json, mediaType.charset.nioCharset())))
       }
     }
 
@@ -160,7 +160,7 @@ trait ErrorAccumulatingUnmarshaller { this: BaseCirceSupport =>
   override implicit final def unmarshaller[A: Decoder]: FromEntityUnmarshaller[A] = {
     def decode(json: Json) =
       Decoder[A]
-        .accumulating(json.hcursor)
+        .decodeAccumulating(json.hcursor)
         .fold(failures => throw ErrorAccumulatingCirceSupport.DecodingFailures(failures), identity)
     jsonUnmarshaller.map(decode)
   }
@@ -169,7 +169,7 @@ trait ErrorAccumulatingUnmarshaller { this: BaseCirceSupport =>
     : FromEntityUnmarshaller[ValidatedNel[io.circe.Error, A]] = {
     def decode(json: Json): ValidatedNel[io.circe.Error, A] =
       Decoder[A]
-        .accumulating(json.hcursor)
+        .decodeAccumulating(json.hcursor)
     safeJsonUnmarshaller.map(_.toValidatedNel andThen decode)
   }
 }
