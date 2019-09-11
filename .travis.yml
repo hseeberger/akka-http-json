@@ -10,9 +10,9 @@ stages:
 
 jobs:
   include:
-    - script: sbt +test:compile +test
+    - script: sbt -Dsbt.supershell=false +test:compile +test
     - stage: release
-      script: sbt ci-release
+      script: sbt -Dsbt.supershell=false ci-release
 
 cache:
   directories:

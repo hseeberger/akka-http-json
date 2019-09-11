@@ -226,7 +226,7 @@ lazy val settings =
 
 lazy val commonSettings =
   Seq(
-    scalaVersion := "2.12.9",
+    scalaVersion := "2.12.10",
     organizationName := "Heiko Seeberger",
     startYear := Some(2015),
     scalacOptions ++= Seq(
