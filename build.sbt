@@ -26,7 +26,7 @@ lazy val `akka-http-json` =
     .aggregate(
       `akka-http-argonaut`,
       `akka-http-avro4s`,
-      `akka-http-avsystem-gencodec`,
+//      `akka-http-avsystem-gencodec`,
       `akka-http-circe`,
       `akka-http-jackson`,
       `akka-http-json4s`,
@@ -46,7 +46,7 @@ lazy val `akka-http-argonaut`=
     .enablePlugins(AutomateHeaderPlugin)
     .settings(settings)
     .settings(
-      crossScalaVersions := Seq("2.13.0", scalaVersion.value, "2.11.12"),
+      crossScalaVersions := Seq(scalaVersion.value, "2.12.10"),
       libraryDependencies ++= Seq(
         library.akkaHttp,
         library.akkaStream,
@@ -60,7 +60,6 @@ lazy val `akka-http-circe` =
     .enablePlugins(AutomateHeaderPlugin)
     .settings(settings)
     .settings(
-      crossScalaVersions := Seq("2.13.0", scalaVersion.value),
       libraryDependencies ++= Seq(
         library.akkaHttp,
         library.akkaStream,
@@ -76,7 +75,6 @@ lazy val `akka-http-jackson` =
     .enablePlugins(AutomateHeaderPlugin)
     .settings(settings)
     .settings(
-      crossScalaVersions := Seq("2.13.0", scalaVersion.value, "2.11.12"),
       libraryDependencies ++= Seq(
         library.akkaHttp,
         library.akkaStream,
@@ -92,7 +90,6 @@ lazy val `akka-http-json4s` =
     .enablePlugins(AutomateHeaderPlugin)
     .settings(settings)
     .settings(
-      crossScalaVersions := Seq("2.13.0", scalaVersion.value, "2.11.12"),
       libraryDependencies ++= Seq(
         library.akkaHttp,
         library.akkaStream,
@@ -108,7 +105,6 @@ lazy val `akka-http-jsoniter-scala` =
     .enablePlugins(AutomateHeaderPlugin)
     .settings(settings)
     .settings(
-      crossScalaVersions := Seq("2.13.0", scalaVersion.value, "2.11.12"),
       libraryDependencies ++= Seq(
         library.akkaHttp,
         library.akkaStream,
@@ -123,7 +119,6 @@ lazy val `akka-http-play-json` =
     .enablePlugins(AutomateHeaderPlugin)
     .settings(settings)
     .settings(
-      crossScalaVersions := Seq("2.13.0", scalaVersion.value, "2.11.12"),
       libraryDependencies ++= Seq(
         library.akkaHttp,
         library.akkaStream,
@@ -137,11 +132,10 @@ lazy val `akka-http-upickle` =
     .enablePlugins(AutomateHeaderPlugin)
     .settings(settings)
     .settings(
-      crossScalaVersions := Seq("2.13.0", scalaVersion.value, "2.11.12"),
       libraryDependencies ++= Seq(
         library.akkaHttp,
         library.akkaStream,
-        if (scalaVersion.value == "2.11.12") library.upickle.withRevision("0.7.4") else library.upickle,
+        library.upickle,
         library.scalaTest % Test
       )
     )
@@ -151,7 +145,6 @@ lazy val `akka-http-avro4s` =
     .enablePlugins(AutomateHeaderPlugin)
     .settings(settings)
     .settings(
-      crossScalaVersions := Seq("2.13.0", scalaVersion.value),
       libraryDependencies ++= Seq(
         library.akkaHttp,
         library.akkaStream,
@@ -160,19 +153,18 @@ lazy val `akka-http-avro4s` =
       )
     )
 
-lazy val `akka-http-avsystem-gencodec` =
-  project
-  .enablePlugins(AutomateHeaderPlugin)
-  .settings(settings)
-  .settings(
-    crossScalaVersions := Seq(scalaVersion.value, "2.11.12"),
-    libraryDependencies ++= Seq(
-      library.akkaHttp,
-      library.akkaStream,
-      library.avsystemCommons,
-      library.scalaTest % Test
-    )
-  )
+// lazy val `akka-http-avsystem-gencodec` =
+//   project
+//   .enablePlugins(AutomateHeaderPlugin)
+//   .settings(settings)
+//   .settings(
+//     libraryDependencies ++= Seq(
+//       library.akkaHttp,
+//       library.akkaStream,
+//       library.avsystemCommons,
+//       library.scalaTest % Test
+//     )
+//   )
 
 // *****************************************************************************
 // Library dependencies
@@ -182,7 +174,7 @@ lazy val library =
   new {
     object Version {
       val akka               = "2.5.25"
-      val akkaHttp           = "10.1.9"
+      val akkaHttp           = "10.1.10"
       val argonaut           = "6.2.3"
       val avro4s             = "3.0.1"
       val circe              = "0.12.1"
@@ -226,7 +218,7 @@ lazy val settings =
 
 lazy val commonSettings =
   Seq(
-    scalaVersion := "2.12.10",
+    scalaVersion := "2.13.1",
     organizationName := "Heiko Seeberger",
     startYear := Some(2015),
     scalacOptions ++= Seq(

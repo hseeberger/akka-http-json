@@ -18,17 +18,22 @@ package de.heikoseeberger.akkahttpcirce
 
 import akka.actor.ActorSystem
 import akka.http.scaladsl.marshalling.Marshal
-import akka.http.scaladsl.model.ContentTypes.`application/json`
-import akka.http.scaladsl.model._
-import akka.http.scaladsl.unmarshalling.Unmarshaller.UnsupportedContentTypeException
+import akka.http.scaladsl.model.{
+  ContentTypeRange,
+  HttpCharsets,
+  HttpEntity,
+  MediaType,
+  RequestEntity
+}
+import akka.http.scaladsl.model.ContentTypes.{ `application/json`, `text/plain(UTF-8)` }
 import akka.http.scaladsl.unmarshalling.{ Unmarshal, Unmarshaller }
+import akka.http.scaladsl.unmarshalling.Unmarshaller.UnsupportedContentTypeException
 import akka.stream.ActorMaterializer
 import cats.data.{ NonEmptyList, ValidatedNel }
+import io.circe.{ DecodingFailure, ParsingFailure, Printer }
 import io.circe.CursorOp.DownField
-import io.circe.{ DecodingFailure, Errors, ParsingFailure, Printer }
 import org.scalatest.{ AsyncWordSpec, BeforeAndAfterAll, EitherValues, Matchers }
 import org.scalatest.concurrent.ScalaFutures
-
 import scala.concurrent.Await
 import scala.concurrent.duration.DurationInt
 
@@ -51,8 +56,8 @@ final class CirceSupportSpec
     with EitherValues {
   import CirceSupportSpec._
 
-  private implicit val system = ActorSystem()
-  private implicit val mat    = ActorMaterializer()
+  private implicit val system: ActorSystem    = ActorSystem()
+  private implicit val mat: ActorMaterializer = ActorMaterializer()
 
   private val `application/json-home` =
     MediaType.applicationWithFixedCharset("json-home", HttpCharsets.`UTF-8`, "json-home")
@@ -73,7 +78,7 @@ final class CirceSupportSpec
     }
 
     "provide proper error messages for requirement errors" in {
-      val entity = HttpEntity(MediaTypes.`application/json`, """{ "bar": "baz" }""")
+      val entity = HttpEntity(`application/json`, """{ "bar": "baz" }""")
       Unmarshal(entity)
         .to[Foo]
         .failed
@@ -93,7 +98,9 @@ final class CirceSupportSpec
       Unmarshal(entity)
         .to[Foo]
         .failed
-        .map(_ shouldBe UnsupportedContentTypeException(`application/json`))
+        .map(
+          _ shouldBe UnsupportedContentTypeException(Some(`text/plain(UTF-8)`), `application/json`)
+        )
     }
 
     "write None as null by default" in {
@@ -104,8 +111,8 @@ final class CirceSupportSpec
     }
 
     "not write None" in {
-      implicit val printer = Printer.noSpaces.copy(dropNullValues = true)
-      val optionFoo        = OptionFoo(None)
+      implicit val printer: Printer = Printer.noSpaces.copy(dropNullValues = true)
+      val optionFoo                 = OptionFoo(None)
       Marshal(optionFoo)
         .to[RequestEntity]
         .map(_.asInstanceOf[HttpEntity.Strict].data.decodeString("UTF-8") shouldBe "{}")
@@ -128,7 +135,7 @@ final class CirceSupportSpec
     }
 
     "fail-fast and return only the first unmarshalling error" in {
-      val entity = HttpEntity(MediaTypes.`application/json`, """{ "a": 1, "b": 2 }""")
+      val entity = HttpEntity(`application/json`, """{ "a": 1, "b": 2 }""")
       val error  = DecodingFailure("String", List(DownField("a")))
       Unmarshal(entity)
         .to[MultiFoo]
@@ -137,7 +144,7 @@ final class CirceSupportSpec
     }
 
     "fail-fast and return only the first unmarshalling error with safeUnmarshaller" in {
-      val entity = HttpEntity(MediaTypes.`application/json`, """{ "a": 1, "b": 2 }""")
+      val entity = HttpEntity(`application/json`, """{ "a": 1, "b": 2 }""")
       val error  = DecodingFailure("String", List(DownField("a")))
       Unmarshal(entity)
         .to[Either[io.circe.Error, MultiFoo]]
@@ -150,11 +157,12 @@ final class CirceSupportSpec
       val foo = Foo("bar")
 
       final object CustomCirceSupport extends FailFastCirceSupport {
-        override def unmarshallerContentTypes = List(`application/json`, `application/json-home`)
+        override def unmarshallerContentTypes: List[ContentTypeRange] =
+          List(`application/json`, `application/json-home`)
       }
       import CustomCirceSupport._
 
-      val entity = HttpEntity(MediaTypes.`application/json`, """{ "bar": "bar" }""")
+      val entity = HttpEntity(`application/json`, """{ "bar": "bar" }""")
       Unmarshal(entity).to[Foo].map(_ shouldBe foo)
     }
   }
@@ -176,7 +184,7 @@ final class CirceSupportSpec
     }
 
     "accumulate and return all unmarshalling errors" in {
-      val entity = HttpEntity(MediaTypes.`application/json`, """{ "a": 1, "b": 2 }""")
+      val entity = HttpEntity(`application/json`, """{ "a": 1, "b": 2 }""")
       val errors =
         NonEmptyList.of(
           DecodingFailure("String", List(DownField("a"))),
@@ -190,7 +198,7 @@ final class CirceSupportSpec
     }
 
     "accumulate and return all unmarshalling errors with safeUnmarshaller" in {
-      val entity = HttpEntity(MediaTypes.`application/json`, """{ "a": 1, "b": 2 }""")
+      val entity = HttpEntity(`application/json`, """{ "a": 1, "b": 2 }""")
       val errors =
         NonEmptyList.of(
           DecodingFailure("String", List(DownField("a"))),
@@ -209,7 +217,8 @@ final class CirceSupportSpec
       val foo = Foo("bar")
 
       final object CustomCirceSupport extends ErrorAccumulatingCirceSupport {
-        override def unmarshallerContentTypes = List(`application/json`, `application/json-home`)
+        override def unmarshallerContentTypes: List[ContentTypeRange] =
+          List(`application/json`, `application/json-home`)
       }
       import CustomCirceSupport._
 
@@ -218,7 +227,7 @@ final class CirceSupportSpec
     }
   }
 
-  override protected def afterAll() = {
+  override protected def afterAll(): Unit = {
     Await.ready(system.terminate(), 42.seconds)
     super.afterAll()
   }
