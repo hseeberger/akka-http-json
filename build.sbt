@@ -46,7 +46,6 @@ lazy val `akka-http-argonaut`=
     .enablePlugins(AutomateHeaderPlugin)
     .settings(settings)
     .settings(
-      crossScalaVersions := Seq(scalaVersion.value, "2.12.10"),
       libraryDependencies ++= Seq(
         library.akkaHttp,
         library.akkaStream,
@@ -219,6 +218,7 @@ lazy val settings =
 lazy val commonSettings =
   Seq(
     scalaVersion := "2.13.1",
+    crossScalaVersions := Seq(scalaVersion.value, "2.12.10"),
     organizationName := "Heiko Seeberger",
     startYear := Some(2015),
     scalacOptions ++= Seq(
