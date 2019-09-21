@@ -153,18 +153,18 @@ lazy val `akka-http-avro4s` =
       )
     )
 
-lazy val `akka-http-avsystem-gencodec` =
-  project
-  .enablePlugins(AutomateHeaderPlugin)
-  .settings(settings)
-  .settings(
-    libraryDependencies ++= Seq(
-      library.akkaHttp,
-      library.akkaStream,
-      library.avsystemCommons,
-      library.scalaTest % Test
-    )
-  )
+// lazy val `akka-http-avsystem-gencodec` =
+//   project
+//   .enablePlugins(AutomateHeaderPlugin)
+//   .settings(settings)
+//   .settings(
+//     libraryDependencies ++= Seq(
+//       library.akkaHttp,
+//       library.akkaStream,
+//       library.avsystemCommons,
+//       library.scalaTest % Test
+//     )
+//   )
 
 // *****************************************************************************
 // Library dependencies
@@ -174,7 +174,7 @@ lazy val library =
   new {
     object Version {
       val akka               = "2.5.25"
-      val akkaHttp           = "10.1.9"
+      val akkaHttp           = "10.1.10"
       val argonaut           = "6.2.3"
       val avro4s             = "3.0.1"
       val circe              = "0.12.1"

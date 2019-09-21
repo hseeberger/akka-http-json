@@ -18,7 +18,7 @@ package de.heikoseeberger.akkahttpjsoniterscala
 
 import akka.actor.ActorSystem
 import akka.http.scaladsl.marshalling.Marshal
-import akka.http.scaladsl.model.ContentTypes.`application/json`
+import akka.http.scaladsl.model.ContentTypes.{ `application/json`, `text/plain(UTF-8)` }
 import akka.http.scaladsl.model._
 import akka.http.scaladsl.unmarshalling.Unmarshaller.UnsupportedContentTypeException
 import akka.http.scaladsl.unmarshalling.{ Unmarshal, Unmarshaller }
@@ -26,7 +26,6 @@ import akka.stream.ActorMaterializer
 import com.github.plokhotnyuk.jsoniter_scala.core.JsonValueCodec
 import com.github.plokhotnyuk.jsoniter_scala.macros._
 import org.scalatest.{ AsyncWordSpec, BeforeAndAfterAll, Matchers }
-
 import scala.concurrent.Await
 import scala.concurrent.duration.DurationInt
 
@@ -75,7 +74,9 @@ final class JsoniterScalaSupportSpec extends AsyncWordSpec with Matchers with Be
       Unmarshal(entity)
         .to[Foo]
         .failed
-        .map(_ shouldBe UnsupportedContentTypeException(`application/json`))
+        .map(
+          _ shouldBe UnsupportedContentTypeException(Some(`text/plain(UTF-8)`), `application/json`)
+        )
     }
 
     "allow unmarshalling with passed in Content-Types" in {
