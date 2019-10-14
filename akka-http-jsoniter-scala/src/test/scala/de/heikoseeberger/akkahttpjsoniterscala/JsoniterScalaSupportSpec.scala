@@ -42,7 +42,7 @@ final class JsoniterScalaSupportSpec extends AsyncWordSpec with Matchers with Be
 
   private implicit val system: ActorSystem        = ActorSystem()
   private implicit val mat: ActorMaterializer     = ActorMaterializer()
-  private implicit val codec: JsonValueCodec[Foo] = JsonCodecMaker.make[Foo](CodecMakerConfig())
+  private implicit val codec: JsonValueCodec[Foo] = JsonCodecMaker.make[Foo](CodecMakerConfig)
 
   "JsoniterScalaSupport" should {
     "should enable marshalling and unmarshalling" in {
@@ -85,7 +85,8 @@ final class JsoniterScalaSupportSpec extends AsyncWordSpec with Matchers with Be
         MediaType.applicationWithFixedCharset("json-home", HttpCharsets.`UTF-8`, "json-home")
 
       final object CustomJsoniterScalaSupport extends JsoniterScalaSupport {
-        override def unmarshallerContentTypes = List(`application/json`, `application/json-home`)
+        override def unmarshallerContentTypes: List[ContentTypeRange] =
+          List(`application/json`, `application/json-home`)
       }
       import CustomJsoniterScalaSupport._
 

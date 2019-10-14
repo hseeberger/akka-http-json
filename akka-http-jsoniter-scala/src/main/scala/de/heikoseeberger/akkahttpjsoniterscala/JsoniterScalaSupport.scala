@@ -30,8 +30,8 @@ import scala.collection.immutable.Seq
   */
 object JsoniterScalaSupport extends JsoniterScalaSupport {
   val defaultReaderConfig: ReaderConfig =
-    ReaderConfig(preferredBufSize = 100 * 1024, preferredCharBufSize = 10 * 1024)
-  val defaultWriterConfig: WriterConfig = WriterConfig(preferredBufSize = 100 * 1024)
+    ReaderConfig.withPreferredBufSize(100 * 1024).withPreferredCharBufSize(10 * 1024)
+  val defaultWriterConfig: WriterConfig = WriterConfig.withPreferredBufSize(100 * 1024)
 }
 
 /**

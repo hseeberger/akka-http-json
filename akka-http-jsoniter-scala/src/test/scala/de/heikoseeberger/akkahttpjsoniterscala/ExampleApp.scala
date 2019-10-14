@@ -46,12 +46,12 @@ object ExampleApp {
 
     // here you should provide implicit codecs for in/out messages of all routes
 
-    implicit val codec: JsonValueCodec[Foo] = JsonCodecMaker.make[Foo](CodecMakerConfig())
+    implicit val codec: JsonValueCodec[Foo] = JsonCodecMaker.make[Foo](CodecMakerConfig)
 
     // also, you can provide an implicit reader/writer configs to override defaults:
     //
-    // implicit val readerConfig = ReaderConfig(throwParseExceptionWithStackTrace = true)
-    // implicit val writerConfig = WriterConfig(indentionStep = 2)
+    // implicit val readerConfig = ReaderConfig.withThrowReaderExceptionWithStackTrace(true)
+    // implicit val writerConfig = WriterConfig.withIndentionStep(2)
 
     pathSingleSlash {
       post {
