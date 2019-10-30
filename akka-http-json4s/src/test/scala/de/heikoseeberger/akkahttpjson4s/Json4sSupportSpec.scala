@@ -22,15 +22,17 @@ import akka.http.scaladsl.model.ContentTypes.{ `application/json`, `text/plain(U
 import akka.http.scaladsl.model._
 import akka.http.scaladsl.unmarshalling.Unmarshaller.UnsupportedContentTypeException
 import akka.http.scaladsl.unmarshalling.{ Unmarshal, Unmarshaller }
+import akka.stream.scaladsl.{ Sink, Source }
 import org.json4s.{ DefaultFormats, jackson, native }
 import org.scalatest.{ AsyncWordSpec, BeforeAndAfterAll, Matchers }
+
 import scala.concurrent.Await
 import scala.concurrent.duration.DurationInt
 
 object Json4sSupportSpec {
 
   final case class Foo(bar: String) {
-    require(bar == "bar", "bar must be 'bar'!")
+    require(bar startsWith "bar", "bar must start with 'bar'!")
   }
 }
 
@@ -52,6 +54,22 @@ final class Json4sSupportSpec extends AsyncWordSpec with Matchers with BeforeAnd
         .map(_ shouldBe foo)
     }
 
+    "enable streamed marshalling and unmarshalling for json arrays" in {
+      implicit val serialization = jackson.Serialization
+
+      val foos = (0 to 100).map(i => Foo(s"bar-$i")).toList
+
+      Marshal(Source(foos))
+        .to[RequestEntity]
+        .flatMap { entity =>
+          Unmarshal(entity).to[String].onComplete(println)
+
+          Unmarshal(entity).to[SourceOf[Foo]]
+        }
+        .flatMap(_.runWith(Sink.seq))
+        .map(_ shouldBe foos)
+    }
+
     "enable marshalling and unmarshalling objects for `DefaultFormats` and `native.Serialization`" in {
       implicit val serialization = native.Serialization
       Marshal(foo)
@@ -67,7 +85,7 @@ final class Json4sSupportSpec extends AsyncWordSpec with Matchers with BeforeAnd
       Unmarshal(entity)
         .to[Foo]
         .failed
-        .map(_ should have message "requirement failed: bar must be 'bar'!")
+        .map(_ should have message "requirement failed: bar must start with 'bar'!")
     }
 
     "fail with NoContentException when unmarshalling empty entities" in {

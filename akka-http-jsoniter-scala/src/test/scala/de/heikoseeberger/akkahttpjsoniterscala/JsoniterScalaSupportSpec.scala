@@ -22,16 +22,18 @@ import akka.http.scaladsl.model.ContentTypes.{ `application/json`, `text/plain(U
 import akka.http.scaladsl.model._
 import akka.http.scaladsl.unmarshalling.Unmarshaller.UnsupportedContentTypeException
 import akka.http.scaladsl.unmarshalling.{ Unmarshal, Unmarshaller }
+import akka.stream.scaladsl.{ Sink, Source }
 import com.github.plokhotnyuk.jsoniter_scala.core.JsonValueCodec
 import com.github.plokhotnyuk.jsoniter_scala.macros._
 import org.scalatest.{ AsyncWordSpec, BeforeAndAfterAll, Matchers }
+
 import scala.concurrent.Await
 import scala.concurrent.duration.DurationInt
 
 object JsoniterScalaSupportSpec {
 
   final case class Foo(bar: String) {
-    require(bar == "bar", "bar must be 'bar'!")
+    require(bar startsWith "bar", "bar must start with 'bar'!")
   }
 }
 
@@ -51,12 +53,24 @@ final class JsoniterScalaSupportSpec extends AsyncWordSpec with Matchers with Be
         .map(_ shouldBe foo)
     }
 
+    "enable streamed marshalling and unmarshalling for json arrays" in {
+      val foos = (0 to 100).map(i => Foo(s"bar-$i")).toList
+
+      Marshal(Source(foos))
+        .to[RequestEntity]
+        .flatMap { entity =>
+          Unmarshal(entity).to[SourceOf[Foo]]
+        }
+        .flatMap(_.runWith(Sink.seq))
+        .map(_ shouldBe foos)
+    }
+
     "provide proper error messages for requirement errors" in {
       val entity = HttpEntity(MediaTypes.`application/json`, """{ "bar": "baz" }""")
       Unmarshal(entity)
         .to[Foo]
         .failed
-        .map(_ should have message "requirement failed: bar must be 'bar'!")
+        .map(_ should have message "requirement failed: bar must start with 'bar'!")
     }
 
     "fail with NoContentException when unmarshalling empty entities" in {

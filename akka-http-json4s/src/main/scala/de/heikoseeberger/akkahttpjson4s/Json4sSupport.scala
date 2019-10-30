@@ -17,16 +17,24 @@
 package de.heikoseeberger.akkahttpjson4s
 
 import java.lang.reflect.InvocationTargetException
-import akka.http.scaladsl.marshalling.{ Marshaller, ToEntityMarshaller }
-import akka.http.scaladsl.model.ContentTypeRange
-import akka.http.scaladsl.model.MediaType
+
+import akka.http.javadsl.common.JsonEntityStreamingSupport
+import akka.http.scaladsl.common.EntityStreamingSupport
+import akka.http.scaladsl.marshalling.{ Marshaller, Marshalling, ToEntityMarshaller }
+import akka.http.scaladsl.model.{ ContentTypeRange, HttpEntity, MediaType, MessageEntity }
 import akka.http.scaladsl.model.MediaTypes.`application/json`
-import akka.http.scaladsl.unmarshalling.{ FromEntityUnmarshaller, Unmarshaller }
+import akka.http.scaladsl.unmarshalling.{ FromEntityUnmarshaller, Unmarshal, Unmarshaller }
+import akka.http.scaladsl.util.FastFuture
 import akka.stream.Materializer
+import akka.stream.scaladsl.{ Flow, Source }
 import akka.util.ByteString
+import de.heikoseeberger.akkahttpjson4s.Json4sSupport.ShouldWritePretty.False
 import org.json4s.{ Formats, MappingException, Serialization }
+
 import scala.collection.immutable.Seq
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ ExecutionContext, Future }
+import scala.util.Try
+import scala.util.control.NonFatal
 
 /**
   * Automatic to and from JSON marshalling/unmarshalling using an in-scope *Json4s* protocol.
@@ -49,6 +57,8 @@ object Json4sSupport extends Json4sSupport {
   * Pretty printing is enabled if an implicit [[Json4sSupport.ShouldWritePretty.True]] is in scope.
   */
 trait Json4sSupport {
+  type SourceOf[A] = Source[A, _]
+
   import Json4sSupport._
 
   def unmarshallerContentTypes: Seq[ContentTypeRange] =
@@ -68,6 +78,38 @@ trait Json4sSupport {
   private val jsonStringMarshaller =
     Marshaller.oneOf(mediaTypes: _*)(Marshaller.stringMarshaller)
 
+  private def sourceByteStringMarshaller(
+      mediaType: MediaType.WithFixedCharset
+  ): Marshaller[SourceOf[ByteString], MessageEntity] =
+    Marshaller[SourceOf[ByteString], MessageEntity] { implicit ec => value =>
+      try FastFuture.successful {
+        Marshalling.WithFixedContentType(
+          mediaType,
+          () => HttpEntity(contentType = mediaType, data = value)
+        ) :: Nil
+      } catch {
+        case NonFatal(e) => FastFuture.failed(e)
+      }
+    }
+
+  private val jsonSourceStringMarshaller =
+    Marshaller.oneOf(mediaTypes: _*)(sourceByteStringMarshaller)
+
+  private def jsonSource[A <: AnyRef](entitySource: SourceOf[A])(
+      implicit f: Formats,
+      s: Serialization,
+      isPretty: ShouldWritePretty,
+      support: JsonEntityStreamingSupport
+  ): SourceOf[ByteString] =
+    entitySource
+      .map(
+        e =>
+          if (isPretty == False) s.write[A](e)
+          else s.writePretty[A](e)
+      )
+      .map(ByteString(_))
+      .via(support.framingRenderer)
+
   /**
     * HTTP entity => `A`
     *
@@ -86,16 +128,79 @@ trait Json4sSupport {
     * @tparam A type to encode, must be upper bounded by `AnyRef`
     * @return marshaller for any `A` value
     */
-  implicit def marshaller[A <: AnyRef](implicit serialization: Serialization,
-                                       formats: Formats,
-                                       shouldWritePretty: ShouldWritePretty =
-                                         ShouldWritePretty.False): ToEntityMarshaller[A] =
+  implicit def marshaller[A <: AnyRef](
+      implicit serialization: Serialization,
+      formats: Formats,
+      shouldWritePretty: ShouldWritePretty = ShouldWritePretty.False
+  ): ToEntityMarshaller[A] =
     shouldWritePretty match {
       case ShouldWritePretty.False =>
         jsonStringMarshaller.compose(serialization.write[A])
       case ShouldWritePretty.True =>
         jsonStringMarshaller.compose(serialization.writePretty[A])
     }
+
+  /**
+    * `ByteString` => `A`
+    *
+    * @tparam A type to decode
+    * @return unmarshaller for any `A` value
+    */
+  implicit def fromByteStringUnmarshaller[A: Manifest](
+      implicit s: Serialization,
+      formats: Formats
+  ): Unmarshaller[ByteString, A] = {
+    val result: Unmarshaller[ByteString, A] =
+      Unmarshaller { _ => bs =>
+        Future.fromTry(Try(s.read(bs.utf8String)))
+      }
+
+    result.recover(throwCause)
+  }
+
+  /**
+    * HTTP entity => `Source[A, _]`
+    *
+    * @tparam A type to decode
+    * @return unmarshaller for `Source[A, _]`
+    */
+  implicit def sourceUnmarshaller[A: Manifest](
+      implicit support: JsonEntityStreamingSupport = EntityStreamingSupport.json(),
+      serialization: Serialization,
+      formats: Formats
+  ): FromEntityUnmarshaller[SourceOf[A]] =
+    Unmarshaller
+      .withMaterializer[HttpEntity, SourceOf[A]] { implicit ec => implicit mat => entity =>
+        def asyncParse(bs: ByteString) =
+          Unmarshal(bs).to[A]
+
+        def ordered =
+          Flow[ByteString].mapAsync(support.parallelism)(asyncParse)
+
+        def unordered =
+          Flow[ByteString].mapAsyncUnordered(support.parallelism)(asyncParse)
+
+        Future.successful {
+          entity.dataBytes
+            .via(support.framingDecoder)
+            .via(if (support.unordered) unordered else ordered)
+        }
+      }
+      .forContentTypes(unmarshallerContentTypes: _*)
+
+  /**
+    * `SourceOf[A]` => HTTP entity
+    *
+    * @tparam A type to encode
+    * @return marshaller for any `SourceOf[A]` value
+    */
+  implicit def sourceMarshaller[A <: AnyRef](
+      implicit serialization: Serialization,
+      formats: Formats,
+      shouldWritePretty: ShouldWritePretty = False,
+      support: JsonEntityStreamingSupport = EntityStreamingSupport.json()
+  ): ToEntityMarshaller[SourceOf[A]] =
+    jsonSourceStringMarshaller.compose(jsonSource[A])
 
   private def throwCause[A](
       ec: ExecutionContext

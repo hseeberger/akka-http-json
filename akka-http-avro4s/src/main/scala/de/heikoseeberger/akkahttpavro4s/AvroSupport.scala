@@ -18,15 +18,21 @@ package de.heikoseeberger.akkahttpavro4s
 
 import java.io.ByteArrayOutputStream
 
-import akka.http.scaladsl.marshalling.{ Marshaller, ToEntityMarshaller }
-import akka.http.scaladsl.model.{ ContentType, ContentTypeRange, HttpEntity, MediaType }
+import akka.http.javadsl.common.JsonEntityStreamingSupport
+import akka.http.scaladsl.common.EntityStreamingSupport
+import akka.http.scaladsl.marshalling.{ Marshaller, Marshalling, ToEntityMarshaller }
 import akka.http.scaladsl.model.MediaTypes.`application/json`
-import akka.http.scaladsl.unmarshalling.{ FromEntityUnmarshaller, Unmarshaller }
+import akka.http.scaladsl.model._
+import akka.http.scaladsl.unmarshalling.{ FromEntityUnmarshaller, Unmarshal, Unmarshaller }
+import akka.http.scaladsl.util.FastFuture
+import akka.stream.scaladsl.{ Flow, Source }
 import akka.util.ByteString
 import com.sksamuel.avro4s._
-import org.apache.avro.Schema
 
 import scala.collection.immutable.Seq
+import scala.concurrent.Future
+import scala.util.Try
+import scala.util.control.NonFatal
 
 /**
   * Automatic to and from JSON marshalling/unmarshalling using *avro4s* protocol.
@@ -37,15 +43,70 @@ object AvroSupport extends AvroSupport
   * Automatic to and from JSON marshalling/unmarshalling using *avro4s* protocol.
   */
 trait AvroSupport {
+  type SourceOf[A] = Source[A, _]
+
   private val defaultMediaTypes: Seq[MediaType.WithFixedCharset] = List(`application/json`)
   private val defaultContentTypes: Seq[ContentTypeRange] =
     defaultMediaTypes.map(ContentTypeRange.apply)
   private val byteArrayUnmarshaller: FromEntityUnmarshaller[Array[Byte]] =
     Unmarshaller.byteArrayUnmarshaller.forContentTypes(unmarshallerContentTypes: _*)
 
+  private def sourceByteStringMarshaller(
+      mediaType: MediaType.WithFixedCharset
+  ): Marshaller[SourceOf[ByteString], MessageEntity] =
+    Marshaller[SourceOf[ByteString], MessageEntity] { implicit ec => value =>
+      try FastFuture.successful {
+        Marshalling.WithFixedContentType(
+          mediaType,
+          () => HttpEntity(contentType = mediaType, data = value)
+        ) :: Nil
+      } catch {
+        case NonFatal(e) => FastFuture.failed(e)
+      }
+    }
+
+  private val jsonSourceStringMarshaller =
+    Marshaller.oneOf(mediaTypes: _*)(sourceByteStringMarshaller)
+
+  private def jsonSource[A: SchemaFor: Encoder](entitySource: SourceOf[A])(
+      implicit support: JsonEntityStreamingSupport
+  ): SourceOf[ByteString] = {
+    val schema = AvroSchema[A]
+
+    entitySource
+      .map { obj =>
+        val baos   = new ByteArrayOutputStream()
+        val stream = AvroOutputStream.json[A].to(baos).build(schema)
+        stream.write(obj)
+        stream.close()
+        baos.toByteArray
+      }
+      .map(ByteString(_))
+      .via(support.framingRenderer)
+  }
+
   def unmarshallerContentTypes: Seq[ContentTypeRange] = defaultContentTypes
 
   def mediaTypes: Seq[MediaType.WithFixedCharset] = defaultMediaTypes
+
+  /**
+    * `ByteString` => `A`
+    *
+    * @tparam A type to decode
+    * @return unmarshaller for any `A` value
+    */
+  implicit def fromByteStringUnmarshaller[A: SchemaFor: Decoder]: Unmarshaller[ByteString, A] =
+    Unmarshaller { _ => bs =>
+      Future.fromTry {
+        val schema = AvroSchema[A]
+
+        Try {
+          val bytes = bs.toArray
+          if (bytes.length == 0) throw Unmarshaller.NoContentException
+          AvroInputStream.json[A].from(bytes).build(schema).iterator.next()
+        }
+      }
+    }
 
   /**
     * HTTP entity => `A`
@@ -78,4 +139,43 @@ trait AvroSupport {
       )
     }
   }
+
+  /**
+    * HTTP entity => `Source[A, _]`
+    *
+    * @tparam A type to decode
+    * @return unmarshaller for `Source[A, _]`
+    */
+  implicit def sourceUnmarshaller[A: SchemaFor: Decoder](
+      implicit support: JsonEntityStreamingSupport = EntityStreamingSupport.json()
+  ): FromEntityUnmarshaller[SourceOf[A]] =
+    Unmarshaller
+      .withMaterializer[HttpEntity, SourceOf[A]] { implicit ec => implicit mat => entity =>
+        def asyncParse(bs: ByteString) =
+          Unmarshal(bs).to[A]
+
+        def ordered =
+          Flow[ByteString].mapAsync(support.parallelism)(asyncParse)
+
+        def unordered =
+          Flow[ByteString].mapAsyncUnordered(support.parallelism)(asyncParse)
+
+        Future.successful {
+          entity.dataBytes
+            .via(support.framingDecoder)
+            .via(if (support.unordered) unordered else ordered)
+        }
+      }
+      .forContentTypes(unmarshallerContentTypes: _*)
+
+  /**
+    * `SourceOf[A]` => HTTP entity
+    *
+    * @tparam A type to encode
+    * @return marshaller for any `SourceOf[A]` value
+    */
+  implicit def sourceMarshaller[A: SchemaFor: Encoder](
+      implicit support: JsonEntityStreamingSupport = EntityStreamingSupport.json()
+  ): ToEntityMarshaller[SourceOf[A]] =
+    jsonSourceStringMarshaller.compose(jsonSource[A])
 }
