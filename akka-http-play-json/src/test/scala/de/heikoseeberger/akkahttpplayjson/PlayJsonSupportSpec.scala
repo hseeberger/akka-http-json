@@ -22,7 +22,6 @@ import akka.http.scaladsl.model.ContentTypes.{ `application/json`, `text/plain(U
 import akka.http.scaladsl.model._
 import akka.http.scaladsl.unmarshalling.Unmarshaller.UnsupportedContentTypeException
 import akka.http.scaladsl.unmarshalling.{ Unmarshal, Unmarshaller }
-import akka.stream.ActorMaterializer
 import org.scalatest.{ AsyncWordSpec, BeforeAndAfterAll, Matchers }
 import play.api.libs.json.{ Format, Json }
 import scala.collection.immutable.Seq
@@ -44,7 +43,6 @@ final class PlayJsonSupportSpec extends AsyncWordSpec with Matchers with BeforeA
   import PlayJsonSupportSpec._
 
   private implicit val system = ActorSystem()
-  private implicit val mat    = ActorMaterializer()
 
   "PlayJsonSupport" should {
     "enable marshalling and unmarshalling objects for which `Writes` and `Reads` exist" in {

@@ -22,7 +22,7 @@ import akka.http.scaladsl.model.ContentTypes.`application/json`
 import akka.http.scaladsl.model._
 import akka.http.scaladsl.unmarshalling.Unmarshaller.UnsupportedContentTypeException
 import akka.http.scaladsl.unmarshalling.{ Unmarshal, Unmarshaller }
-import akka.stream.ActorMaterializer
+import akka.stream.Materialzer
 import com.avsystem.commons.serialization.GenCodec
 import org.scalatest.{ AsyncWordSpec, BeforeAndAfterAll, Matchers }
 
@@ -45,7 +45,7 @@ final class GenCodecSupportSpec extends AsyncWordSpec with Matchers with BeforeA
   import GenCodecSupportSpec._
 
   private implicit val system = ActorSystem()
-  private implicit val mat    = ActorMaterializer()
+  private implicit val mat    = Materialzer()
 
   "GenCodecSupport" should {
     "enable marshalling and unmarshalling of case classes" in {

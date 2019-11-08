@@ -28,7 +28,6 @@ import akka.http.scaladsl.model.{
 import akka.http.scaladsl.model.ContentTypes.{ `application/json`, `text/plain(UTF-8)` }
 import akka.http.scaladsl.unmarshalling.{ Unmarshal, Unmarshaller }
 import akka.http.scaladsl.unmarshalling.Unmarshaller.UnsupportedContentTypeException
-import akka.stream.ActorMaterializer
 import cats.data.{ NonEmptyList, ValidatedNel }
 import io.circe.{ DecodingFailure, ParsingFailure, Printer }
 import io.circe.CursorOp.DownField
@@ -56,8 +55,7 @@ final class CirceSupportSpec
     with EitherValues {
   import CirceSupportSpec._
 
-  private implicit val system: ActorSystem    = ActorSystem()
-  private implicit val mat: ActorMaterializer = ActorMaterializer()
+  private implicit val system: ActorSystem = ActorSystem()
 
   private val `application/json-home` =
     MediaType.applicationWithFixedCharset("json-home", HttpCharsets.`UTF-8`, "json-home")

@@ -19,7 +19,7 @@ package de.heikoseeberger.akkahttpplayjson
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.server.Directives
-import akka.stream.{ ActorMaterializer, Materializer }
+import akka.stream.Materializer
 import play.api.libs.json.{ Format, Json }
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
@@ -34,7 +34,6 @@ object ExampleApp {
 
   def main(args: Array[String]): Unit = {
     implicit val system = ActorSystem()
-    implicit val mat    = ActorMaterializer()
 
     Http().bindAndHandle(route, "127.0.0.1", 8000)
 

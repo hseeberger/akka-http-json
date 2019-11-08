@@ -22,7 +22,6 @@ import akka.http.scaladsl.model.ContentTypes.{ `application/json`, `text/plain(U
 import akka.http.scaladsl.model._
 import akka.http.scaladsl.unmarshalling.Unmarshaller.UnsupportedContentTypeException
 import akka.http.scaladsl.unmarshalling.{ Unmarshal, Unmarshaller }
-import akka.stream.ActorMaterializer
 import com.github.plokhotnyuk.jsoniter_scala.core.JsonValueCodec
 import com.github.plokhotnyuk.jsoniter_scala.macros._
 import org.scalatest.{ AsyncWordSpec, BeforeAndAfterAll, Matchers }
@@ -41,7 +40,6 @@ final class JsoniterScalaSupportSpec extends AsyncWordSpec with Matchers with Be
   import JsoniterScalaSupportSpec._
 
   private implicit val system: ActorSystem        = ActorSystem()
-  private implicit val mat: ActorMaterializer     = ActorMaterializer()
   private implicit val codec: JsonValueCodec[Foo] = JsonCodecMaker.make[Foo](CodecMakerConfig)
 
   "JsoniterScalaSupport" should {

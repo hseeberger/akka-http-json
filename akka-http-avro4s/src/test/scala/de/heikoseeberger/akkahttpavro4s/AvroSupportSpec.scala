@@ -22,7 +22,6 @@ import akka.http.scaladsl.model.ContentTypes.{ `application/json`, `text/plain(U
 import akka.http.scaladsl.model._
 import akka.http.scaladsl.unmarshalling.Unmarshaller.UnsupportedContentTypeException
 import akka.http.scaladsl.unmarshalling.{ Unmarshal, Unmarshaller }
-import akka.stream.ActorMaterializer
 import com.sksamuel.avro4s.{ Decoder, Encoder, SchemaFor }
 import org.scalatest.{ AsyncWordSpec, BeforeAndAfterAll, Matchers }
 import scala.concurrent.Await
@@ -40,7 +39,6 @@ final class AvroSupportSpec extends AsyncWordSpec with Matchers with BeforeAndAf
   import AvroSupportSpec._
 
   private implicit val system    = ActorSystem()
-  private implicit val mat       = ActorMaterializer()
   private implicit val schemaFor = SchemaFor[Foo]
   private implicit val encoder   = Encoder[Foo]
   private implicit val decoder   = Decoder[Foo]

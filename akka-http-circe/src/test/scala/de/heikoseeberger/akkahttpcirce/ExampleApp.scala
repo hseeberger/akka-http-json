@@ -19,7 +19,7 @@ package de.heikoseeberger.akkahttpcirce
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.server.Directives
-import akka.stream.{ ActorMaterializer, Materializer }
+import akka.stream.{ Materializer }
 import scala.io.StdIn
 
 object ExampleApp {
@@ -28,7 +28,6 @@ object ExampleApp {
 
   def main(args: Array[String]): Unit = {
     implicit val system = ActorSystem()
-    implicit val mat    = ActorMaterializer()
 
     Http().bindAndHandle(route, "127.0.0.1", 8000)
 

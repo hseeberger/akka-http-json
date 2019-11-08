@@ -22,7 +22,6 @@ import akka.http.scaladsl.model.ContentTypes.{ `application/json`, `text/plain(U
 import akka.http.scaladsl.model._
 import akka.http.scaladsl.unmarshalling.Unmarshaller.UnsupportedContentTypeException
 import akka.http.scaladsl.unmarshalling.{ Unmarshal, Unmarshaller }
-import akka.stream.ActorMaterializer
 import org.scalatest.{ AsyncWordSpec, BeforeAndAfterAll, Matchers }
 import scala.concurrent.Await
 import scala.concurrent.duration.DurationInt
@@ -44,7 +43,6 @@ final class UpickleSupportSpec extends AsyncWordSpec with Matchers with BeforeAn
   import UpickleSupportSpec._
 
   private implicit val system = ActorSystem()
-  private implicit val mat    = ActorMaterializer()
 
   "UpickleSupport" should {
     "enable marshalling and unmarshalling of case classes" in {

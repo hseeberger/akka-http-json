@@ -19,7 +19,7 @@ package de.heikoseeberger.akkahttpjsoniterscala
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.server.{ Directives, Route }
-import akka.stream.{ ActorMaterializer, Materializer }
+import akka.stream.Materializer
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
 import scala.io.StdIn
@@ -29,8 +29,7 @@ object ExampleApp {
   final case class Foo(bar: String)
 
   def main(args: Array[String]): Unit = {
-    implicit val system: ActorSystem    = ActorSystem()
-    implicit val mat: ActorMaterializer = ActorMaterializer()
+    implicit val system: ActorSystem = ActorSystem()
 
     Http().bindAndHandle(route, "127.0.0.1", 8000)
 

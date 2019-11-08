@@ -22,7 +22,6 @@ import akka.http.scaladsl.model._
 import akka.http.scaladsl.model.ContentTypes.{ `application/json`, `text/plain(UTF-8)` }
 import akka.http.scaladsl.unmarshalling.{ Unmarshal, Unmarshaller }
 import akka.http.scaladsl.unmarshalling.Unmarshaller.UnsupportedContentTypeException
-import akka.stream.ActorMaterializer
 import argonaut.Argonaut._
 import org.scalatest.{ AsyncWordSpec, BeforeAndAfterAll, Matchers }
 import scala.concurrent.Await
@@ -40,7 +39,6 @@ final class ArgonautSupportSpec extends AsyncWordSpec with Matchers with BeforeA
   import ArgonautSupportSpec._
 
   private implicit val system   = ActorSystem()
-  private implicit val mat      = ActorMaterializer()
   private implicit def fooCodec = casecodec1(Foo.apply, Foo.unapply)("bar")
 
   "ArgonautSupport" should {

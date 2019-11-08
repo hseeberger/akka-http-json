@@ -19,7 +19,7 @@ package de.heikoseeberger.akkahttpavsystemgencodec
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.server.Directives
-import akka.stream.{ ActorMaterializer, Materializer }
+import akka.stream.{ Materialzer, Materializer }
 import com.avsystem.commons.serialization.GenCodec
 
 import scala.concurrent.Await
@@ -36,7 +36,7 @@ object ExampleApp {
 
   def main(args: Array[String]): Unit = {
     implicit val system = ActorSystem()
-    implicit val mat    = ActorMaterializer()
+    implicit val mat    = Materialzer()
 
     Http().bindAndHandle(route, "127.0.0.1", 8000)
 
