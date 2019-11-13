@@ -18,9 +18,14 @@ package de.heikoseeberger.akkahttpcirce
 
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
+import akka.http.scaladsl.marshalling.Marshal
+import akka.http.scaladsl.model.{ HttpRequest, RequestEntity }
 import akka.http.scaladsl.server.Directives
-import akka.stream.{ Materializer }
+import akka.http.scaladsl.unmarshalling.Unmarshal
+import akka.stream.scaladsl.Source
+
 import scala.io.StdIn
+import scala.concurrent.duration._
 
 object ExampleApp {
 
@@ -35,7 +40,7 @@ object ExampleApp {
     system.terminate()
   }
 
-  private def route(implicit mat: Materializer) = {
+  private def route(implicit sys: ActorSystem) = {
     import Directives._
     import FailFastCirceSupport._
     import io.circe.generic.auto._
@@ -45,6 +50,29 @@ object ExampleApp {
         entity(as[Foo]) { foo =>
           complete {
             foo
+          }
+        }
+      }
+    } ~ pathPrefix("stream") {
+      post {
+        entity(as[SourceOf[Foo]]) { fooSource: SourceOf[Foo] =>
+          import sys._
+
+          Marshal(Source.single(Foo("a"))).to[RequestEntity]
+
+          complete(fooSource.throttle(1, 2.seconds))
+        }
+      } ~ get {
+        pathEndOrSingleSlash {
+          complete(
+            Source(0 to 5)
+              .throttle(1, 1.seconds)
+              .map(i => Foo(s"bar-$i"))
+          )
+        } ~ pathPrefix("remote") {
+          onSuccess(Http().singleRequest(HttpRequest(uri = "http://localhost:8000/stream"))) {
+            response =>
+              complete(Unmarshal(response).to[SourceOf[Foo]])
           }
         }
       }

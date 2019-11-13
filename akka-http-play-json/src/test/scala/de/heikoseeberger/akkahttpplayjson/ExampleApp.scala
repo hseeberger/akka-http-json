@@ -18,11 +18,14 @@ package de.heikoseeberger.akkahttpplayjson
 
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
+import akka.http.scaladsl.model.HttpRequest
 import akka.http.scaladsl.server.Directives
-import akka.stream.Materializer
-import play.api.libs.json.{ Format, Json }
+import akka.http.scaladsl.unmarshalling.Unmarshal
+import akka.stream.scaladsl.Source
+import play.api.libs.json.{ Format, JsValue, Json }
+
 import scala.concurrent.Await
-import scala.concurrent.duration.Duration
+import scala.concurrent.duration._
 import scala.io.StdIn
 
 object ExampleApp {
@@ -41,15 +44,36 @@ object ExampleApp {
     Await.ready(system.terminate(), Duration.Inf)
   }
 
-  def route(implicit mat: Materializer) = {
+  def route(implicit sys: ActorSystem) = {
     import Directives._
     import PlayJsonSupport._
+
+    implicit val prettyPrint: JsValue => String = Json.prettyPrint
 
     pathSingleSlash {
       post {
         entity(as[Foo]) { foo =>
           complete {
             foo
+          }
+        }
+      }
+    } ~ pathPrefix("stream") {
+      post {
+        entity(as[SourceOf[Foo]]) { fooSource: SourceOf[Foo] =>
+          complete(fooSource.throttle(1, 2.seconds))
+        }
+      } ~ get {
+        pathEndOrSingleSlash {
+          complete(
+            Source(0 to 5)
+              .throttle(1, 1.seconds)
+              .map(i => Foo(s"bar-$i"))
+          )
+        } ~ pathPrefix("remote") {
+          onSuccess(Http().singleRequest(HttpRequest(uri = "http://localhost:8000/stream"))) {
+            response =>
+              complete(Unmarshal(response).to[SourceOf[Foo]])
           }
         }
       }

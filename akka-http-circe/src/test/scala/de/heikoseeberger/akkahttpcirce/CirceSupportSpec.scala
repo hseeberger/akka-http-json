@@ -23,23 +23,26 @@ import akka.http.scaladsl.model.{
   HttpCharsets,
   HttpEntity,
   MediaType,
-  RequestEntity
+  RequestEntity,
+  ResponseEntity
 }
 import akka.http.scaladsl.model.ContentTypes.{ `application/json`, `text/plain(UTF-8)` }
 import akka.http.scaladsl.unmarshalling.{ Unmarshal, Unmarshaller }
 import akka.http.scaladsl.unmarshalling.Unmarshaller.UnsupportedContentTypeException
+import akka.stream.scaladsl.{ Sink, Source }
 import cats.data.{ NonEmptyList, ValidatedNel }
-import io.circe.{ DecodingFailure, ParsingFailure, Printer }
+import io.circe.{ DecodingFailure, Encoder, ParsingFailure, Printer }
 import io.circe.CursorOp.DownField
 import org.scalatest.{ AsyncWordSpec, BeforeAndAfterAll, EitherValues, Matchers }
 import org.scalatest.concurrent.ScalaFutures
+
 import scala.concurrent.Await
 import scala.concurrent.duration.DurationInt
 
 object CirceSupportSpec {
 
   final case class Foo(bar: String) {
-    require(bar == "bar", "bar must be 'bar'!")
+    require(bar startsWith "bar", "bar must start with 'bar'!")
   }
 
   final case class MultiFoo(a: String, b: String)
@@ -75,12 +78,32 @@ final class CirceSupportSpec
         .map(_ shouldBe foo)
     }
 
+    "enable streamed marshalling and unmarshalling for json arrays" in {
+      val foos = (0 to 100).map(i => Foo(s"bar-$i")).toList
+
+      //Don't know why, the encoder is not resolving alongside the marshaller
+      //this only happens if we use the implicits from BaseCirceSupport
+      //so, tried to create it before and guess what? it worked.
+      //not sure if this is a bug, but, the error is this:
+      //  diverging implicit expansion for type io.circe.Encoder[A]
+      //  [error] starting with lazy value encodeZoneOffset in object Encoder
+      implicit val e = implicitly[Encoder[Foo]]
+
+      Marshal(Source(foos))
+        .to[ResponseEntity]
+        .flatMap { entity =>
+          Unmarshal(entity).to[SourceOf[Foo]]
+        }
+        .flatMap(_.runWith(Sink.seq))
+        .map(_ shouldBe foos)
+    }
+
     "provide proper error messages for requirement errors" in {
       val entity = HttpEntity(`application/json`, """{ "bar": "baz" }""")
       Unmarshal(entity)
         .to[Foo]
         .failed
-        .map(_ should have message "requirement failed: bar must be 'bar'!")
+        .map(_ should have message "requirement failed: bar must start with 'bar'!")
     }
 
     "fail with NoContentException when unmarshalling empty entities" in {
