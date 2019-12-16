@@ -33,11 +33,13 @@ import akka.stream.scaladsl.{ Sink, Source }
 import cats.data.{ NonEmptyList, ValidatedNel }
 import io.circe.{ DecodingFailure, Encoder, ParsingFailure, Printer }
 import io.circe.CursorOp.DownField
-import org.scalatest.{ AsyncWordSpec, BeforeAndAfterAll, EitherValues, Matchers }
+import org.scalatest.{ BeforeAndAfterAll, EitherValues }
 import org.scalatest.concurrent.ScalaFutures
 
 import scala.concurrent.Await
 import scala.concurrent.duration.DurationInt
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AsyncWordSpec
 
 object CirceSupportSpec {
 
