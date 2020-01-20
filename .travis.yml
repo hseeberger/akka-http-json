@@ -10,7 +10,7 @@ stages:
 
 jobs:
   include:
-    - script: sbt -Dsbt.supershell=false +test:compile +test
+    - script: sbt -Dsbt.supershell=false +test:compile +test +mimaReportBinaryIssues
     - stage: release
       script: sbt -Dsbt.supershell=false ci-release
 
