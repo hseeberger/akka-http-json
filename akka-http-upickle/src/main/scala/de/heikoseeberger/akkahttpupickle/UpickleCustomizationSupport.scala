@@ -25,11 +25,31 @@ import akka.http.scaladsl.unmarshalling.{ FromEntityUnmarshaller, Unmarshal, Unm
 import akka.http.scaladsl.util.FastFuture
 import akka.stream.scaladsl.{ Flow, Source }
 import akka.util.ByteString
+import UpickleCustomizationSupport._
 
 import scala.collection.immutable.Seq
 import scala.concurrent.Future
 import scala.util.Try
 import scala.util.control.NonFatal
+
+// This companion object only exists for binary compatibility as adding methods with default implementations
+// (including val's as they create synthetic methods) is not compatible.
+private object UpickleCustomizationSupport {
+
+  private def jsonStringUnmarshaller(support: UpickleCustomizationSupport) =
+    Unmarshaller.byteStringUnmarshaller
+      .forContentTypes(support.unmarshallerContentTypes: _*)
+      .mapWithCharset {
+        case (ByteString.empty, _) => throw Unmarshaller.NoContentException
+        case (data, charset)       => data.decodeString(charset.nioCharset.name)
+      }
+
+  private def jsonSourceStringMarshaller(support: UpickleCustomizationSupport) =
+    Marshaller.oneOf(support.mediaTypes: _*)(support.sourceByteStringMarshaller)
+
+  private def jsonStringMarshaller(support: UpickleCustomizationSupport) =
+    Marshaller.oneOf(support.mediaTypes: _*)(Marshaller.stringMarshaller)
+}
 
 /**
   * Automatic to and from JSON marshalling/unmarshalling using *upickle* protocol.
@@ -49,14 +69,6 @@ trait UpickleCustomizationSupport {
   def mediaTypes: Seq[MediaType.WithFixedCharset] =
     List(`application/json`)
 
-  private val jsonStringUnmarshaller =
-    Unmarshaller.byteStringUnmarshaller
-      .forContentTypes(unmarshallerContentTypes: _*)
-      .mapWithCharset {
-        case (ByteString.empty, _) => throw Unmarshaller.NoContentException
-        case (data, charset)       => data.decodeString(charset.nioCharset.name)
-      }
-
   private def sourceByteStringMarshaller(
       mediaType: MediaType.WithFixedCharset
   ): Marshaller[SourceOf[ByteString], MessageEntity] =
@@ -70,12 +82,6 @@ trait UpickleCustomizationSupport {
         case NonFatal(e) => FastFuture.failed(e)
       }
     }
-
-  private val jsonSourceStringMarshaller =
-    Marshaller.oneOf(mediaTypes: _*)(sourceByteStringMarshaller)
-
-  private val jsonStringMarshaller =
-    Marshaller.oneOf(mediaTypes: _*)(Marshaller.stringMarshaller)
 
   private def jsonSource[A](entitySource: SourceOf[A])(
       implicit writes: apiInstance.Writer[A],
@@ -104,7 +110,7 @@ trait UpickleCustomizationSupport {
     * @return unmarshaller for `A`
     */
   implicit def unmarshaller[A: apiInstance.Reader]: FromEntityUnmarshaller[A] =
-    jsonStringUnmarshaller.map(apiInstance.read(_))
+    jsonStringUnmarshaller(this).map(apiInstance.read(_))
 
   /**
     * `A` => HTTP entity
@@ -113,7 +119,7 @@ trait UpickleCustomizationSupport {
     * @return marshaller for any `A` value
     */
   implicit def marshaller[A: apiInstance.Writer]: ToEntityMarshaller[A] =
-    jsonStringMarshaller.compose(apiInstance.write(_))
+    jsonStringMarshaller(this).compose(apiInstance.write(_))
 
   /**
     * HTTP entity => `Source[A, _]`
@@ -153,5 +159,5 @@ trait UpickleCustomizationSupport {
       implicit writes: apiInstance.Writer[A],
       support: JsonEntityStreamingSupport = EntityStreamingSupport.json()
   ): ToEntityMarshaller[SourceOf[A]] =
-    jsonSourceStringMarshaller.compose(jsonSource[A])
+    jsonSourceStringMarshaller(this).compose(jsonSource[A])
 }
