@@ -23,6 +23,7 @@ inThisBuild(
 lazy val `akka-http-json` =
   project
     .in(file("."))
+    .disablePlugins(MimaPlugin)
     .aggregate(
       `akka-http-argonaut`,
       `akka-http-avro4s`,
@@ -229,7 +230,8 @@ lazy val commonSettings =
       "-encoding", "UTF-8"
     ),
     Compile / unmanagedSourceDirectories := Seq((Compile / scalaSource).value),
-    Test / unmanagedSourceDirectories := Seq((Test / scalaSource).value)
+    Test / unmanagedSourceDirectories := Seq((Test / scalaSource).value),
+    mimaPreviousArtifacts := previousStableVersion.value.map(organization.value %% name.value % _).toSet,
 )
 
 lazy val gitSettings =
