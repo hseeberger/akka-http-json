@@ -102,10 +102,9 @@ trait Json4sSupport {
       support: JsonEntityStreamingSupport
   ): SourceOf[ByteString] =
     entitySource
-      .map(
-        e =>
-          if (isPretty == False) s.write[A](e)
-          else s.writePretty[A](e)
+      .map(e =>
+        if (isPretty == False) s.write[A](e)
+        else s.writePretty[A](e)
       )
       .map(ByteString(_))
       .via(support.framingRenderer)
@@ -116,8 +115,10 @@ trait Json4sSupport {
     * @tparam A type to decode
     * @return unmarshaller for `A`
     */
-  implicit def unmarshaller[A: Manifest](implicit serialization: Serialization,
-                                         formats: Formats): FromEntityUnmarshaller[A] =
+  implicit def unmarshaller[A: Manifest](
+      implicit serialization: Serialization,
+      formats: Formats
+  ): FromEntityUnmarshaller[A] =
     jsonStringUnmarshaller
       .map(s => serialization.read(s))
       .recover(throwCause)
