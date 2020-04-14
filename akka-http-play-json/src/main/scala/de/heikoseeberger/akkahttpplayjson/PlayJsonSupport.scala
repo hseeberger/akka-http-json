@@ -87,9 +87,7 @@ trait PlayJsonSupport {
   private def read[A: Reads](json: JsValue): A =
     implicitly[Reads[A]]
       .reads(json)
-      .recoverTotal { e =>
-        throw PlayJsonError(e)
-      }
+      .recoverTotal(e => throw PlayJsonError(e))
 
   private def jsonSource[A](entitySource: SourceOf[A])(
       implicit writes: Writes[A],
@@ -130,9 +128,7 @@ trait PlayJsonSupport {
     * @return unmarshaller for any `A` value
     */
   implicit def fromByteStringUnmarshaller[A: Reads]: Unmarshaller[ByteString, A] =
-    Unmarshaller { _ => bs =>
-      Future.fromTry(Try(Json.parse(bs.toArray).as[A]))
-    }
+    Unmarshaller(_ => bs => Future.fromTry(Try(Json.parse(bs.toArray).as[A])))
 
   /**
     * HTTP entity => `Source[A, _]`

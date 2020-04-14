@@ -99,9 +99,7 @@ trait UpickleCustomizationSupport {
     * @return unmarshaller for any `A` value
     */
   implicit def fromByteStringUnmarshaller[A: apiInstance.Reader]: Unmarshaller[ByteString, A] =
-    Unmarshaller { _ => bs =>
-      Future.fromTry(Try(apiInstance.read(bs.toArray)))
-    }
+    Unmarshaller(_ => bs => Future.fromTry(Try(apiInstance.read(bs.toArray))))
 
   /**
     * HTTP entity => `A`

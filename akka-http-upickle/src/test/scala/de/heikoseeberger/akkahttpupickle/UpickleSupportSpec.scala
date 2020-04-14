@@ -62,9 +62,7 @@ final class UpickleSupportSpec extends AsyncWordSpec with Matchers with BeforeAn
 
       Marshal(Source(foos))
         .to[RequestEntity]
-        .flatMap { entity =>
-          Unmarshal(entity).to[SourceOf[Foo]]
-        }
+        .flatMap(entity => Unmarshal(entity).to[SourceOf[Foo]])
         .flatMap(_.runWith(Sink.seq))
         .map(_ shouldBe foos)
     }

@@ -65,9 +65,7 @@ final class AvroSupportSpec extends AsyncWordSpec with Matchers with BeforeAndAf
 
       Marshal(Source(foos))
         .to[RequestEntity]
-        .flatMap { entity =>
-          Unmarshal(entity).to[SourceOf[Foo]]
-        }
+        .flatMap(entity => Unmarshal(entity).to[SourceOf[Foo]])
         .flatMap(_.runWith(Sink.seq))
         .map(_ shouldBe foos)
     }

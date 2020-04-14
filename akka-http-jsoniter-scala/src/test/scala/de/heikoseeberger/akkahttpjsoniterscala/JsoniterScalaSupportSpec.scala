@@ -60,9 +60,7 @@ final class JsoniterScalaSupportSpec extends AsyncWordSpec with Matchers with Be
 
       Marshal(Source(foos))
         .to[RequestEntity]
-        .flatMap { entity =>
-          Unmarshal(entity).to[SourceOf[Foo]]
-        }
+        .flatMap(entity => Unmarshal(entity).to[SourceOf[Foo]])
         .flatMap(_.runWith(Sink.seq))
         .map(_ shouldBe foos)
     }

@@ -152,9 +152,7 @@ trait Json4sSupport {
       formats: Formats
   ): Unmarshaller[ByteString, A] = {
     val result: Unmarshaller[ByteString, A] =
-      Unmarshaller { _ => bs =>
-        Future.fromTry(Try(s.read(bs.utf8String)))
-      }
+      Unmarshaller(_ => bs => Future.fromTry(Try(s.read(bs.utf8String))))
 
     result.recover(throwCause)
   }

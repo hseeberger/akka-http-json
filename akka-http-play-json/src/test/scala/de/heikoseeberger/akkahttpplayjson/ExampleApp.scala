@@ -72,8 +72,7 @@ object ExampleApp {
           )
         } ~ pathPrefix("remote") {
           onSuccess(Http().singleRequest(HttpRequest(uri = "http://localhost:8000/stream"))) {
-            response =>
-              complete(Unmarshal(response).to[SourceOf[Foo]])
+            response => complete(Unmarshal(response).to[SourceOf[Foo]])
           }
         }
       }

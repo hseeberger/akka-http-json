@@ -187,9 +187,7 @@ trait BaseCirceSupport {
   implicit def unmarshaller[A: Decoder]: FromEntityUnmarshaller[A]
 
   def byteStringJsonUnmarshaller: Unmarshaller[ByteString, Json] =
-    Unmarshaller { _ => bs =>
-      Future.fromTry(jawn.parseByteBuffer(bs.asByteBuffer).toTry)
-    }
+    Unmarshaller(_ => bs => Future.fromTry(jawn.parseByteBuffer(bs.asByteBuffer).toTry))
 
   /**
     * HTTP entity => `Source[A, _]`

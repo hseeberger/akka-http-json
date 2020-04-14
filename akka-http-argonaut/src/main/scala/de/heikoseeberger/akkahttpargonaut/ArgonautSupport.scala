@@ -130,9 +130,7 @@ trait ArgonautSupport {
     * @return unmarshaller for any `A` value
     */
   implicit def fromByteStringUnmarshaller[A: DecodeJson]: Unmarshaller[ByteString, A] =
-    Unmarshaller { _ => bs =>
-      Future.successful(decode(parse(bs.utf8String)))
-    }
+    Unmarshaller(_ => bs => Future.successful(decode(parse(bs.utf8String))))
 
   /**
     * HTTP entity => `Source[A, _]`
