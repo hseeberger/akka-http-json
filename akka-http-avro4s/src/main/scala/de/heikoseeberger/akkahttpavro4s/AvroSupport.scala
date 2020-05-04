@@ -68,8 +68,8 @@ trait AvroSupport {
   private val jsonSourceStringMarshaller =
     Marshaller.oneOf(mediaTypes: _*)(sourceByteStringMarshaller)
 
-  private def jsonSource[A: SchemaFor: Encoder](entitySource: SourceOf[A])(
-      implicit support: JsonEntityStreamingSupport
+  private def jsonSource[A: SchemaFor: Encoder](entitySource: SourceOf[A])(implicit
+      support: JsonEntityStreamingSupport
   ): SourceOf[ByteString] = {
     val schema = AvroSchema[A]
 
@@ -146,8 +146,8 @@ trait AvroSupport {
     * @tparam A type to decode
     * @return unmarshaller for `Source[A, _]`
     */
-  implicit def sourceUnmarshaller[A: SchemaFor: Decoder](
-      implicit support: JsonEntityStreamingSupport = EntityStreamingSupport.json()
+  implicit def sourceUnmarshaller[A: SchemaFor: Decoder](implicit
+      support: JsonEntityStreamingSupport = EntityStreamingSupport.json()
   ): FromEntityUnmarshaller[SourceOf[A]] =
     Unmarshaller
       .withMaterializer[HttpEntity, SourceOf[A]] { implicit ec => implicit mat => entity =>
@@ -174,8 +174,8 @@ trait AvroSupport {
     * @tparam A type to encode
     * @return marshaller for any `SourceOf[A]` value
     */
-  implicit def sourceMarshaller[A: SchemaFor: Encoder](
-      implicit support: JsonEntityStreamingSupport = EntityStreamingSupport.json()
+  implicit def sourceMarshaller[A: SchemaFor: Encoder](implicit
+      support: JsonEntityStreamingSupport = EntityStreamingSupport.json()
   ): ToEntityMarshaller[SourceOf[A]] =
     jsonSourceStringMarshaller.compose(jsonSource[A])
 }

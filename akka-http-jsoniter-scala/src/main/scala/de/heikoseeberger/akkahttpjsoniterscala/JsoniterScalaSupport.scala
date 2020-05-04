@@ -78,8 +78,8 @@ trait JsoniterScalaSupport {
   private val jsonSourceStringMarshaller =
     Marshaller.oneOf(mediaTypes: _*)(sourceByteStringMarshaller)
 
-  private def jsonSource[A](entitySource: SourceOf[A])(
-      implicit codec: JsonValueCodec[A],
+  private def jsonSource[A](entitySource: SourceOf[A])(implicit
+      codec: JsonValueCodec[A],
       config: WriterConfig = defaultWriterConfig,
       support: JsonEntityStreamingSupport
   ): SourceOf[ByteString] =
@@ -95,8 +95,8 @@ trait JsoniterScalaSupport {
   /**
     * HTTP entity => `A`
     */
-  implicit def unmarshaller[A](
-      implicit codec: JsonValueCodec[A],
+  implicit def unmarshaller[A](implicit
+      codec: JsonValueCodec[A],
       config: ReaderConfig = defaultReaderConfig
   ): FromEntityUnmarshaller[A] =
     byteArrayUnmarshaller.map { bytes =>
@@ -107,8 +107,8 @@ trait JsoniterScalaSupport {
   /**
     * `A` => HTTP entity
     */
-  implicit def marshaller[A](
-      implicit codec: JsonValueCodec[A],
+  implicit def marshaller[A](implicit
+      codec: JsonValueCodec[A],
       config: WriterConfig = defaultWriterConfig
   ): ToEntityMarshaller[A] = {
     val mediaType   = mediaTypes.head
@@ -124,8 +124,8 @@ trait JsoniterScalaSupport {
     * @tparam A type to decode
     * @return unmarshaller for any `A` value
     */
-  implicit def fromByteStringUnmarshaller[A](
-      implicit codec: JsonValueCodec[A],
+  implicit def fromByteStringUnmarshaller[A](implicit
+      codec: JsonValueCodec[A],
       config: ReaderConfig = defaultReaderConfig
   ): Unmarshaller[ByteString, A] =
     Unmarshaller(_ => bs => Future.fromTry(Try(readFromArray(bs.toArray, config))))
@@ -136,8 +136,8 @@ trait JsoniterScalaSupport {
     * @tparam A type to decode
     * @return unmarshaller for `Source[A, _]`
     */
-  implicit def sourceUnmarshaller[A: JsonValueCodec](
-      implicit support: JsonEntityStreamingSupport = EntityStreamingSupport.json(),
+  implicit def sourceUnmarshaller[A: JsonValueCodec](implicit
+      support: JsonEntityStreamingSupport = EntityStreamingSupport.json(),
       config: ReaderConfig = defaultReaderConfig
   ): FromEntityUnmarshaller[SourceOf[A]] =
     Unmarshaller
@@ -165,8 +165,8 @@ trait JsoniterScalaSupport {
     * @tparam A type to encode
     * @return marshaller for any `SourceOf[A]` value
     */
-  implicit def sourceMarshaller[A](
-      implicit codec: JsonValueCodec[A],
+  implicit def sourceMarshaller[A](implicit
+      codec: JsonValueCodec[A],
       config: WriterConfig = defaultWriterConfig,
       support: JsonEntityStreamingSupport = EntityStreamingSupport.json()
   ): ToEntityMarshaller[SourceOf[A]] =

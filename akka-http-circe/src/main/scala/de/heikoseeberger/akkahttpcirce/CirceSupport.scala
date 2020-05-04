@@ -107,8 +107,8 @@ trait BaseCirceSupport {
   private val jsonSourceStringMarshaller =
     Marshaller.oneOf(mediaTypes: _*)(sourceByteStringMarshaller)
 
-  private def jsonSource[A](entitySource: SourceOf[A])(
-      implicit encoder: Encoder[A],
+  private def jsonSource[A](entitySource: SourceOf[A])(implicit
+      encoder: Encoder[A],
       printer: Printer,
       support: JsonEntityStreamingSupport
   ): SourceOf[ByteString] =
@@ -131,8 +131,8 @@ trait BaseCirceSupport {
     *
     * @return marshaller for JSON value
     */
-  implicit final def jsonMarshaller(
-      implicit printer: Printer = Printer.noSpaces
+  implicit final def jsonMarshaller(implicit
+      printer: Printer = Printer.noSpaces
   ): ToEntityMarshaller[Json] =
     Marshaller.oneOf(mediaTypes: _*) { mediaType =>
       Marshaller.withFixedContentType(ContentType(mediaType)) { json =>
@@ -149,8 +149,8 @@ trait BaseCirceSupport {
     * @tparam A type to encode
     * @return marshaller for any `A` value
     */
-  implicit final def marshaller[A: Encoder](
-      implicit printer: Printer = Printer.noSpaces
+  implicit final def marshaller[A: Encoder](implicit
+      printer: Printer = Printer.noSpaces
   ): ToEntityMarshaller[A] =
     jsonMarshaller(printer).compose(Encoder[A].apply)
 
@@ -195,8 +195,8 @@ trait BaseCirceSupport {
     * @tparam A type to decode
     * @return unmarshaller for `Source[A, _]`
     */
-  implicit def sourceUnmarshaller[A: Decoder](
-      implicit support: JsonEntityStreamingSupport = EntityStreamingSupport.json()
+  implicit def sourceUnmarshaller[A: Decoder](implicit
+      support: JsonEntityStreamingSupport = EntityStreamingSupport.json()
   ): FromEntityUnmarshaller[SourceOf[A]] =
     Unmarshaller
       .withMaterializer[HttpEntity, SourceOf[A]] { implicit ec => implicit mat => entity =>
@@ -223,8 +223,8 @@ trait BaseCirceSupport {
     * @tparam A type to encode
     * @return marshaller for any `SourceOf[A]` value
     */
-  implicit def sourceMarshaller[A](
-      implicit writes: Encoder[A],
+  implicit def sourceMarshaller[A](implicit
+      writes: Encoder[A],
       printer: Printer = Printer.noSpaces,
       support: JsonEntityStreamingSupport = EntityStreamingSupport.json()
   ): ToEntityMarshaller[SourceOf[A]] =
