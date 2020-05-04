@@ -95,8 +95,8 @@ trait Json4sSupport {
   private val jsonSourceStringMarshaller =
     Marshaller.oneOf(mediaTypes: _*)(sourceByteStringMarshaller)
 
-  private def jsonSource[A <: AnyRef](entitySource: SourceOf[A])(
-      implicit f: Formats,
+  private def jsonSource[A <: AnyRef](entitySource: SourceOf[A])(implicit
+      f: Formats,
       s: Serialization,
       isPretty: ShouldWritePretty,
       support: JsonEntityStreamingSupport
@@ -115,8 +115,8 @@ trait Json4sSupport {
     * @tparam A type to decode
     * @return unmarshaller for `A`
     */
-  implicit def unmarshaller[A: Manifest](
-      implicit serialization: Serialization,
+  implicit def unmarshaller[A: Manifest](implicit
+      serialization: Serialization,
       formats: Formats
   ): FromEntityUnmarshaller[A] =
     jsonStringUnmarshaller
@@ -129,8 +129,8 @@ trait Json4sSupport {
     * @tparam A type to encode, must be upper bounded by `AnyRef`
     * @return marshaller for any `A` value
     */
-  implicit def marshaller[A <: AnyRef](
-      implicit serialization: Serialization,
+  implicit def marshaller[A <: AnyRef](implicit
+      serialization: Serialization,
       formats: Formats,
       shouldWritePretty: ShouldWritePretty = ShouldWritePretty.False
   ): ToEntityMarshaller[A] =
@@ -147,8 +147,8 @@ trait Json4sSupport {
     * @tparam A type to decode
     * @return unmarshaller for any `A` value
     */
-  implicit def fromByteStringUnmarshaller[A: Manifest](
-      implicit s: Serialization,
+  implicit def fromByteStringUnmarshaller[A: Manifest](implicit
+      s: Serialization,
       formats: Formats
   ): Unmarshaller[ByteString, A] = {
     val result: Unmarshaller[ByteString, A] =
@@ -163,8 +163,8 @@ trait Json4sSupport {
     * @tparam A type to decode
     * @return unmarshaller for `Source[A, _]`
     */
-  implicit def sourceUnmarshaller[A: Manifest](
-      implicit support: JsonEntityStreamingSupport = EntityStreamingSupport.json(),
+  implicit def sourceUnmarshaller[A: Manifest](implicit
+      support: JsonEntityStreamingSupport = EntityStreamingSupport.json(),
       serialization: Serialization,
       formats: Formats
   ): FromEntityUnmarshaller[SourceOf[A]] =
@@ -193,8 +193,8 @@ trait Json4sSupport {
     * @tparam A type to encode
     * @return marshaller for any `SourceOf[A]` value
     */
-  implicit def sourceMarshaller[A <: AnyRef](
-      implicit serialization: Serialization,
+  implicit def sourceMarshaller[A <: AnyRef](implicit
+      serialization: Serialization,
       formats: Formats,
       shouldWritePretty: ShouldWritePretty = False,
       support: JsonEntityStreamingSupport = EntityStreamingSupport.json()

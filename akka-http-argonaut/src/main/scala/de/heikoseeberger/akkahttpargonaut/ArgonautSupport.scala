@@ -81,8 +81,8 @@ trait ArgonautSupport {
   private val jsonSourceStringMarshaller =
     Marshaller.oneOf(mediaTypes: _*)(sourceByteStringMarshaller)
 
-  private def jsonSource[A](entitySource: SourceOf[A])(
-      implicit e: EncodeJson[A],
+  private def jsonSource[A](entitySource: SourceOf[A])(implicit
+      e: EncodeJson[A],
       support: JsonEntityStreamingSupport
   ): SourceOf[ByteString] =
     entitySource
@@ -138,8 +138,8 @@ trait ArgonautSupport {
     * @tparam A type to decode
     * @return unmarshaller for `Source[A, _]`
     */
-  implicit def sourceUnmarshaller[A: DecodeJson](
-      implicit support: JsonEntityStreamingSupport = EntityStreamingSupport.json()
+  implicit def sourceUnmarshaller[A: DecodeJson](implicit
+      support: JsonEntityStreamingSupport = EntityStreamingSupport.json()
   ): FromEntityUnmarshaller[SourceOf[A]] =
     Unmarshaller
       .withMaterializer[HttpEntity, SourceOf[A]] { implicit ec => implicit mat => entity =>
@@ -166,8 +166,8 @@ trait ArgonautSupport {
     * @tparam A type to encode
     * @return marshaller for any `SourceOf[A]` value
     */
-  implicit def sourceMarshaller[A](
-      implicit e: EncodeJson[A],
+  implicit def sourceMarshaller[A](implicit
+      e: EncodeJson[A],
       support: JsonEntityStreamingSupport = EntityStreamingSupport.json()
   ): ToEntityMarshaller[SourceOf[A]] =
     jsonSourceStringMarshaller.compose(jsonSource[A])

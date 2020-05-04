@@ -89,8 +89,8 @@ trait PlayJsonSupport {
       .reads(json)
       .recoverTotal(e => throw PlayJsonError(e))
 
-  private def jsonSource[A](entitySource: SourceOf[A])(
-      implicit writes: Writes[A],
+  private def jsonSource[A](entitySource: SourceOf[A])(implicit
+      writes: Writes[A],
       printer: JsValue => String,
       support: JsonEntityStreamingSupport
   ): SourceOf[ByteString] =
@@ -115,8 +115,8 @@ trait PlayJsonSupport {
     * @tparam A type to encode
     * @return marshaller for any `A` value
     */
-  implicit def marshaller[A](
-      implicit writes: Writes[A],
+  implicit def marshaller[A](implicit
+      writes: Writes[A],
       printer: JsValue => String = Json.prettyPrint
   ): ToEntityMarshaller[A] =
     jsonStringMarshaller.compose(printer).compose(writes.writes)
@@ -136,8 +136,8 @@ trait PlayJsonSupport {
     * @tparam A type to decode
     * @return unmarshaller for `Source[A, _]`
     */
-  implicit def sourceUnmarshaller[A: Reads](
-      implicit support: JsonEntityStreamingSupport = EntityStreamingSupport.json()
+  implicit def sourceUnmarshaller[A: Reads](implicit
+      support: JsonEntityStreamingSupport = EntityStreamingSupport.json()
   ): FromEntityUnmarshaller[SourceOf[A]] =
     Unmarshaller
       .withMaterializer[HttpEntity, SourceOf[A]] { implicit ec => implicit mat => entity =>
@@ -154,10 +154,13 @@ trait PlayJsonSupport {
           entity.dataBytes
             .via(support.framingDecoder)
             .via(if (support.unordered) unordered else ordered)
-            .recoverWithRetries(1, {
-              case a: JsResultException =>
-                Source.failed(PlayJsonError(JsError(a.errors)))
-            })
+            .recoverWithRetries(
+              1,
+              {
+                case a: JsResultException =>
+                  Source.failed(PlayJsonError(JsError(a.errors)))
+              }
+            )
         }
       }
       .forContentTypes(unmarshallerContentTypes: _*)
@@ -168,8 +171,8 @@ trait PlayJsonSupport {
     * @tparam A type to encode
     * @return marshaller for any `SourceOf[A]` value
     */
-  implicit def sourceMarshaller[A](
-      implicit writes: Writes[A],
+  implicit def sourceMarshaller[A](implicit
+      writes: Writes[A],
       printer: JsValue => String = Json.stringify,
       support: JsonEntityStreamingSupport = EntityStreamingSupport.json()
   ): ToEntityMarshaller[SourceOf[A]] =

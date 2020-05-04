@@ -83,8 +83,8 @@ trait UpickleCustomizationSupport {
       }
     }
 
-  private def jsonSource[A](entitySource: SourceOf[A])(
-      implicit writes: apiInstance.Writer[A],
+  private def jsonSource[A](entitySource: SourceOf[A])(implicit
+      writes: apiInstance.Writer[A],
       support: JsonEntityStreamingSupport
   ): SourceOf[ByteString] =
     entitySource
@@ -125,8 +125,8 @@ trait UpickleCustomizationSupport {
     * @tparam A type to decode
     * @return unmarshaller for `Source[A, _]`
     */
-  implicit def sourceUnmarshaller[A: apiInstance.Reader](
-      implicit support: JsonEntityStreamingSupport = EntityStreamingSupport.json()
+  implicit def sourceUnmarshaller[A: apiInstance.Reader](implicit
+      support: JsonEntityStreamingSupport = EntityStreamingSupport.json()
   ): FromEntityUnmarshaller[SourceOf[A]] =
     Unmarshaller
       .withMaterializer[HttpEntity, SourceOf[A]] { implicit ec => implicit mat => entity =>
@@ -153,8 +153,8 @@ trait UpickleCustomizationSupport {
     * @tparam A type to encode
     * @return marshaller for any `SourceOf[A]` value
     */
-  implicit def sourceMarshaller[A](
-      implicit writes: apiInstance.Writer[A],
+  implicit def sourceMarshaller[A](implicit
+      writes: apiInstance.Writer[A],
       support: JsonEntityStreamingSupport = EntityStreamingSupport.json()
   ): ToEntityMarshaller[SourceOf[A]] =
     jsonSourceStringMarshaller(this).compose(jsonSource[A])

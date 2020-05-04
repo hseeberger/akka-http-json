@@ -106,8 +106,8 @@ trait JacksonSupport {
   private val jsonSourceStringMarshaller =
     Marshaller.oneOf(mediaTypes: _*)(sourceByteStringMarshaller)
 
-  private def jsonSource[A](entitySource: SourceOf[A])(
-      implicit objectMapper: ObjectMapper = defaultObjectMapper,
+  private def jsonSource[A](entitySource: SourceOf[A])(implicit
+      objectMapper: ObjectMapper = defaultObjectMapper,
       support: JsonEntityStreamingSupport
   ): SourceOf[ByteString] =
     entitySource
@@ -118,8 +118,8 @@ trait JacksonSupport {
   /**
     * HTTP entity => `A`
     */
-  implicit def unmarshaller[A](
-      implicit ct: TypeTag[A],
+  implicit def unmarshaller[A](implicit
+      ct: TypeTag[A],
       objectMapper: ObjectMapper = defaultObjectMapper
   ): FromEntityUnmarshaller[A] =
     jsonStringUnmarshaller.map(data => objectMapper.readValue(data, typeReference[A]))
@@ -127,8 +127,8 @@ trait JacksonSupport {
   /**
     * `A` => HTTP entity
     */
-  implicit def marshaller[Object](
-      implicit objectMapper: ObjectMapper = defaultObjectMapper
+  implicit def marshaller[Object](implicit
+      objectMapper: ObjectMapper = defaultObjectMapper
   ): ToEntityMarshaller[Object] =
     Jackson.marshaller[Object](objectMapper)
 
@@ -138,8 +138,8 @@ trait JacksonSupport {
     * @tparam A type to decode
     * @return unmarshaller for any `A` value
     */
-  implicit def fromByteStringUnmarshaller[A](
-      implicit ct: TypeTag[A],
+  implicit def fromByteStringUnmarshaller[A](implicit
+      ct: TypeTag[A],
       objectMapper: ObjectMapper = defaultObjectMapper
   ): Unmarshaller[ByteString, A] =
     Unmarshaller { _ => bs =>
@@ -152,8 +152,8 @@ trait JacksonSupport {
     * @tparam A type to decode
     * @return unmarshaller for `Source[A, _]`
     */
-  implicit def sourceUnmarshaller[A](
-      implicit ct: TypeTag[A],
+  implicit def sourceUnmarshaller[A](implicit
+      ct: TypeTag[A],
       objectMapper: ObjectMapper = defaultObjectMapper,
       support: JsonEntityStreamingSupport = EntityStreamingSupport.json()
   ): FromEntityUnmarshaller[SourceOf[A]] =
@@ -182,8 +182,8 @@ trait JacksonSupport {
     * @tparam A type to encode
     * @return marshaller for any `SourceOf[A]` value
     */
-  implicit def sourceMarshaller[A](
-      implicit ct: TypeTag[A],
+  implicit def sourceMarshaller[A](implicit
+      ct: TypeTag[A],
       objectMapper: ObjectMapper = defaultObjectMapper,
       support: JsonEntityStreamingSupport = EntityStreamingSupport.json()
   ): ToEntityMarshaller[SourceOf[A]] =
