@@ -49,7 +49,7 @@ lazy val `akka-http-argonaut`=
     .settings(
       libraryDependencies ++= Seq(
         library.akkaHttp,
-        library.akkaStream,
+        library.akkaStream % Provided,
         library.argonaut,
         library.scalaTest % Test
       )
@@ -62,7 +62,7 @@ lazy val `akka-http-circe` =
     .settings(
       libraryDependencies ++= Seq(
         library.akkaHttp,
-        library.akkaStream,
+        library.akkaStream % Provided,
         library.circe,
         library.circeParser,
         library.circeGeneric % Test,
@@ -77,7 +77,7 @@ lazy val `akka-http-jackson` =
     .settings(
       libraryDependencies ++= Seq(
         library.akkaHttp,
-        library.akkaStream,
+        library.akkaStream % Provided,
         library.akkaHttpJacksonJava,
         library.jacksonModuleScala,
         "org.scala-lang" % "scala-reflect" % scalaVersion.value,
@@ -92,7 +92,7 @@ lazy val `akka-http-json4s` =
     .settings(
       libraryDependencies ++= Seq(
         library.akkaHttp,
-        library.akkaStream,
+        library.akkaStream % Provided,
         library.json4sCore,
         library.json4sJackson % Test,
         library.json4sNative  % Test,
@@ -107,7 +107,7 @@ lazy val `akka-http-jsoniter-scala` =
     .settings(
       libraryDependencies ++= Seq(
         library.akkaHttp,
-        library.akkaStream,
+        library.akkaStream % Provided,
         library.jsoniterScalaCore,
         library.jsoniterScalaMacros % Test,
         library.scalaTest % Test
@@ -121,7 +121,7 @@ lazy val `akka-http-play-json` =
     .settings(
       libraryDependencies ++= Seq(
         library.akkaHttp,
-        library.akkaStream,
+        library.akkaStream % Provided,
         library.playJson,
         library.scalaTest % Test
       )
@@ -134,7 +134,7 @@ lazy val `akka-http-upickle` =
     .settings(
       libraryDependencies ++= Seq(
         library.akkaHttp,
-        library.akkaStream,
+        library.akkaStream % Provided,
         library.upickle,
         library.scalaTest % Test
       )
@@ -147,7 +147,7 @@ lazy val `akka-http-avro4s` =
     .settings(
       libraryDependencies ++= Seq(
         library.akkaHttp,
-        library.akkaStream,
+        library.akkaStream % Provided,
         library.avro4sJson,
         library.scalaTest     % Test
       )
@@ -188,7 +188,7 @@ lazy val library =
     }
     val akkaHttp            = "com.typesafe.akka"                     %% "akka-http"             % Version.akkaHttp
     val akkaHttpJacksonJava = "com.typesafe.akka"                     %% "akka-http-jackson"     % Version.akkaHttp
-    val akkaStream          = "com.typesafe.akka"                     %% "akka-stream"           % Version.akka % Provided
+    val akkaStream          = "com.typesafe.akka"                     %% "akka-stream"           % Version.akka
     val argonaut            = "io.argonaut"                           %% "argonaut"              % Version.argonaut
     val avro4sJson          = "com.sksamuel.avro4s"                   %% "avro4s-json"           % Version.avro4s
     val avsystemCommons     = "com.avsystem.commons"                  %% "commons-core"          % Version.avsystemCommons
