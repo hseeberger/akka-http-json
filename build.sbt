@@ -188,7 +188,7 @@ lazy val library =
     }
     val akkaHttp            = "com.typesafe.akka"                     %% "akka-http"             % Version.akkaHttp
     val akkaHttpJacksonJava = "com.typesafe.akka"                     %% "akka-http-jackson"     % Version.akkaHttp
-    val akkaStream          = "com.typesafe.akka"                     %% "akka-stream"           % Version.akka
+    val akkaStream          = "com.typesafe.akka"                     %% "akka-stream"           % Version.akka % Provided
     val argonaut            = "io.argonaut"                           %% "argonaut"              % Version.argonaut
     val avro4sJson          = "com.sksamuel.avro4s"                   %% "avro4s-json"           % Version.avro4s
     val avsystemCommons     = "com.avsystem.commons"                  %% "commons-core"          % Version.avsystemCommons
