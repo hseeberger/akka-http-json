@@ -44,7 +44,7 @@ object ExampleApp {
     //   .registerModule(DefaultScalaModule)
     //   .registerModule(new GuavaModule())
 
-    Http().bindAndHandle(route, "127.0.0.1", 8000)
+    Http().newServerAt("127.0.0.1", 8000).bindFlow(route)
 
     StdIn.readLine("Hit ENTER to exit")
     Await.ready(system.terminate(), Duration.Inf)

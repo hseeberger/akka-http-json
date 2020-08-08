@@ -41,7 +41,7 @@ object ExampleApp {
   def main(args: Array[String]): Unit = {
     implicit val system = ActorSystem()
 
-    Http().bindAndHandle(route, "127.0.0.1", 8000)
+    Http().newServerAt("127.0.0.1", 8000).bindFlow(route)
 
     StdIn.readLine("Hit ENTER to exit")
     Await.ready(system.terminate(), Duration.Inf)
