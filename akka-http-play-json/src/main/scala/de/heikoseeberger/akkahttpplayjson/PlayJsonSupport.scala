@@ -156,9 +156,8 @@ trait PlayJsonSupport {
             .via(if (support.unordered) unordered else ordered)
             .recoverWithRetries(
               1,
-              {
-                case a: JsResultException =>
-                  Source.failed(PlayJsonError(JsError(a.errors)))
+              { case a: JsResultException =>
+                Source.failed(PlayJsonError(JsError(a.errors)))
               }
             )
         }
