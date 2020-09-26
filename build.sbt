@@ -4,15 +4,19 @@ inThisBuild(
     homepage := Some(url("https://github.com/hseeberger/akka-http-json")),
     licenses := List("Apache-2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0")),
     scmInfo := Some(
-      ScmInfo(url("https://github.com/hseeberger/akka-http-json"),
-              "git@github.com:hseeberger/akka-http-json.git")
+      ScmInfo(
+        url("https://github.com/hseeberger/akka-http-json"),
+        "git@github.com:hseeberger/akka-http-json.git"
+      )
     ),
     developers := List(
-      Developer("hseeberger",
-                "Heiko Seeberger",
-                "mail@heikoseeberger.de",
-                url("https://github.com/hseeberger"))
-    ),
+      Developer(
+        "hseeberger",
+        "Heiko Seeberger",
+        "mail@heikoseeberger.de",
+        url("https://github.com/hseeberger")
+      )
+    )
   )
 )
 
@@ -81,7 +85,7 @@ lazy val `akka-http-jackson` =
         library.akkaStream % Provided,
         library.akkaHttpJacksonJava,
         library.jacksonModuleScala,
-        "org.scala-lang" % "scala-reflect" % scalaVersion.value,
+        "org.scala-lang"  % "scala-reflect" % scalaVersion.value,
         library.scalaTest % Test
       )
     )
@@ -163,7 +167,7 @@ lazy val `akka-http-avro4s` =
         library.akkaHttp,
         library.akkaStream % Provided,
         library.avro4sJson,
-        library.scalaTest     % Test
+        library.scalaTest % Test
       )
     )
 
