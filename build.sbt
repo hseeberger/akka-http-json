@@ -35,7 +35,7 @@ lazy val `akka-http-json` =
       `akka-http-jackson`,
       `akka-http-json4s`,
       `akka-http-jsoniter-scala`,
-      `akka-http-ninny`,
+//      `akka-http-ninny`,
       `akka-http-play-json`,
       `akka-http-upickle`,
     )
@@ -56,7 +56,7 @@ lazy val `akka-http-argonaut` =
         library.argonaut,
         library.akkaStream % Provided,
         library.scalaTest  % Test,
-      )
+      ),
     )
 
 lazy val `akka-http-circe` =
@@ -71,7 +71,7 @@ lazy val `akka-http-circe` =
         library.akkaStream   % Provided,
         library.circeGeneric % Test,
         library.scalaTest    % Test,
-      )
+      ),
     )
 
 lazy val `akka-http-jackson` =
@@ -86,7 +86,7 @@ lazy val `akka-http-jackson` =
         library.scalaReflect % scalaVersion.value,
         library.akkaStream   % Provided,
         library.scalaTest    % Test,
-      )
+      ),
     )
 
 lazy val `akka-http-json4s` =
@@ -101,7 +101,7 @@ lazy val `akka-http-json4s` =
         library.json4sJackson % Test,
         library.json4sNative  % Test,
         library.scalaTest     % Test,
-      )
+      ),
     )
 
 lazy val `akka-http-jsoniter-scala` =
@@ -115,7 +115,7 @@ lazy val `akka-http-jsoniter-scala` =
         library.akkaStream          % Provided,
         library.jsoniterScalaMacros % Test,
         library.scalaTest           % Test,
-      )
+      ),
     )
 
 lazy val `akka-http-ninny` =
@@ -128,7 +128,7 @@ lazy val `akka-http-ninny` =
         library.ninny,
         library.akkaStream % Provided,
         library.scalaTest  % Test,
-      )
+      ),
     )
 
 lazy val `akka-http-play-json` =
@@ -141,7 +141,7 @@ lazy val `akka-http-play-json` =
         library.playJson,
         library.akkaStream % Provided,
         library.scalaTest  % Test,
-      )
+      ),
     )
 
 lazy val `akka-http-upickle` =
@@ -154,7 +154,7 @@ lazy val `akka-http-upickle` =
         library.upickle,
         library.akkaStream % Provided,
         library.scalaTest  % Test,
-      )
+      ),
     )
 
 lazy val `akka-http-avro4s` =
@@ -167,7 +167,7 @@ lazy val `akka-http-avro4s` =
         library.avro4sJson,
         library.akkaStream % Provided,
         library.scalaTest  % Test,
-      )
+      ),
     )
 
 // *****************************************************************************
