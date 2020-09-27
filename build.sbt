@@ -16,7 +16,7 @@ inThisBuild(
         "mail@heikoseeberger.de",
         url("https://github.com/hseeberger")
       )
-    )
+    ),
   )
 )
 
@@ -31,158 +31,144 @@ lazy val `akka-http-json` =
     .aggregate(
       `akka-http-argonaut`,
       `akka-http-avro4s`,
-//      `akka-http-avsystem-gencodec`,
       `akka-http-circe`,
       `akka-http-jackson`,
       `akka-http-json4s`,
       `akka-http-jsoniter-scala`,
-      `akka-http-ninny`,
+//      `akka-http-ninny`,
       `akka-http-play-json`,
-      `akka-http-upickle`
+      `akka-http-upickle`,
     )
-    .settings(settings)
+    .settings(commonSettings)
     .settings(
       Compile / unmanagedSourceDirectories := Seq.empty,
       Test / unmanagedSourceDirectories := Seq.empty,
-      publishArtifact := false
+      publishArtifact := false,
     )
 
 lazy val `akka-http-argonaut` =
   project
     .enablePlugins(AutomateHeaderPlugin)
-    .settings(settings)
+    .settings(commonSettings)
     .settings(
       libraryDependencies ++= Seq(
         library.akkaHttp,
-        library.akkaStream % Provided,
         library.argonaut,
-        library.scalaTest % Test
-      )
+        library.akkaStream % Provided,
+        library.scalaTest  % Test,
+      ),
     )
 
 lazy val `akka-http-circe` =
   project
     .enablePlugins(AutomateHeaderPlugin)
-    .settings(settings)
+    .settings(commonSettings)
     .settings(
       libraryDependencies ++= Seq(
         library.akkaHttp,
-        library.akkaStream % Provided,
         library.circe,
         library.circeParser,
+        library.akkaStream   % Provided,
         library.circeGeneric % Test,
-        library.scalaTest    % Test
-      )
+        library.scalaTest    % Test,
+      ),
     )
 
 lazy val `akka-http-jackson` =
   project
     .enablePlugins(AutomateHeaderPlugin)
-    .settings(settings)
+    .settings(commonSettings)
     .settings(
       libraryDependencies ++= Seq(
         library.akkaHttp,
-        library.akkaStream % Provided,
         library.akkaHttpJacksonJava,
         library.jacksonModuleScala,
-        "org.scala-lang"  % "scala-reflect" % scalaVersion.value,
-        library.scalaTest % Test
-      )
+        library.scalaReflect % scalaVersion.value,
+        library.akkaStream   % Provided,
+        library.scalaTest    % Test,
+      ),
     )
 
 lazy val `akka-http-json4s` =
   project
     .enablePlugins(AutomateHeaderPlugin)
-    .settings(settings)
+    .settings(commonSettings)
     .settings(
       libraryDependencies ++= Seq(
         library.akkaHttp,
-        library.akkaStream % Provided,
         library.json4sCore,
+        library.akkaStream    % Provided,
         library.json4sJackson % Test,
         library.json4sNative  % Test,
-        library.scalaTest     % Test
-      )
+        library.scalaTest     % Test,
+      ),
     )
 
 lazy val `akka-http-jsoniter-scala` =
   project
     .enablePlugins(AutomateHeaderPlugin)
-    .settings(settings)
+    .settings(commonSettings)
     .settings(
       libraryDependencies ++= Seq(
         library.akkaHttp,
-        library.akkaStream % Provided,
         library.jsoniterScalaCore,
+        library.akkaStream          % Provided,
         library.jsoniterScalaMacros % Test,
-        library.scalaTest           % Test
-      )
+        library.scalaTest           % Test,
+      ),
     )
 
 lazy val `akka-http-ninny` =
   project
     .enablePlugins(AutomateHeaderPlugin)
-    .settings(settings)
+    .settings(commonSettings)
     .settings(
       libraryDependencies ++= Seq(
         library.akkaHttp,
-        library.akkaStream % Provided,
         library.ninny,
-        library.scalaTest % Test
-      )
+        library.akkaStream % Provided,
+        library.scalaTest  % Test,
+      ),
     )
 
 lazy val `akka-http-play-json` =
   project
     .enablePlugins(AutomateHeaderPlugin)
-    .settings(settings)
+    .settings(commonSettings)
     .settings(
       libraryDependencies ++= Seq(
         library.akkaHttp,
-        library.akkaStream % Provided,
         library.playJson,
-        library.scalaTest % Test
-      )
+        library.akkaStream % Provided,
+        library.scalaTest  % Test,
+      ),
     )
 
 lazy val `akka-http-upickle` =
   project
     .enablePlugins(AutomateHeaderPlugin)
-    .settings(settings)
+    .settings(commonSettings)
     .settings(
       libraryDependencies ++= Seq(
         library.akkaHttp,
-        library.akkaStream % Provided,
         library.upickle,
-        library.scalaTest % Test
-      )
+        library.akkaStream % Provided,
+        library.scalaTest  % Test,
+      ),
     )
 
 lazy val `akka-http-avro4s` =
   project
     .enablePlugins(AutomateHeaderPlugin)
-    .settings(settings)
+    .settings(commonSettings)
     .settings(
       libraryDependencies ++= Seq(
         library.akkaHttp,
-        library.akkaStream % Provided,
         library.avro4sJson,
-        library.scalaTest % Test
-      )
+        library.akkaStream % Provided,
+        library.scalaTest  % Test,
+      ),
     )
-
-// lazy val `akka-http-avsystem-gencodec` =
-//   project
-//   .enablePlugins(AutomateHeaderPlugin)
-//   .settings(settings)
-//   .settings(
-//     libraryDependencies ++= Seq(
-//       library.akkaHttp,
-//       library.akkaStream,
-//       library.avsystemCommons,
-//       library.scalaTest % Test
-//     )
-//   )
 
 // *****************************************************************************
 // Library dependencies
@@ -203,46 +189,36 @@ lazy val library =
       val play               = "2.9.1"
       val scalaTest          = "3.2.2"
       val upickle            = "1.2.0"
-      val avsystemCommons    = "1.40.0"
     }
-    val akkaHttp            = "com.typesafe.akka"    %% "akka-http"         % Version.akkaHttp
-    val akkaHttpJacksonJava = "com.typesafe.akka"    %% "akka-http-jackson" % Version.akkaHttp
-    val akkaStream          = "com.typesafe.akka"    %% "akka-stream"       % Version.akka
-    val argonaut            = "io.argonaut"          %% "argonaut"          % Version.argonaut
-    val avro4sJson          = "com.sksamuel.avro4s"  %% "avro4s-json"       % Version.avro4s
-    val avsystemCommons     = "com.avsystem.commons" %% "commons-core"      % Version.avsystemCommons
-    val circe               = "io.circe"             %% "circe-core"        % Version.circe
-    val circeParser         = "io.circe"             %% "circe-parser"      % Version.circe
-    val circeGeneric        = "io.circe"             %% "circe-generic"     % Version.circe
-    val jacksonModuleScala =
-      "com.fasterxml.jackson.module" %% "jackson-module-scala" % Version.jacksonModuleScala
-    val json4sCore    = "org.json4s" %% "json4s-core"    % Version.json4s
-    val json4sJackson = "org.json4s" %% "json4s-jackson" % Version.json4s
-    val json4sNative  = "org.json4s" %% "json4s-native"  % Version.json4s
-    val jsoniterScalaCore =
-      "com.github.plokhotnyuk.jsoniter-scala" %% "jsoniter-scala-core" % Version.jsoniterScala
-    val jsoniterScalaMacros =
-      "com.github.plokhotnyuk.jsoniter-scala" %% "jsoniter-scala-macros" % Version.jsoniterScala
-    val ninny     = "io.github.kag0"    %% "ninny"     % Version.ninny
-    val playJson  = "com.typesafe.play" %% "play-json" % Version.play
-    val scalaTest = "org.scalatest"     %% "scalatest" % Version.scalaTest
-    val upickle   = "com.lihaoyi"       %% "upickle"   % Version.upickle
+    val akkaHttp            = "com.typesafe.akka"                     %% "akka-http"             % Version.akkaHttp
+    val akkaHttpJacksonJava = "com.typesafe.akka"                     %% "akka-http-jackson"     % Version.akkaHttp
+    val akkaStream          = "com.typesafe.akka"                     %% "akka-stream"           % Version.akka
+    val argonaut            = "io.argonaut"                           %% "argonaut"              % Version.argonaut
+    val avro4sJson          = "com.sksamuel.avro4s"                   %% "avro4s-json"           % Version.avro4s
+    val circe               = "io.circe"                              %% "circe-core"            % Version.circe
+    val circeParser         = "io.circe"                              %% "circe-parser"          % Version.circe
+    val circeGeneric        = "io.circe"                              %% "circe-generic"         % Version.circe
+    val jacksonModuleScala  = "com.fasterxml.jackson.module"          %% "jackson-module-scala"  % Version.jacksonModuleScala
+    val json4sCore          = "org.json4s"                            %% "json4s-core"           % Version.json4s
+    val json4sJackson       = "org.json4s"                            %% "json4s-jackson"        % Version.json4s
+    val json4sNative        = "org.json4s"                            %% "json4s-native"         % Version.json4s
+    val jsoniterScalaCore   = "com.github.plokhotnyuk.jsoniter-scala" %% "jsoniter-scala-core"   % Version.jsoniterScala
+    val jsoniterScalaMacros = "com.github.plokhotnyuk.jsoniter-scala" %% "jsoniter-scala-macros" % Version.jsoniterScala
+    val playJson            = "com.typesafe.play"                     %% "play-json"             % Version.play
+    val ninny               = "io.github.kag0"                        %% "ninny"                 % Version.ninny
+    val scalaTest           = "org.scalatest"                         %% "scalatest"             % Version.scalaTest
+    val upickle             = "com.lihaoyi"                           %% "upickle"               % Version.upickle
+    val scalaReflect        = "org.scala-lang"                        %  "scala-reflect"
   }
 
 // *****************************************************************************
 // Settings
 // *****************************************************************************
 
-lazy val settings =
-  commonSettings ++
-  gitSettings ++
-  scalafmtSettings ++
-  publishSettings
-
 lazy val commonSettings =
   Seq(
-    scalaVersion := "2.13.1",
-    crossScalaVersions := Seq(scalaVersion.value, "2.12.10"),
+    scalaVersion := "2.13.3",
+    crossScalaVersions := Seq(scalaVersion.value, "2.12.12"),
     organizationName := "Heiko Seeberger",
     startYear := Some(2015),
     scalacOptions ++= Seq(
@@ -251,26 +227,12 @@ lazy val commonSettings =
       "-language:_",
       "-target:jvm-1.8",
       "-encoding",
-      "UTF-8"
+      "UTF-8",
     ),
     Compile / unmanagedSourceDirectories := Seq((Compile / scalaSource).value),
     Test / unmanagedSourceDirectories := Seq((Test / scalaSource).value),
-    mimaPreviousArtifacts := previousStableVersion.value
-      .map(organization.value %% name.value % _)
-      .toSet
-  )
-
-lazy val gitSettings =
-  Seq(
-    git.useGitDescribe := true
-  )
-
-lazy val scalafmtSettings =
-  Seq(
-    scalafmtOnCompile := true
-  )
-
-lazy val publishSettings =
-  Seq(
-    pomIncludeRepository := (_ => false)
+    mimaPreviousArtifacts := previousStableVersion.value.map(organization.value %% name.value % _).toSet,
+    git.useGitDescribe := true,
+    scalafmtOnCompile := true,
+    pomIncludeRepository := (_ => false),
   )
