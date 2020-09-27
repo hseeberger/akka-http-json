@@ -1,7 +1,7 @@
 language: scala
 
 jdk:
-  - openjdk8
+  - openjdk11
 
 stages:
   - name: test
@@ -10,17 +10,13 @@ stages:
 
 jobs:
   include:
-    - script: sbt -Dsbt.supershell=false +test:compile +test +mimaReportBinaryIssues
+    - stage: test
+      script: sbt -Dsbt.supershell=false +test:compile +test +mimaReportBinaryIssues
     - stage: release
       script: sbt -Dsbt.supershell=false ci-release
 
-cache:
-  directories:
-    - $HOME/.sbt/1.0/dependency
-    - $HOME/.sbt/boot/scala*
-    - $HOME/.sbt/launchers
-    - $HOME/.ivy2/cache
-    - $HOME/.coursier
+before_install:
+  - git fetch --tags
 
 before_cache:
   - du -h -d 1 $HOME/.ivy2/cache
@@ -29,5 +25,10 @@ before_cache:
   - find $HOME/.ivy2/cache -name "ivydata-*.properties" -type f -delete
   - rm -rf $HOME/.ivy2/local
 
-before_install:
-  - git fetch --tags
+cache:
+  directories:
+    - $HOME/.sbt/1.0/dependency
+    - $HOME/.sbt/boot/scala*
+    - $HOME/.sbt/launchers
+    - $HOME/.ivy2/cache
+    - $HOME/.coursier
