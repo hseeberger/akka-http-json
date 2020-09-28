@@ -75,7 +75,7 @@ final class JacksonSupportSpec extends AsyncWordSpec with Matchers with BeforeAn
       Unmarshal(entity)
         .to[Foo]
         .failed
-        .map(_.getMessage should include("requirement failed: bar must start with 'bar'!"))
+        .map(_.getMessage should include("requirement failed: bar must start with 'baz'!"))
     }
 
     "fail with NoContentException when unmarshalling empty entities" in {
