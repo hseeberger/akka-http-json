@@ -35,7 +35,7 @@ lazy val `akka-http-json` =
       `akka-http-jackson`,
       `akka-http-json4s`,
       `akka-http-jsoniter-scala`,
-//      `akka-http-ninny`,
+      `akka-http-ninny`,
       `akka-http-play-json`,
       `akka-http-upickle`,
     )
@@ -185,7 +185,7 @@ lazy val library =
       val jacksonModuleScala = "2.11.2"
       val jsoniterScala      = "2.6.0"
       val json4s             = "3.6.9"
-      val ninny              = "0.1.3"
+      val ninny              = "0.2.0"
       val play               = "2.9.1"
       val scalaTest          = "3.2.2"
       val upickle            = "1.2.0"
