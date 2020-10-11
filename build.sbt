@@ -188,7 +188,7 @@ lazy val library =
       val ninny              = "0.2.1"
       val play               = "2.9.1"
       val scalaTest          = "3.2.2"
-      val upickle            = "1.2.1"
+      val upickle            = "1.2.2"
     }
     val akkaHttp            = "com.typesafe.akka"                     %% "akka-http"             % Version.akkaHttp
     val akkaHttpJacksonJava = "com.typesafe.akka"                     %% "akka-http-jackson"     % Version.akkaHttp
