@@ -177,7 +177,7 @@ lazy val `akka-http-avro4s` =
 lazy val library =
   new {
     object Version {
-      val akka               = "2.6.9"
+      val akka               = "2.6.10"
       val akkaHttp           = "10.2.1"
       val argonaut           = "6.3.1"
       val avro4s             = "3.1.0"
