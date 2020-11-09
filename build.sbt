@@ -187,7 +187,7 @@ lazy val library =
       val json4s             = "3.6.10"
       val ninny              = "0.2.4"
       val play               = "2.9.1"
-      val scalaTest          = "3.2.2"
+      val scalaTest          = "3.2.3"
       val upickle            = "1.2.2"
     }
     val akkaHttp            = "com.typesafe.akka"                     %% "akka-http"             % Version.akkaHttp
