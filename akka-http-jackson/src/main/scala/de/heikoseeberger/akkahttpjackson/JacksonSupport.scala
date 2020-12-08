@@ -53,7 +53,7 @@ object JacksonSupport extends JacksonSupport {
 trait JacksonSupport {
   type SourceOf[A] = Source[A, _]
 
-  import JacksonSupport._
+  def defaultObjectMapper: ObjectMapper
 
   def unmarshallerContentTypes: Seq[ContentTypeRange] =
     mediaTypes.map(ContentTypeRange.apply)
