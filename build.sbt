@@ -179,7 +179,7 @@ lazy val library =
     object Version {
       val akka               = "2.6.10"
       val akkaHttp           = "10.2.2"
-      val argonaut           = "6.3.2"
+      val argonaut           = "6.3.3"
       val avro4s             = "3.1.0"
       val circe              = "0.13.0"
       val jacksonModuleScala = "2.12.0"
