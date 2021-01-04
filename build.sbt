@@ -186,7 +186,7 @@ lazy val library =
       val jsoniterScala      = "2.6.2"
       val json4s             = "3.6.10"
       val ninny              = "0.2.5"
-      val play               = "2.9.1"
+      val play               = "2.9.2"
       val scalaTest          = "3.2.3"
       val upickle            = "1.2.2"
     }
