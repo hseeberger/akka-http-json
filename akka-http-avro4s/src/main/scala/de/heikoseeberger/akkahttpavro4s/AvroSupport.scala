@@ -71,12 +71,10 @@ trait AvroSupport {
   private def jsonSource[A: SchemaFor: Encoder](entitySource: SourceOf[A])(implicit
       support: JsonEntityStreamingSupport
   ): SourceOf[ByteString] = {
-    val schema = AvroSchema[A]
-
     entitySource
       .map { obj =>
         val baos   = new ByteArrayOutputStream()
-        val stream = AvroOutputStream.json[A].to(baos).build(schema)
+        val stream = AvroOutputStream.json[A].to(baos).build()
         stream.write(obj)
         stream.close()
         baos.toByteArray
@@ -123,7 +121,6 @@ trait AvroSupport {
     * `A` => HTTP entity
     */
   implicit def marshaller[A: SchemaFor: Encoder]: ToEntityMarshaller[A] = {
-    val schema      = AvroSchema[A]
     val mediaType   = mediaTypes.head
     val contentType = ContentType.WithFixedCharset(mediaType)
     Marshaller.withFixedContentType(contentType) { obj =>
@@ -131,7 +128,7 @@ trait AvroSupport {
         contentType,
         ByteString.fromArrayUnsafe {
           val baos   = new ByteArrayOutputStream()
-          val stream = AvroOutputStream.json[A].to(baos).build(schema)
+          val stream = AvroOutputStream.json[A].to(baos).build()
           stream.write(obj)
           stream.close()
           baos.toByteArray
