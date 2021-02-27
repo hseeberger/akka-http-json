@@ -217,7 +217,7 @@ lazy val library =
 
 lazy val commonSettings =
   Seq(
-    scalaVersion := "2.13.3",
+    scalaVersion := "2.13.5",
     crossScalaVersions := Seq(scalaVersion.value, "2.12.13"),
     organizationName := "Heiko Seeberger",
     startYear := Some(2015),
