@@ -38,6 +38,7 @@ lazy val `akka-http-json` =
       `akka-http-ninny`,
       `akka-http-play-json`,
       `akka-http-upickle`,
+      `akka-http-zio-json`
     )
     .settings(commonSettings)
     .settings(
@@ -170,6 +171,19 @@ lazy val `akka-http-avro4s` =
       ),
     )
 
+lazy val `akka-http-zio-json` =
+  project
+    .enablePlugins(AutomateHeaderPlugin)
+    .settings(commonSettings)
+    .settings(
+      libraryDependencies ++= Seq(
+        library.akkaHttp,
+        library.zioJson,
+        library.akkaStream % Provided,
+        library.scalaTest  % Test,
+      )
+    )
+
 // *****************************************************************************
 // Library dependencies
 // *****************************************************************************
@@ -189,6 +203,7 @@ lazy val library =
       val play               = "2.9.2"
       val scalaTest          = "3.2.6"
       val upickle            = "1.3.7"
+      val zioJson            = "0.1.2"
     }
     val akkaHttp            = "com.typesafe.akka"                     %% "akka-http"             % Version.akkaHttp
     val akkaHttpJacksonJava = "com.typesafe.akka"                     %% "akka-http-jackson"     % Version.akkaHttp
@@ -208,6 +223,7 @@ lazy val library =
     val ninny               = "io.github.kag0"                        %% "ninny"                 % Version.ninny
     val scalaTest           = "org.scalatest"                         %% "scalatest"             % Version.scalaTest
     val upickle             = "com.lihaoyi"                           %% "upickle"               % Version.upickle
+    val zioJson             = "dev.zio"                               %% "zio-json"              % Version.zioJson
     val scalaReflect        = "org.scala-lang"                        %  "scala-reflect"
   }
 
