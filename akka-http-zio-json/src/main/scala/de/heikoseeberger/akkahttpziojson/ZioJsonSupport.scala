@@ -37,6 +37,11 @@ import scala.concurrent.Future
 import scala.util.Try
 import scala.util.control.NonFatal
 import zio.json._
+import scala.util.Failure
+import scala.util.Success
+import zio.stream.ZStream
+
+object ZioJsonSupport extends ZioJsonSupport
 
 /**
   * JSON marshalling/unmarshalling using zio-json codec implicits.
@@ -88,8 +93,15 @@ trait ZioJsonSupport {
     * @tparam A type to decode
     * @return
     */
-  implicit final def fromByteStringUnmarshaller[A: JsonDecoder]: Unmarshaller[ByteString, A] =
-    Unmarshaller(_ => bs => Future.fromTry(bs.toString.fromJson.left.map(new Throwable(_)).toTry))
+  implicit final def fromByteStringUnmarshaller[A](implicit
+      jd: JsonDecoder[A]
+  ): Unmarshaller[ByteString, A] =
+    Unmarshaller(_ =>
+      bs => {
+        val decoded = jd.decodeJsonStreamInput(ZStream.fromIterable(bs))
+        zio.Runtime.default.unsafeRunToFuture(decoded)
+      }
+    )
 
   /**
     * `A` => HTTP entity
@@ -98,7 +110,11 @@ trait ZioJsonSupport {
     * @return marshaller for any `A` value
     */
   implicit final def marshaller[A: JsonEncoder]: ToEntityMarshaller[A] =
-    Marshaller.opaque(_.toJson)
+    Marshaller.oneOf(mediaTypes: _*) { mediaType =>
+      Marshaller.withFixedContentType(ContentType(mediaType)) { a =>
+        HttpEntity(mediaType, ByteString(a.toJson))
+      }
+    }
 
   /**
     * HTTPEntity => `A`
