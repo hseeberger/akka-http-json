@@ -43,7 +43,9 @@ import zio.json._
   *
   * The opaque marshaller writes `A` to JSON.
   *
-  * The unmarshaller follows zio-json's early exit strategy.
+  * The unmarshaller follows zio-json's early exit strategy, reading JSON to an `A`,
+  *
+  * No intermediate JSON representation as per zio-json's design.
   */
 trait ZioJsonSupport {
   type SourceOf[A] = Source[A, _]
@@ -122,7 +124,7 @@ trait ZioJsonSupport {
     * @tparam A type to decode
     * @return unmarshaller from `Source[A, _]`
     */
-  implicit def sourceUnmarshaller[A: JsonDecoder](implicit
+  implicit final def sourceUnmarshaller[A: JsonDecoder](implicit
       support: JsonEntityStreamingSupport = EntityStreamingSupport.json()
   ): FromEntityUnmarshaller[SourceOf[A]] =
     Unmarshaller
@@ -150,9 +152,14 @@ trait ZioJsonSupport {
     * @tparam A type to encode
     * @return marshaller for any `SourceOf[A]` value
     */
-  implicit def sourceMarshaller[A](implicit
+  implicit final def sourceMarshaller[A](implicit
       writes: JsonEncoder[A],
       support: JsonEntityStreamingSupport = EntityStreamingSupport.json()
   ): ToEntityMarshaller[SourceOf[A]] =
     jsonSourceStringMarshaller.compose(jsonSource[A])
+
+  implicit final def safeUnmarshaller[A: JsonDecoder]: FromEntityUnmarshaller[Either[String, A]] =
+    Unmarshaller.stringUnmarshaller
+      .forContentTypes(unmarshallerContentTypes: _*)
+      .map(_.fromJson)
 }
