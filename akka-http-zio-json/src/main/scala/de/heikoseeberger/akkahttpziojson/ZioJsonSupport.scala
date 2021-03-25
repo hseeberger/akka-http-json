@@ -46,9 +46,11 @@ object ZioJsonSupport extends ZioJsonSupport
 /**
   * JSON marshalling/unmarshalling using zio-json codec implicits.
   *
-  * The opaque marshaller writes `A` to JSON.
+  * The marshaller writes `A` to JSON `HTTPEntity`.
   *
-  * The unmarshaller follows zio-json's early exit strategy, reading JSON to an `A`,
+  * The unmarshaller follows zio-json's early exit strategy, attempting to reading JSON to an `A`.
+  * 
+  * A safe unmarshaller is provided to attempt reading JSON to an `Either[String, A]` instead.
   *
   * No intermediate JSON representation as per zio-json's design.
   */
