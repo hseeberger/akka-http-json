@@ -24,7 +24,6 @@ import akka.http.scaladsl.server.Directives
 import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.stream.scaladsl.Source
 import com.sksamuel.avro4s.{ FromRecord, SchemaFor, ToRecord }
-
 import scala.concurrent.Await
 import scala.concurrent.duration._
 import scala.io.StdIn

@@ -25,8 +25,7 @@ import akka.http.scaladsl.unmarshalling.{ FromEntityUnmarshaller, Unmarshal, Unm
 import akka.http.scaladsl.util.FastFuture
 import akka.stream.scaladsl.{ Flow, Source }
 import akka.util.ByteString
-import UpickleCustomizationSupport._
-
+import de.heikoseeberger.akkahttpupickle.UpickleCustomizationSupport._
 import scala.collection.immutable.Seq
 import scala.concurrent.Future
 import scala.util.Try

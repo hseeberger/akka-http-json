@@ -18,19 +18,17 @@ package de.heikoseeberger.akkahttpninny
 
 import akka.actor.ActorSystem
 import akka.http.scaladsl.marshalling.Marshal
-import akka.http.scaladsl.model.ContentTypes.{ `application/json`, `text/plain(UTF-8)` }
 import akka.http.scaladsl.model._
-import akka.http.scaladsl.unmarshalling.Unmarshaller.UnsupportedContentTypeException
+import akka.http.scaladsl.model.ContentTypes.{ `application/json`, `text/plain(UTF-8)` }
 import akka.http.scaladsl.unmarshalling.{ Unmarshal, Unmarshaller }
+import akka.http.scaladsl.unmarshalling.Unmarshaller.UnsupportedContentTypeException
 import akka.stream.scaladsl.{ Sink, Source }
 import io.github.kag0.ninny.JsonException
 import org.scalatest.BeforeAndAfterAll
-
-import scala.collection.immutable.Seq
-import scala.concurrent.Await
-import scala.concurrent.duration.DurationInt
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AsyncWordSpec
+import scala.concurrent.Await
+import scala.concurrent.duration.DurationInt
 
 object NinnySupportSpec {
 

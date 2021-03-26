@@ -25,11 +25,10 @@ import akka.http.scaladsl.unmarshalling.Unmarshaller.UnsupportedContentTypeExcep
 import akka.stream.scaladsl.{ Sink, Source }
 import argonaut.Argonaut._
 import org.scalatest.BeforeAndAfterAll
-
-import scala.concurrent.Await
-import scala.concurrent.duration.DurationInt
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AsyncWordSpec
+import scala.concurrent.Await
+import scala.concurrent.duration.DurationInt
 
 object ArgonautSupportSpec {
 

@@ -18,26 +18,18 @@ package de.heikoseeberger.akkahttpziojson
 
 import akka.actor.ActorSystem
 import akka.http.scaladsl.marshalling.Marshal
-import akka.http.scaladsl.model.{
-  ContentTypeRange,
-  HttpCharsets,
-  HttpEntity,
-  MediaType,
-  RequestEntity,
-  ResponseEntity
-}
+import akka.http.scaladsl.model.{ HttpEntity, RequestEntity, ResponseEntity }
 import akka.http.scaladsl.model.ContentTypes.{ `application/json`, `text/plain(UTF-8)` }
 import akka.http.scaladsl.unmarshalling.{ Unmarshal, Unmarshaller }
 import akka.http.scaladsl.unmarshalling.Unmarshaller.UnsupportedContentTypeException
 import akka.stream.scaladsl.{ Sink, Source }
 import org.scalatest.{ BeforeAndAfterAll, EitherValues }
 import org.scalatest.concurrent.ScalaFutures
-import zio.json._
-
-import scala.concurrent.Await
-import scala.concurrent.duration.DurationInt
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AsyncWordSpec
+import scala.concurrent.Await
+import scala.concurrent.duration.DurationInt
+import zio.json._
 
 object ZioJsonSupportSpec {
 

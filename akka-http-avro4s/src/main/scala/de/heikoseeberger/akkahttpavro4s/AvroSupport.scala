@@ -16,19 +16,24 @@
 
 package de.heikoseeberger.akkahttpavro4s
 
-import java.io.ByteArrayOutputStream
-
 import akka.http.javadsl.common.JsonEntityStreamingSupport
 import akka.http.scaladsl.common.EntityStreamingSupport
 import akka.http.scaladsl.marshalling.{ Marshaller, Marshalling, ToEntityMarshaller }
-import akka.http.scaladsl.model.MediaTypes.`application/json`
 import akka.http.scaladsl.model._
+import akka.http.scaladsl.model.MediaTypes.`application/json`
 import akka.http.scaladsl.unmarshalling.{ FromEntityUnmarshaller, Unmarshal, Unmarshaller }
 import akka.http.scaladsl.util.FastFuture
 import akka.stream.scaladsl.{ Flow, Source }
 import akka.util.ByteString
-import com.sksamuel.avro4s._
-
+import com.sksamuel.avro4s.{
+  AvroInputStream,
+  AvroOutputStream,
+  AvroSchema,
+  Decoder,
+  Encoder,
+  SchemaFor
+}
+import java.io.ByteArrayOutputStream
 import scala.collection.immutable.Seq
 import scala.concurrent.Future
 import scala.util.Try
@@ -70,7 +75,7 @@ trait AvroSupport {
 
   private def jsonSource[A: SchemaFor: Encoder](entitySource: SourceOf[A])(implicit
       support: JsonEntityStreamingSupport
-  ): SourceOf[ByteString] = {
+  ): SourceOf[ByteString] =
     entitySource
       .map { obj =>
         val baos   = new ByteArrayOutputStream()
@@ -81,7 +86,6 @@ trait AvroSupport {
       }
       .map(ByteString(_))
       .via(support.framingRenderer)
-  }
 
   def unmarshallerContentTypes: Seq[ContentTypeRange] = defaultContentTypes
 

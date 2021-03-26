@@ -26,10 +26,8 @@ import akka.http.scaladsl.util.FastFuture
 import akka.stream.scaladsl.{ Flow, Source }
 import akka.util.ByteString
 import argonaut.{ DecodeJson, EncodeJson, Json, Parse, PrettyParams }
-
 import scala.collection.immutable.Seq
 import scala.concurrent.Future
-import scala.util.Try
 import scala.util.control.NonFatal
 
 /**
