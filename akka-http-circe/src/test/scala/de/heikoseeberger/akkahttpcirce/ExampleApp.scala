@@ -23,9 +23,8 @@ import akka.http.scaladsl.model.{ HttpRequest, RequestEntity }
 import akka.http.scaladsl.server.Directives
 import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.stream.scaladsl.Source
-
-import scala.io.StdIn
 import scala.concurrent.duration._
+import scala.io.StdIn
 
 object ExampleApp {
 

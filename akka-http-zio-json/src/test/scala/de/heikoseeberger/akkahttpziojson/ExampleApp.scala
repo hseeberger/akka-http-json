@@ -23,10 +23,9 @@ import akka.http.scaladsl.model.{ HttpRequest, RequestEntity }
 import akka.http.scaladsl.server.Directives
 import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.stream.scaladsl.Source
-import zio.json._
-
-import scala.io.StdIn
 import scala.concurrent.duration._
+import scala.io.StdIn
+import zio.json._
 
 object ExampleApp {
   private final case class Foo(bar: String)

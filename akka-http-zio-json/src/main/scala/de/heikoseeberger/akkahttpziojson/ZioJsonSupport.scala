@@ -31,14 +31,10 @@ import akka.http.scaladsl.unmarshalling.{ FromEntityUnmarshaller, Unmarshal, Unm
 import akka.http.scaladsl.util.FastFuture
 import akka.stream.scaladsl.{ Flow, Source }
 import akka.util.ByteString
-
 import scala.collection.immutable.Seq
 import scala.concurrent.Future
-import scala.util.Try
 import scala.util.control.NonFatal
 import zio.json._
-import scala.util.Failure
-import scala.util.Success
 import zio.stream.ZStream
 
 object ZioJsonSupport extends ZioJsonSupport
@@ -49,7 +45,7 @@ object ZioJsonSupport extends ZioJsonSupport
   * The marshaller writes `A` to JSON `HTTPEntity`.
   *
   * The unmarshaller follows zio-json's early exit strategy, attempting to reading JSON to an `A`.
-  * 
+  *
   * A safe unmarshaller is provided to attempt reading JSON to an `Either[String, A]` instead.
   *
   * No intermediate JSON representation as per zio-json's design.
@@ -127,8 +123,8 @@ trait ZioJsonSupport {
   implicit final def unmarshaller[A: JsonDecoder]: FromEntityUnmarshaller[A] =
     Unmarshaller.byteStringUnmarshaller
       .forContentTypes(unmarshallerContentTypes: _*)
-      .flatMap { implicit ec => implicit m => a =>
-        a match {
+      .flatMap { implicit ec => implicit m =>
+        {
           case ByteString.empty => throw Unmarshaller.NoContentException
           case data =>
             val marshaller = fromByteStringUnmarshaller

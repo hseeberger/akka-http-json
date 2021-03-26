@@ -16,8 +16,6 @@
 
 package de.heikoseeberger.akkahttpjackson
 
-import java.lang.reflect.{ ParameterizedType, Type => JType }
-
 import akka.http.javadsl.common.JsonEntityStreamingSupport
 import akka.http.javadsl.marshallers.jackson.Jackson
 import akka.http.scaladsl.common.EntityStreamingSupport
@@ -31,7 +29,7 @@ import akka.util.ByteString
 import com.fasterxml.jackson.core.`type`.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
-
+import java.lang.reflect.{ ParameterizedType, Type => JType }
 import scala.collection.immutable.Seq
 import scala.concurrent.Future
 import scala.reflect.runtime.universe._
@@ -77,11 +75,9 @@ trait JacksonSupport {
         mirror.runtimeClass(t)
       else
         new ParameterizedType {
-          def getRawType = mirror.runtimeClass(t)
-
-          def getActualTypeArguments = t.typeArgs.map(mapType).toArray
-
-          def getOwnerType = null
+          def getRawType()             = mirror.runtimeClass(t)
+          def getActualTypeArguments() = t.typeArgs.map(mapType).toArray
+          def getOwnerType()           = null
         }
 
     new TypeReference[T] {
