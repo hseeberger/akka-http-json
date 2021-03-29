@@ -16,19 +16,17 @@
 
 package de.heikoseeberger.akkahttpninny
 
-import java.nio.charset.StandardCharsets
-
 import akka.http.javadsl.common.JsonEntityStreamingSupport
 import akka.http.scaladsl.common.EntityStreamingSupport
 import akka.http.scaladsl.marshalling.{ Marshaller, Marshalling, ToEntityMarshaller }
-import akka.http.scaladsl.model.MediaTypes.`application/json`
 import akka.http.scaladsl.model.{ ContentTypeRange, HttpEntity, MediaType, MessageEntity }
+import akka.http.scaladsl.model.MediaTypes.`application/json`
 import akka.http.scaladsl.unmarshalling.{ FromEntityUnmarshaller, Unmarshal, Unmarshaller }
 import akka.http.scaladsl.util.FastFuture
 import akka.stream.scaladsl.{ Flow, Source }
 import akka.util.ByteString
 import io.github.kag0.ninny._
-
+import java.nio.charset.StandardCharsets
 import scala.collection.immutable.Seq
 import scala.concurrent.Future
 import scala.util.control.NonFatal

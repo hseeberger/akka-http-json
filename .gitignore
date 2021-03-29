@@ -36,3 +36,9 @@ snapshots
 
 # jenv
 .java-version
+
+# VSCode Metals
+metals.sbt
+.bloop
+.metals
+.vscode

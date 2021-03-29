@@ -18,19 +18,18 @@ package de.heikoseeberger.akkahttpjsoniterscala
 
 import akka.actor.ActorSystem
 import akka.http.scaladsl.marshalling.Marshal
-import akka.http.scaladsl.model.ContentTypes.{ `application/json`, `text/plain(UTF-8)` }
 import akka.http.scaladsl.model._
-import akka.http.scaladsl.unmarshalling.Unmarshaller.UnsupportedContentTypeException
+import akka.http.scaladsl.model.ContentTypes.{ `application/json`, `text/plain(UTF-8)` }
 import akka.http.scaladsl.unmarshalling.{ Unmarshal, Unmarshaller }
+import akka.http.scaladsl.unmarshalling.Unmarshaller.UnsupportedContentTypeException
 import akka.stream.scaladsl.{ Sink, Source }
 import com.github.plokhotnyuk.jsoniter_scala.core.JsonValueCodec
 import com.github.plokhotnyuk.jsoniter_scala.macros._
 import org.scalatest.BeforeAndAfterAll
-
-import scala.concurrent.Await
-import scala.concurrent.duration.DurationInt
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AsyncWordSpec
+import scala.concurrent.Await
+import scala.concurrent.duration.DurationInt
 
 object JsoniterScalaSupportSpec {
 

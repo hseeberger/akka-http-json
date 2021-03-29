@@ -14,40 +14,56 @@
  * limitations under the License.
  */
 
-package de.heikoseeberger.akkahttpargonaut
+package de.heikoseeberger.akkahttpziojson
 
 import akka.actor.ActorSystem
 import akka.http.scaladsl.marshalling.Marshal
-import akka.http.scaladsl.model._
+import akka.http.scaladsl.model.{ HttpEntity, RequestEntity, ResponseEntity }
 import akka.http.scaladsl.model.ContentTypes.{ `application/json`, `text/plain(UTF-8)` }
 import akka.http.scaladsl.unmarshalling.{ Unmarshal, Unmarshaller }
 import akka.http.scaladsl.unmarshalling.Unmarshaller.UnsupportedContentTypeException
 import akka.stream.scaladsl.{ Sink, Source }
-import argonaut.Argonaut._
-import org.scalatest.BeforeAndAfterAll
+import org.scalatest.{ BeforeAndAfterAll, EitherValues }
+import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AsyncWordSpec
 import scala.concurrent.Await
 import scala.concurrent.duration.DurationInt
+import zio.json._
 
-object ArgonautSupportSpec {
+object ZioJsonSupportSpec {
 
   final case class Foo(bar: String) {
     require(bar startsWith "bar", "bar must start with 'bar'!")
   }
+
+  final case class MultiFoo(a: String, b: String)
+
+  final case class OptionFoo(a: Option[String])
+
+  implicit val fooEncoder: JsonEncoder[Foo]             = DeriveJsonEncoder.gen
+  implicit val multiFooEncoder: JsonEncoder[MultiFoo]   = DeriveJsonEncoder.gen
+  implicit val optionFooEncoder: JsonEncoder[OptionFoo] = DeriveJsonEncoder.gen
+
+  implicit val fooDecoder: JsonDecoder[Foo]             = DeriveJsonDecoder.gen
+  implicit val multiFooDecoder: JsonDecoder[MultiFoo]   = DeriveJsonDecoder.gen
+  implicit val optionFooDecoder: JsonDecoder[OptionFoo] = DeriveJsonDecoder.gen
 }
 
-final class ArgonautSupportSpec extends AsyncWordSpec with Matchers with BeforeAndAfterAll {
+final class ZioJsonSupportSpec
+    extends AsyncWordSpec
+    with Matchers
+    with BeforeAndAfterAll
+    with ScalaFutures
+    with EitherValues {
+  import ZioJsonSupportSpec._
 
-  import ArgonautSupportSpec._
+  private implicit val system: ActorSystem = ActorSystem()
 
-  private implicit val system   = ActorSystem()
-  private implicit def fooCodec = casecodec1(Foo.apply, Foo.unapply)("bar")
+  "ZioJsonSupport" should {
+    import ZioJsonSupport._
 
-  "ArgonautSupport" should {
     "enable marshalling and unmarshalling objects for generic derivation" in {
-      import ArgonautSupport._
-
       val foo = Foo("bar")
       Marshal(foo)
         .to[RequestEntity]
@@ -56,21 +72,17 @@ final class ArgonautSupportSpec extends AsyncWordSpec with Matchers with BeforeA
     }
 
     "enable streamed marshalling and unmarshalling for json arrays" in {
-      import ArgonautSupport._
-
       val foos = (0 to 100).map(i => Foo(s"bar-$i")).toList
 
       Marshal(Source(foos))
-        .to[RequestEntity]
+        .to[ResponseEntity]
         .flatMap(entity => Unmarshal(entity).to[SourceOf[Foo]])
         .flatMap(_.runWith(Sink.seq))
         .map(_ shouldBe foos)
     }
 
     "provide proper error messages for requirement errors" in {
-      import ArgonautSupport._
-
-      val entity = HttpEntity(MediaTypes.`application/json`, """{ "bar": "baz" }""")
+      val entity = HttpEntity(`application/json`, """{ "bar": "baz" }""")
       Unmarshal(entity)
         .to[Foo]
         .failed
@@ -78,8 +90,6 @@ final class ArgonautSupportSpec extends AsyncWordSpec with Matchers with BeforeA
     }
 
     "fail with NoContentException when unmarshalling empty entities" in {
-      import ArgonautSupport._
-
       val entity = HttpEntity.empty(`application/json`)
       Unmarshal(entity)
         .to[Foo]
@@ -88,8 +98,6 @@ final class ArgonautSupportSpec extends AsyncWordSpec with Matchers with BeforeA
     }
 
     "fail with UnsupportedContentTypeException when Content-Type is not `application/json`" in {
-      import ArgonautSupport._
-
       val entity = HttpEntity("""{ "bar": "bar" }""")
       Unmarshal(entity)
         .to[Foo]
@@ -99,22 +107,51 @@ final class ArgonautSupportSpec extends AsyncWordSpec with Matchers with BeforeA
         )
     }
 
+    "not write None" in {
+      val optionFoo = OptionFoo(None)
+      Marshal(optionFoo)
+        .to[RequestEntity]
+        .map(_.asInstanceOf[HttpEntity.Strict].data.decodeString("UTF-8") shouldBe "{}")
+    }
+
+    "fail when unmarshalling empty entities with safeUnmarshaller" in {
+      val entity = HttpEntity.empty(`application/json`)
+      Unmarshal(entity)
+        .to[Either[String, Foo]]
+        .futureValue
+        .left
+        .value shouldBe a[String]
+    }
+
+    val errorMessage = """.a(expected '"' got '1')"""
+
+    "fail-fast and return only the first unmarshalling error" in {
+      val entity = HttpEntity(`application/json`, """{ "a": 1, "b": 2 }""")
+      Unmarshal(entity)
+        .to[MultiFoo]
+        .failed
+        .map(_.getMessage())
+        .map(_ shouldBe errorMessage)
+    }
+
+    "fail-fast and return only the first unmarshalling error with safeUnmarshaller" in {
+      val entity = HttpEntity(`application/json`, """{ "a": 1, "b": 2 }""")
+      Unmarshal(entity)
+        .to[Either[String, MultiFoo]]
+        .futureValue
+        .left
+        .value shouldBe errorMessage
+    }
+
     "allow unmarshalling with passed in Content-Types" in {
       val foo = Foo("bar")
-      val `application/json-home` =
-        MediaType.applicationWithFixedCharset("json-home", HttpCharsets.`UTF-8`, "json-home")
 
-      final object CustomArgonautSupport extends ArgonautSupport {
-        override def unmarshallerContentTypes = List(`application/json`, `application/json-home`)
-      }
-      import CustomArgonautSupport._
-
-      val entity = HttpEntity(`application/json-home`, """{ "bar": "bar" }""")
+      val entity = HttpEntity(`application/json`, """{ "bar": "bar" }""")
       Unmarshal(entity).to[Foo].map(_ shouldBe foo)
     }
   }
 
-  override protected def afterAll() = {
+  override protected def afterAll(): Unit = {
     Await.ready(system.terminate(), 42.seconds)
     super.afterAll()
   }

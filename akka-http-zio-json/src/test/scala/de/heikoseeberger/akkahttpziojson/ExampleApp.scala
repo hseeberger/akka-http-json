@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package de.heikoseeberger.akkahttpcirce
+package de.heikoseeberger.akkahttpziojson
 
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
@@ -25,10 +25,14 @@ import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.stream.scaladsl.Source
 import scala.concurrent.duration._
 import scala.io.StdIn
+import zio.json._
 
 object ExampleApp {
-
   private final case class Foo(bar: String)
+  private object Foo {
+    implicit val fooEncoder: JsonEncoder[Foo] = DeriveJsonEncoder.gen
+    implicit val fooDecoder: JsonDecoder[Foo] = DeriveJsonDecoder.gen
+  }
 
   def main(args: Array[String]): Unit = {
     implicit val system = ActorSystem()
@@ -41,8 +45,7 @@ object ExampleApp {
 
   private def route(implicit sys: ActorSystem) = {
     import Directives._
-    import FailFastCirceSupport._
-    import io.circe.generic.auto._
+    import ZioJsonSupport._
 
     pathSingleSlash {
       post {

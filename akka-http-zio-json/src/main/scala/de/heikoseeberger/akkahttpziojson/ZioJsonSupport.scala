@@ -14,35 +14,43 @@
  * limitations under the License.
  */
 
-package de.heikoseeberger.akkahttpargonaut
+package de.heikoseeberger.akkahttpziojson
 
 import akka.http.javadsl.common.JsonEntityStreamingSupport
 import akka.http.scaladsl.common.EntityStreamingSupport
 import akka.http.scaladsl.marshalling.{ Marshaller, Marshalling, ToEntityMarshaller }
-import akka.http.scaladsl.model.{ ContentTypeRange, HttpEntity, MediaType, MessageEntity }
+import akka.http.scaladsl.model.{
+  ContentType,
+  ContentTypeRange,
+  HttpEntity,
+  MediaType,
+  MessageEntity
+}
 import akka.http.scaladsl.model.MediaTypes.`application/json`
 import akka.http.scaladsl.unmarshalling.{ FromEntityUnmarshaller, Unmarshal, Unmarshaller }
 import akka.http.scaladsl.util.FastFuture
 import akka.stream.scaladsl.{ Flow, Source }
 import akka.util.ByteString
-import argonaut.{ DecodeJson, EncodeJson, Json, Parse, PrettyParams }
 import scala.collection.immutable.Seq
 import scala.concurrent.Future
 import scala.util.control.NonFatal
+import zio.json._
+import zio.stream.ZStream
+
+object ZioJsonSupport extends ZioJsonSupport
 
 /**
-  * Automatic to and from JSON marshalling/unmarshalling using an in-scope *Argonaut* protocol.
+  * JSON marshalling/unmarshalling using zio-json codec implicits.
   *
-  * To use automatic codec derivation, user needs to import `argonaut.Shapeless._`.
-  */
-object ArgonautSupport extends ArgonautSupport
-
-/**
-  * JSON marshalling/unmarshalling using an in-scope *Argonaut* protocol.
+  * The marshaller writes `A` to JSON `HTTPEntity`.
   *
-  * To use automatic codec derivation, user needs to import `argonaut.Shapeless._`
+  * The unmarshaller follows zio-json's early exit strategy, attempting to reading JSON to an `A`.
+  *
+  * A safe unmarshaller is provided to attempt reading JSON to an `Either[String, A]` instead.
+  *
+  * No intermediate JSON representation as per zio-json's design.
   */
-trait ArgonautSupport {
+trait ZioJsonSupport {
   type SourceOf[A] = Source[A, _]
 
   def unmarshallerContentTypes: Seq[ContentTypeRange] =
@@ -50,17 +58,6 @@ trait ArgonautSupport {
 
   def mediaTypes: Seq[MediaType.WithFixedCharset] =
     List(`application/json`)
-
-  private val jsonStringUnmarshaller =
-    Unmarshaller.byteStringUnmarshaller
-      .forContentTypes(unmarshallerContentTypes: _*)
-      .mapWithCharset {
-        case (ByteString.empty, _) => throw Unmarshaller.NoContentException
-        case (data, charset)       => data.decodeString(charset.nioCharset.name)
-      }
-
-  private val jsonStringMarshaller =
-    Marshaller.oneOf(mediaTypes: _*)(Marshaller.stringMarshaller)
 
   private def sourceByteStringMarshaller(
       mediaType: MediaType.WithFixedCharset
@@ -80,35 +77,29 @@ trait ArgonautSupport {
     Marshaller.oneOf(mediaTypes: _*)(sourceByteStringMarshaller)
 
   private def jsonSource[A](entitySource: SourceOf[A])(implicit
-      e: EncodeJson[A],
+      encoder: JsonEncoder[A],
       support: JsonEntityStreamingSupport
   ): SourceOf[ByteString] =
     entitySource
-      .map(e.apply)
-      .map(PrettyParams.nospace.pretty)
+      .map(_.toJson)
       .map(ByteString(_))
       .via(support.framingRenderer)
 
-  private def parse(s: String) =
-    Parse.parse(s) match {
-      case Right(json)   => json
-      case Left(message) => sys.error(message)
-    }
-
-  private def decode[A: DecodeJson](json: Json) =
-    DecodeJson.of[A].decodeJson(json).result match {
-      case Right(entity) => entity
-      case Left((m, h))  => sys.error(m + " - " + h)
-    }
-
   /**
-    * HTTP entity => `A`
+    * `ByteString` => `A`
     *
     * @tparam A type to decode
-    * @return unmarshaller for `A`
+    * @return
     */
-  implicit def unmarshaller[A: DecodeJson]: FromEntityUnmarshaller[A] =
-    jsonStringUnmarshaller.map(parse).map(decode[A])
+  implicit final def fromByteStringUnmarshaller[A](implicit
+      jd: JsonDecoder[A]
+  ): Unmarshaller[ByteString, A] =
+    Unmarshaller(_ =>
+      bs => {
+        val decoded = jd.decodeJsonStreamInput(ZStream.fromIterable(bs))
+        zio.Runtime.default.unsafeRunToFuture(decoded)
+      }
+    )
 
   /**
     * `A` => HTTP entity
@@ -116,27 +107,38 @@ trait ArgonautSupport {
     * @tparam A type to encode
     * @return marshaller for any `A` value
     */
-  implicit def marshaller[A: EncodeJson]: ToEntityMarshaller[A] =
-    jsonStringMarshaller
-      .compose(PrettyParams.nospace.pretty)
-      .compose(EncodeJson.of[A].apply)
+  implicit final def marshaller[A: JsonEncoder]: ToEntityMarshaller[A] =
+    Marshaller.oneOf(mediaTypes: _*) { mediaType =>
+      Marshaller.withFixedContentType(ContentType(mediaType)) { a =>
+        HttpEntity(mediaType, ByteString(a.toJson))
+      }
+    }
 
   /**
-    * `ByteString` => `A`
+    * HTTPEntity => `A`
     *
     * @tparam A type to decode
-    * @return unmarshaller for any `A` value
+    * @return unmarshaller for `A`
     */
-  implicit def fromByteStringUnmarshaller[A: DecodeJson]: Unmarshaller[ByteString, A] =
-    Unmarshaller(_ => bs => Future.successful(decode(parse(bs.utf8String))))
+  implicit final def unmarshaller[A: JsonDecoder]: FromEntityUnmarshaller[A] =
+    Unmarshaller.byteStringUnmarshaller
+      .forContentTypes(unmarshallerContentTypes: _*)
+      .flatMap { implicit ec => implicit m =>
+        {
+          case ByteString.empty => throw Unmarshaller.NoContentException
+          case data =>
+            val marshaller = fromByteStringUnmarshaller
+            marshaller(data)
+        }
+      }
 
   /**
     * HTTP entity => `Source[A, _]`
     *
     * @tparam A type to decode
-    * @return unmarshaller for `Source[A, _]`
+    * @return unmarshaller from `Source[A, _]`
     */
-  implicit def sourceUnmarshaller[A: DecodeJson](implicit
+  implicit final def sourceUnmarshaller[A: JsonDecoder](implicit
       support: JsonEntityStreamingSupport = EntityStreamingSupport.json()
   ): FromEntityUnmarshaller[SourceOf[A]] =
     Unmarshaller
@@ -164,9 +166,14 @@ trait ArgonautSupport {
     * @tparam A type to encode
     * @return marshaller for any `SourceOf[A]` value
     */
-  implicit def sourceMarshaller[A](implicit
-      e: EncodeJson[A],
+  implicit final def sourceMarshaller[A](implicit
+      writes: JsonEncoder[A],
       support: JsonEntityStreamingSupport = EntityStreamingSupport.json()
   ): ToEntityMarshaller[SourceOf[A]] =
     jsonSourceStringMarshaller.compose(jsonSource[A])
+
+  implicit final def safeUnmarshaller[A: JsonDecoder]: FromEntityUnmarshaller[Either[String, A]] =
+    Unmarshaller.stringUnmarshaller
+      .forContentTypes(unmarshallerContentTypes: _*)
+      .map(_.fromJson)
 }

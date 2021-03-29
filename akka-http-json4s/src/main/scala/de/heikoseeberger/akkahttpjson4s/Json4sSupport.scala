@@ -16,8 +16,6 @@
 
 package de.heikoseeberger.akkahttpjson4s
 
-import java.lang.reflect.InvocationTargetException
-
 import akka.http.javadsl.common.JsonEntityStreamingSupport
 import akka.http.scaladsl.common.EntityStreamingSupport
 import akka.http.scaladsl.marshalling.{ Marshaller, Marshalling, ToEntityMarshaller }
@@ -29,8 +27,8 @@ import akka.stream.Materializer
 import akka.stream.scaladsl.{ Flow, Source }
 import akka.util.ByteString
 import de.heikoseeberger.akkahttpjson4s.Json4sSupport.ShouldWritePretty.False
+import java.lang.reflect.InvocationTargetException
 import org.json4s.{ Formats, MappingException, Serialization }
-
 import scala.collection.immutable.Seq
 import scala.concurrent.{ ExecutionContext, Future }
 import scala.util.Try

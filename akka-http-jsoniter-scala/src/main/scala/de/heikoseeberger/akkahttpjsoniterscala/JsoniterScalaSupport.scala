@@ -32,7 +32,6 @@ import akka.http.scaladsl.util.FastFuture
 import akka.stream.scaladsl.{ Flow, Source }
 import akka.util.ByteString
 import com.github.plokhotnyuk.jsoniter_scala.core._
-
 import scala.collection.immutable.Seq
 import scala.concurrent.Future
 import scala.util.Try
