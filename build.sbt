@@ -23,7 +23,7 @@ inThisBuild(
         url("https://github.com/hseeberger")
       )
     ),
-    scalaVersion := "2.13.5",
+    scalaVersion := "2.13.6",
     crossScalaVersions := Seq(scalaVersion.value, "2.12.13"),
     scalacOptions ++= Seq(
       "-unchecked",
@@ -229,13 +229,13 @@ lazy val library =
       val avro4s             = "4.0.9"
       val circe              = "0.13.0"
       val jacksonModuleScala = "2.12.3"
-      val jsoniterScala      = "2.8.1"
+      val jsoniterScala      = "2.8.2"
       val json4s             = "3.6.11"
       val ninny              = "0.2.10"
       val play               = "2.9.2"
       val scalaTest          = "3.2.9"
-      val upickle            = "1.3.14"
-      val zioJson            = "0.1.4"
+      val upickle            = "1.3.15"
+      val zioJson            = "0.1.5"
     }
     // format: off
     val akkaHttp            = "com.typesafe.akka"                     %% "akka-http"             % Version.akkaHttp
