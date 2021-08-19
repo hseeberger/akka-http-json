@@ -94,8 +94,10 @@ trait UpickleCustomizationSupport {
   /**
     * `ByteString` => `A`
     *
-    * @tparam A type to decode
-    * @return unmarshaller for any `A` value
+    * @tparam A
+    *   type to decode
+    * @return
+    *   unmarshaller for any `A` value
     */
   implicit def fromByteStringUnmarshaller[A: apiInstance.Reader]: Unmarshaller[ByteString, A] =
     Unmarshaller(_ => bs => Future.fromTry(Try(apiInstance.read(bs.toArray))))
@@ -103,8 +105,10 @@ trait UpickleCustomizationSupport {
   /**
     * HTTP entity => `A`
     *
-    * @tparam A type to decode
-    * @return unmarshaller for `A`
+    * @tparam A
+    *   type to decode
+    * @return
+    *   unmarshaller for `A`
     */
   implicit def unmarshaller[A: apiInstance.Reader]: FromEntityUnmarshaller[A] =
     jsonStringUnmarshaller(this).map(apiInstance.read(_))
@@ -112,8 +116,10 @@ trait UpickleCustomizationSupport {
   /**
     * `A` => HTTP entity
     *
-    * @tparam A type to encode
-    * @return marshaller for any `A` value
+    * @tparam A
+    *   type to encode
+    * @return
+    *   marshaller for any `A` value
     */
   implicit def marshaller[A: apiInstance.Writer]: ToEntityMarshaller[A] =
     jsonStringMarshaller(this).compose(apiInstance.write(_))
@@ -121,8 +127,10 @@ trait UpickleCustomizationSupport {
   /**
     * HTTP entity => `Source[A, _]`
     *
-    * @tparam A type to decode
-    * @return unmarshaller for `Source[A, _]`
+    * @tparam A
+    *   type to decode
+    * @return
+    *   unmarshaller for `Source[A, _]`
     */
   implicit def sourceUnmarshaller[A: apiInstance.Reader](implicit
       support: JsonEntityStreamingSupport = EntityStreamingSupport.json()
@@ -149,8 +157,10 @@ trait UpickleCustomizationSupport {
   /**
     * `SourceOf[A]` => HTTP entity
     *
-    * @tparam A type to encode
-    * @return marshaller for any `SourceOf[A]` value
+    * @tparam A
+    *   type to encode
+    * @return
+    *   marshaller for any `SourceOf[A]` value
     */
   implicit def sourceMarshaller[A](implicit
       writes: apiInstance.Writer[A],

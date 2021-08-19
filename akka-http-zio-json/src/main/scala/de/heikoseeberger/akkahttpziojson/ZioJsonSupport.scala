@@ -88,7 +88,8 @@ trait ZioJsonSupport {
   /**
     * `ByteString` => `A`
     *
-    * @tparam A type to decode
+    * @tparam A
+    *   type to decode
     * @return
     */
   implicit final def fromByteStringUnmarshaller[A](implicit
@@ -104,8 +105,10 @@ trait ZioJsonSupport {
   /**
     * `A` => HTTP entity
     *
-    * @tparam A type to encode
-    * @return marshaller for any `A` value
+    * @tparam A
+    *   type to encode
+    * @return
+    *   marshaller for any `A` value
     */
   implicit final def marshaller[A: JsonEncoder]: ToEntityMarshaller[A] =
     Marshaller.oneOf(mediaTypes: _*) { mediaType =>
@@ -117,8 +120,10 @@ trait ZioJsonSupport {
   /**
     * HTTPEntity => `A`
     *
-    * @tparam A type to decode
-    * @return unmarshaller for `A`
+    * @tparam A
+    *   type to decode
+    * @return
+    *   unmarshaller for `A`
     */
   implicit final def unmarshaller[A: JsonDecoder]: FromEntityUnmarshaller[A] =
     Unmarshaller.byteStringUnmarshaller
@@ -135,8 +140,10 @@ trait ZioJsonSupport {
   /**
     * HTTP entity => `Source[A, _]`
     *
-    * @tparam A type to decode
-    * @return unmarshaller from `Source[A, _]`
+    * @tparam A
+    *   type to decode
+    * @return
+    *   unmarshaller from `Source[A, _]`
     */
   implicit final def sourceUnmarshaller[A: JsonDecoder](implicit
       support: JsonEntityStreamingSupport = EntityStreamingSupport.json()
@@ -163,8 +170,10 @@ trait ZioJsonSupport {
   /**
     * `SourceOf[A]` => HTTP entity
     *
-    * @tparam A type to encode
-    * @return marshaller for any `SourceOf[A]` value
+    * @tparam A
+    *   type to encode
+    * @return
+    *   marshaller for any `SourceOf[A]` value
     */
   implicit final def sourceMarshaller[A](implicit
       writes: JsonEncoder[A],
