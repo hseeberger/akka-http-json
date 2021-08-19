@@ -38,7 +38,8 @@ import scala.util.Try
 import scala.util.control.NonFatal
 
 /**
-  * Automatic to and from JSON marshalling/unmarshalling using an in-scope instance of JsonValueCodec
+  * Automatic to and from JSON marshalling/unmarshalling using an in-scope instance of
+  * JsonValueCodec
   */
 object JsoniterScalaSupport extends JsoniterScalaSupport {
   val defaultReaderConfig: ReaderConfig =
@@ -120,8 +121,10 @@ trait JsoniterScalaSupport {
   /**
     * `ByteString` => `A`
     *
-    * @tparam A type to decode
-    * @return unmarshaller for any `A` value
+    * @tparam A
+    *   type to decode
+    * @return
+    *   unmarshaller for any `A` value
     */
   implicit def fromByteStringUnmarshaller[A](implicit
       codec: JsonValueCodec[A],
@@ -132,8 +135,10 @@ trait JsoniterScalaSupport {
   /**
     * HTTP entity => `Source[A, _]`
     *
-    * @tparam A type to decode
-    * @return unmarshaller for `Source[A, _]`
+    * @tparam A
+    *   type to decode
+    * @return
+    *   unmarshaller for `Source[A, _]`
     */
   implicit def sourceUnmarshaller[A: JsonValueCodec](implicit
       support: JsonEntityStreamingSupport = EntityStreamingSupport.json(),
@@ -161,8 +166,10 @@ trait JsoniterScalaSupport {
   /**
     * `SourceOf[A]` => HTTP entity
     *
-    * @tparam A type to encode
-    * @return marshaller for any `SourceOf[A]` value
+    * @tparam A
+    *   type to encode
+    * @return
+    *   marshaller for any `SourceOf[A]` value
     */
   implicit def sourceMarshaller[A](implicit
       codec: JsonValueCodec[A],

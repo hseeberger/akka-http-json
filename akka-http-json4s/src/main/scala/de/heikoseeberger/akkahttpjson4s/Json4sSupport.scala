@@ -110,8 +110,10 @@ trait Json4sSupport {
   /**
     * HTTP entity => `A`
     *
-    * @tparam A type to decode
-    * @return unmarshaller for `A`
+    * @tparam A
+    *   type to decode
+    * @return
+    *   unmarshaller for `A`
     */
   implicit def unmarshaller[A: Manifest](implicit
       serialization: Serialization,
@@ -124,8 +126,10 @@ trait Json4sSupport {
   /**
     * `A` => HTTP entity
     *
-    * @tparam A type to encode, must be upper bounded by `AnyRef`
-    * @return marshaller for any `A` value
+    * @tparam A
+    *   type to encode, must be upper bounded by `AnyRef`
+    * @return
+    *   marshaller for any `A` value
     */
   implicit def marshaller[A <: AnyRef](implicit
       serialization: Serialization,
@@ -142,8 +146,10 @@ trait Json4sSupport {
   /**
     * `ByteString` => `A`
     *
-    * @tparam A type to decode
-    * @return unmarshaller for any `A` value
+    * @tparam A
+    *   type to decode
+    * @return
+    *   unmarshaller for any `A` value
     */
   implicit def fromByteStringUnmarshaller[A: Manifest](implicit
       s: Serialization,
@@ -158,8 +164,10 @@ trait Json4sSupport {
   /**
     * HTTP entity => `Source[A, _]`
     *
-    * @tparam A type to decode
-    * @return unmarshaller for `Source[A, _]`
+    * @tparam A
+    *   type to decode
+    * @return
+    *   unmarshaller for `Source[A, _]`
     */
   implicit def sourceUnmarshaller[A: Manifest](implicit
       support: JsonEntityStreamingSupport = EntityStreamingSupport.json(),
@@ -188,8 +196,10 @@ trait Json4sSupport {
   /**
     * `SourceOf[A]` => HTTP entity
     *
-    * @tparam A type to encode
-    * @return marshaller for any `SourceOf[A]` value
+    * @tparam A
+    *   type to encode
+    * @return
+    *   marshaller for any `SourceOf[A]` value
     */
   implicit def sourceMarshaller[A <: AnyRef](implicit
       serialization: Serialization,

@@ -102,8 +102,10 @@ trait PlayJsonSupport {
   /**
     * HTTP entity => `A`
     *
-    * @tparam A type to decode
-    * @return unmarshaller for `A`
+    * @tparam A
+    *   type to decode
+    * @return
+    *   unmarshaller for `A`
     */
   implicit def unmarshaller[A: Reads]: FromEntityUnmarshaller[A] =
     jsonStringUnmarshaller.map(data => read(Json.parse(data)))
@@ -111,8 +113,10 @@ trait PlayJsonSupport {
   /**
     * `A` => HTTP entity
     *
-    * @tparam A type to encode
-    * @return marshaller for any `A` value
+    * @tparam A
+    *   type to encode
+    * @return
+    *   marshaller for any `A` value
     */
   implicit def marshaller[A](implicit
       writes: Writes[A],
@@ -123,8 +127,10 @@ trait PlayJsonSupport {
   /**
     * `ByteString` => `A`
     *
-    * @tparam A type to decode
-    * @return unmarshaller for any `A` value
+    * @tparam A
+    *   type to decode
+    * @return
+    *   unmarshaller for any `A` value
     */
   implicit def fromByteStringUnmarshaller[A: Reads]: Unmarshaller[ByteString, A] =
     Unmarshaller(_ => bs => Future.fromTry(Try(Json.parse(bs.toArray).as[A])))
@@ -132,8 +138,10 @@ trait PlayJsonSupport {
   /**
     * HTTP entity => `Source[A, _]`
     *
-    * @tparam A type to decode
-    * @return unmarshaller for `Source[A, _]`
+    * @tparam A
+    *   type to decode
+    * @return
+    *   unmarshaller for `Source[A, _]`
     */
   implicit def sourceUnmarshaller[A: Reads](implicit
       support: JsonEntityStreamingSupport = EntityStreamingSupport.json()
@@ -166,8 +174,10 @@ trait PlayJsonSupport {
   /**
     * `SourceOf[A]` => HTTP entity
     *
-    * @tparam A type to encode
-    * @return marshaller for any `SourceOf[A]` value
+    * @tparam A
+    *   type to encode
+    * @return
+    *   marshaller for any `SourceOf[A]` value
     */
   implicit def sourceMarshaller[A](implicit
       writes: Writes[A],
