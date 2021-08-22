@@ -212,6 +212,7 @@ trait Json4sSupport {
   private def throwCause[A](
       ec: ExecutionContext
   )(mat: Materializer): PartialFunction[Throwable, A] = {
-    case MappingException(_, e: InvocationTargetException) => throw e.getCause
+    case e: MappingException if e.cause.isInstanceOf[InvocationTargetException] =>
+      throw e.cause.getCause
   }
 }
