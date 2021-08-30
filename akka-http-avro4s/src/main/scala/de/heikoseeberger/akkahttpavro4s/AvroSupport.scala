@@ -94,8 +94,10 @@ trait AvroSupport {
   /**
     * `ByteString` => `A`
     *
-    * @tparam A type to decode
-    * @return unmarshaller for any `A` value
+    * @tparam A
+    *   type to decode
+    * @return
+    *   unmarshaller for any `A` value
     */
   implicit def fromByteStringUnmarshaller[A: SchemaFor: Decoder]: Unmarshaller[ByteString, A] =
     Unmarshaller { _ => bs =>
@@ -144,8 +146,10 @@ trait AvroSupport {
   /**
     * HTTP entity => `Source[A, _]`
     *
-    * @tparam A type to decode
-    * @return unmarshaller for `Source[A, _]`
+    * @tparam A
+    *   type to decode
+    * @return
+    *   unmarshaller for `Source[A, _]`
     */
   implicit def sourceUnmarshaller[A: SchemaFor: Decoder](implicit
       support: JsonEntityStreamingSupport = EntityStreamingSupport.json()
@@ -172,8 +176,10 @@ trait AvroSupport {
   /**
     * `SourceOf[A]` => HTTP entity
     *
-    * @tparam A type to encode
-    * @return marshaller for any `SourceOf[A]` value
+    * @tparam A
+    *   type to encode
+    * @return
+    *   marshaller for any `SourceOf[A]` value
     */
   implicit def sourceMarshaller[A: SchemaFor: Encoder](implicit
       support: JsonEntityStreamingSupport = EntityStreamingSupport.json()

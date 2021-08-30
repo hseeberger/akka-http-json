@@ -43,8 +43,10 @@ trait NinnySupport {
   /**
     * HTTP entity => `A`
     *
-    * @tparam A type to decode
-    * @return unmarshaller for `A`
+    * @tparam A
+    *   type to decode
+    * @return
+    *   unmarshaller for `A`
     */
   implicit def unmarshaller[A: FromJson]: FromEntityUnmarshaller[A] =
     Unmarshaller.byteStringUnmarshaller
@@ -58,8 +60,10 @@ trait NinnySupport {
   /**
     * `A` => HTTP entity
     *
-    * @tparam A type to encode
-    * @return marshaller for any `A` value
+    * @tparam A
+    *   type to encode
+    * @return
+    *   marshaller for any `A` value
     */
   implicit def marshaller[A: ToSomeJson]: ToEntityMarshaller[A] =
     Marshaller
@@ -70,8 +74,10 @@ trait NinnySupport {
   /**
     * `ByteString` => `A`
     *
-    * @tparam A type to decode
-    * @return unmarshaller for any `A` value
+    * @tparam A
+    *   type to decode
+    * @return
+    *   unmarshaller for any `A` value
     */
   implicit def fromByteStringUnmarshaller[A: FromJson]: Unmarshaller[ByteString, A] =
     Unmarshaller(_ =>
@@ -81,8 +87,10 @@ trait NinnySupport {
   /**
     * HTTP entity => `Source[A, _]`
     *
-    * @tparam A type to decode
-    * @return unmarshaller for `Source[A, _]`
+    * @tparam A
+    *   type to decode
+    * @return
+    *   unmarshaller for `Source[A, _]`
     */
   implicit def sourceUnmarshaller[A: FromJson](implicit
       support: JsonEntityStreamingSupport = EntityStreamingSupport.json()
@@ -109,8 +117,10 @@ trait NinnySupport {
   /**
     * `SourceOf[A]` => HTTP entity
     *
-    * @tparam A type to encode
-    * @return marshaller for any `SourceOf[A]` value
+    * @tparam A
+    *   type to encode
+    * @return
+    *   marshaller for any `SourceOf[A]` value
     */
   implicit def sourceMarshaller[A](implicit
       toJson: ToSomeJson[A],

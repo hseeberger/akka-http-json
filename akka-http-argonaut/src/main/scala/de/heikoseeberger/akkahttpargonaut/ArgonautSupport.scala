@@ -104,8 +104,10 @@ trait ArgonautSupport {
   /**
     * HTTP entity => `A`
     *
-    * @tparam A type to decode
-    * @return unmarshaller for `A`
+    * @tparam A
+    *   type to decode
+    * @return
+    *   unmarshaller for `A`
     */
   implicit def unmarshaller[A: DecodeJson]: FromEntityUnmarshaller[A] =
     jsonStringUnmarshaller.map(parse).map(decode[A])
@@ -113,8 +115,10 @@ trait ArgonautSupport {
   /**
     * `A` => HTTP entity
     *
-    * @tparam A type to encode
-    * @return marshaller for any `A` value
+    * @tparam A
+    *   type to encode
+    * @return
+    *   marshaller for any `A` value
     */
   implicit def marshaller[A: EncodeJson]: ToEntityMarshaller[A] =
     jsonStringMarshaller
@@ -124,8 +128,10 @@ trait ArgonautSupport {
   /**
     * `ByteString` => `A`
     *
-    * @tparam A type to decode
-    * @return unmarshaller for any `A` value
+    * @tparam A
+    *   type to decode
+    * @return
+    *   unmarshaller for any `A` value
     */
   implicit def fromByteStringUnmarshaller[A: DecodeJson]: Unmarshaller[ByteString, A] =
     Unmarshaller(_ => bs => Future.successful(decode(parse(bs.utf8String))))
@@ -133,8 +139,10 @@ trait ArgonautSupport {
   /**
     * HTTP entity => `Source[A, _]`
     *
-    * @tparam A type to decode
-    * @return unmarshaller for `Source[A, _]`
+    * @tparam A
+    *   type to decode
+    * @return
+    *   unmarshaller for `Source[A, _]`
     */
   implicit def sourceUnmarshaller[A: DecodeJson](implicit
       support: JsonEntityStreamingSupport = EntityStreamingSupport.json()
@@ -161,8 +169,10 @@ trait ArgonautSupport {
   /**
     * `SourceOf[A]` => HTTP entity
     *
-    * @tparam A type to encode
-    * @return marshaller for any `SourceOf[A]` value
+    * @tparam A
+    *   type to encode
+    * @return
+    *   marshaller for any `SourceOf[A]` value
     */
   implicit def sourceMarshaller[A](implicit
       e: EncodeJson[A],

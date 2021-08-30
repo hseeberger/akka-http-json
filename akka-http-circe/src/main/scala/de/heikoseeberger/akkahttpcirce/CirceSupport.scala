@@ -41,24 +41,24 @@ import scala.concurrent.Future
 import scala.util.control.NonFatal
 
 /**
-  * Automatic to and from JSON marshalling/unmarshalling using an in-scope circe protocol.
-  * The unmarshaller fails fast, throwing the first `Error` encountered.
+  * Automatic to and from JSON marshalling/unmarshalling using an in-scope circe protocol. The
+  * unmarshaller fails fast, throwing the first `Error` encountered.
   *
   * To use automatic codec derivation, user needs to import `io.circe.generic.auto._`.
   */
 object FailFastCirceSupport extends FailFastCirceSupport
 
 /**
-  * Automatic to and from JSON marshalling/unmarshalling using an in-scope circe protocol.
-  * The unmarshaller fails fast, throwing the first `Error` encountered.
+  * Automatic to and from JSON marshalling/unmarshalling using an in-scope circe protocol. The
+  * unmarshaller fails fast, throwing the first `Error` encountered.
   *
   * To use automatic codec derivation import `io.circe.generic.auto._`.
   */
 trait FailFastCirceSupport extends BaseCirceSupport with FailFastUnmarshaller
 
 /**
-  * Automatic to and from JSON marshalling/unmarshalling using an in-scope circe protocol.
-  * The unmarshaller accumulates all errors in the exception `Errors`.
+  * Automatic to and from JSON marshalling/unmarshalling using an in-scope circe protocol. The
+  * unmarshaller accumulates all errors in the exception `Errors`.
   *
   * To use automatic codec derivation, user needs to import `io.circe.generic.auto._`.
   */
@@ -69,8 +69,8 @@ object ErrorAccumulatingCirceSupport extends ErrorAccumulatingCirceSupport {
 }
 
 /**
-  * Automatic to and from JSON marshalling/unmarshalling using an in-scope circe protocol.
-  * The unmarshaller accumulates all errors in the exception `Errors`.
+  * Automatic to and from JSON marshalling/unmarshalling using an in-scope circe protocol. The
+  * unmarshaller accumulates all errors in the exception `Errors`.
   *
   * To use automatic codec derivation import `io.circe.generic.auto._`.
   */
@@ -119,15 +119,18 @@ trait BaseCirceSupport {
   /**
     * `ByteString` => `A`
     *
-    * @tparam A type to decode
-    * @return unmarshaller for any `A` value
+    * @tparam A
+    *   type to decode
+    * @return
+    *   unmarshaller for any `A` value
     */
   implicit def fromByteStringUnmarshaller[A: Decoder]: Unmarshaller[ByteString, A]
 
   /**
     * `Json` => HTTP entity
     *
-    * @return marshaller for JSON value
+    * @return
+    *   marshaller for JSON value
     */
   implicit final def jsonMarshaller(implicit
       printer: Printer = Printer.noSpaces
@@ -144,8 +147,10 @@ trait BaseCirceSupport {
   /**
     * `A` => HTTP entity
     *
-    * @tparam A type to encode
-    * @return marshaller for any `A` value
+    * @tparam A
+    *   type to encode
+    * @return
+    *   marshaller for any `A` value
     */
   implicit final def marshaller[A: Encoder](implicit
       printer: Printer = Printer.noSpaces
@@ -155,7 +160,8 @@ trait BaseCirceSupport {
   /**
     * HTTP entity => `Json`
     *
-    * @return unmarshaller for `Json`
+    * @return
+    *   unmarshaller for `Json`
     */
   implicit final val jsonUnmarshaller: FromEntityUnmarshaller[Json] =
     Unmarshaller.byteStringUnmarshaller
@@ -168,7 +174,8 @@ trait BaseCirceSupport {
   /**
     * HTTP entity => `Either[io.circe.ParsingFailure, Json]`
     *
-    * @return unmarshaller for `Either[io.circe.ParsingFailure, Json]`
+    * @return
+    *   unmarshaller for `Either[io.circe.ParsingFailure, Json]`
     */
   implicit final val safeJsonUnmarshaller
       : FromEntityUnmarshaller[Either[io.circe.ParsingFailure, Json]] =
@@ -179,8 +186,10 @@ trait BaseCirceSupport {
   /**
     * HTTP entity => `A`
     *
-    * @tparam A type to decode
-    * @return unmarshaller for `A`
+    * @tparam A
+    *   type to decode
+    * @return
+    *   unmarshaller for `A`
     */
   implicit def unmarshaller[A: Decoder]: FromEntityUnmarshaller[A]
 
@@ -190,8 +199,10 @@ trait BaseCirceSupport {
   /**
     * HTTP entity => `Source[A, _]`
     *
-    * @tparam A type to decode
-    * @return unmarshaller for `Source[A, _]`
+    * @tparam A
+    *   type to decode
+    * @return
+    *   unmarshaller for `Source[A, _]`
     */
   implicit def sourceUnmarshaller[A: Decoder](implicit
       support: JsonEntityStreamingSupport = EntityStreamingSupport.json()
@@ -218,8 +229,10 @@ trait BaseCirceSupport {
   /**
     * `SourceOf[A]` => HTTP entity
     *
-    * @tparam A type to encode
-    * @return marshaller for any `SourceOf[A]` value
+    * @tparam A
+    *   type to encode
+    * @return
+    *   marshaller for any `SourceOf[A]` value
     */
   implicit def sourceMarshaller[A](implicit
       writes: Encoder[A],

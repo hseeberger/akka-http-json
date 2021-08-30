@@ -4,9 +4,9 @@
 
 inThisBuild(
   Seq(
-    organization := "de.heikoseeberger",
+    organization     := "de.heikoseeberger",
     organizationName := "Heiko Seeberger",
-    startYear := Some(2015),
+    startYear        := Some(2015),
     licenses += ("Apache-2.0", url("http://www.apache.org/licenses/LICENSE-2.0")),
     homepage := Some(url("https://github.com/hseeberger/akka-http-json")),
     scmInfo := Some(
@@ -23,7 +23,7 @@ inThisBuild(
         url("https://github.com/hseeberger")
       )
     ),
-    scalaVersion := "2.13.6",
+    scalaVersion       := "2.13.6",
     crossScalaVersions := Seq(scalaVersion.value, "2.12.14"),
     scalacOptions ++= Seq(
       "-unchecked",
@@ -35,7 +35,7 @@ inThisBuild(
       "-target:jvm-1.8"
     ),
     scalafmtOnCompile := true,
-    dynverSeparator := "_" // the default `+` is not compatible with docker tags,
+    dynverSeparator   := "_" // the default `+` is not compatible with docker tags,
   )
 )
 
@@ -62,8 +62,8 @@ lazy val `akka-http-json` =
     .settings(commonSettings)
     .settings(
       Compile / unmanagedSourceDirectories := Seq.empty,
-      Test / unmanagedSourceDirectories := Seq.empty,
-      publishArtifact := false,
+      Test / unmanagedSourceDirectories    := Seq.empty,
+      publishArtifact                      := false,
     )
 
 lazy val `akka-http-argonaut` =
@@ -223,14 +223,14 @@ lazy val commonSettings =
 lazy val library =
   new {
     object Version {
-      val akka               = "2.6.15"
+      val akka               = "2.6.16"
       val akkaHttp           = "10.2.6"
       val argonaut           = "6.3.6"
       val avro4s             = "4.0.10"
       val circe              = "0.14.1"
-      val jacksonModuleScala = "2.12.4"
-      val jsoniterScala      = "2.10.0"
-      val json4s             = "4.0.3"
+      val jacksonModuleScala = "2.12.5"
+      val jsoniterScala      = "2.10.1"
+      val json4s             = "3.6.11"
       val ninny              = "0.2.11"
       val play               = "2.9.2"
       val scalaTest          = "3.2.9"
