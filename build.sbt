@@ -233,7 +233,7 @@ lazy val library =
       val json4s             = "4.0.3"
       val ninny              = "0.2.12"
       val play               = "2.9.2"
-      val scalaTest          = "3.2.9"
+      val scalaTest          = "3.2.10"
       val upickle            = "1.4.1"
       val zioJson            = "0.1.5"
     }
