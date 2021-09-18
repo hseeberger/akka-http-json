@@ -24,7 +24,7 @@ inThisBuild(
       )
     ),
     scalaVersion       := "2.13.6",
-    crossScalaVersions := Seq(scalaVersion.value, "2.12.14"),
+    crossScalaVersions := Seq(scalaVersion.value, "2.12.15"),
     scalacOptions ++= Seq(
       "-unchecked",
       "-deprecation",
@@ -231,10 +231,10 @@ lazy val library =
       val jacksonModuleScala = "2.12.5"
       val jsoniterScala      = "2.10.2"
       val json4s             = "4.0.3"
-      val ninny              = "0.2.11"
+      val ninny              = "0.2.12"
       val play               = "2.9.2"
-      val scalaTest          = "3.2.9"
-      val upickle            = "1.3.15"
+      val scalaTest          = "3.2.10"
+      val upickle            = "1.4.1"
       val zioJson            = "0.1.5"
     }
     // format: off
