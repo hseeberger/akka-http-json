@@ -223,7 +223,7 @@ lazy val commonSettings =
 lazy val library =
   new {
     object Version {
-      val akka               = "2.6.16"
+      val akka               = "2.6.17"
       val akkaHttp           = "10.2.6"
       val argonaut           = "6.3.7"
       val avro4s             = "4.0.11"
