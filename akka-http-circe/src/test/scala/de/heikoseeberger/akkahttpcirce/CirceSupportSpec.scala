@@ -82,10 +82,10 @@ final class CirceSupportSpec
     "enable streamed marshalling and unmarshalling for json arrays" in {
       val foos = (0 to 100).map(i => Foo(s"bar-$i")).toList
 
-      //Don't know why, the encoder is not resolving alongside the marshaller
-      //this only happens if we use the implicits from BaseCirceSupport
-      //so, tried to create it before and guess what? it worked.
-      //not sure if this is a bug, but, the error is this:
+      // Don't know why, the encoder is not resolving alongside the marshaller
+      // this only happens if we use the implicits from BaseCirceSupport
+      // so, tried to create it before and guess what? it worked.
+      // not sure if this is a bug, but, the error is this:
       //  diverging implicit expansion for type io.circe.Encoder[A]
       //  [error] starting with lazy value encodeZoneOffset in object Encoder
       implicit val e = implicitly[Encoder[Foo]]
