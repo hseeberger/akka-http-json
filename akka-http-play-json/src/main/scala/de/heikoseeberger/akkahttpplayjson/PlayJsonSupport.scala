@@ -67,12 +67,14 @@ trait PlayJsonSupport {
       mediaType: MediaType.WithFixedCharset
   ): Marshaller[SourceOf[ByteString], MessageEntity] =
     Marshaller[SourceOf[ByteString], MessageEntity] { implicit ec => value =>
-      try FastFuture.successful {
-        Marshalling.WithFixedContentType(
-          mediaType,
-          () => HttpEntity(contentType = mediaType, data = value)
-        ) :: Nil
-      } catch {
+      try
+        FastFuture.successful {
+          Marshalling.WithFixedContentType(
+            mediaType,
+            () => HttpEntity(contentType = mediaType, data = value)
+          ) :: Nil
+        }
+      catch {
         case NonFatal(e) => FastFuture.failed(e)
       }
     }
