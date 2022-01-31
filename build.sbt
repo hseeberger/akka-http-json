@@ -203,6 +203,19 @@ lazy val `akka-http-zio-json` =
       )
     )
 
+lazy val `akka-http-zio2-json` =
+  project
+    .enablePlugins(AutomateHeaderPlugin)
+    .settings(commonSettings)
+    .settings(
+      libraryDependencies ++= Seq(
+        library.zio2Json,
+        library.akkaStream % Provided,
+        library.scalaTest  % Test
+      )
+    )
+    .dependsOn(`akka-http-zio-json`)
+
 // *****************************************************************************
 // Project settings
 // *****************************************************************************
@@ -235,7 +248,8 @@ lazy val library =
       val play               = "2.9.2"
       val scalaTest          = "3.2.11"
       val upickle            = "1.5.0"
-      val zioJson            = "0.3.0-RC2"
+      val zioJson            = "0.1.5"
+      val zio2Json           = "0.3.0-RC2"
     }
     // format: off
     val akkaHttp            = "com.typesafe.akka"                     %% "akka-http"             % Version.akkaHttp
@@ -257,5 +271,7 @@ lazy val library =
     val scalaTest           = "org.scalatest"                         %% "scalatest"             % Version.scalaTest
     val upickle             = "com.lihaoyi"                           %% "upickle"               % Version.upickle
     val zioJson             = "dev.zio"                               %% "zio-json"              % Version.zioJson
+    val zio2Json            = "dev.zio"                               %% "zio-json"              % Version.zio2Json
+
     // format: on
   }
