@@ -78,7 +78,7 @@ final class NinnySupportSpec extends AsyncWordSpec with Matchers with BeforeAndA
         .failed
         .map { err =>
           err shouldBe a[JsonException]
-          err should have message "Expected string, got 5"
+          err should have message "Error converting bar from JSON: Expected string, got 5"
         }
     }
 
