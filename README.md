@@ -12,7 +12,7 @@ akka-http-json provides JSON (un)marshalling support for [Akka HTTP](https://git
 - [Jackson](https://github.com/FasterXML/jackson) via [Scala Module](https://github.com/FasterXML/jackson-module-scala) by default
 - [Json4s](https://github.com/json4s/json4s)
 - [jsoniter-scala](https://github.com/plokhotnyuk/jsoniter-scala)
-- [ninny](https://github.com/kag0/ninny-json)
+- [ninny](https://nrktkt.github.io/ninny-json/USERGUIDE)
 - [Play JSON](https://www.playframework.com/documentation/2.6.x/ScalaJson)
 - [uPickle](https://github.com/lihaoyi/upickle-pprint)
 - [zio-json](https://github.com/zio/zio-json)
