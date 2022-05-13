@@ -42,7 +42,7 @@ import scala.util.control.NonFatal
 object JacksonSupport extends JacksonSupport {
 
   val defaultObjectMapper: ObjectMapper =
-    new ObjectMapper().registerModule(DefaultScalaModule)
+    new ObjectMapper.registerModule(DefaultScalaModule)
 }
 
 /**

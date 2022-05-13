@@ -100,7 +100,7 @@ trait ArgonautSupport {
   private def decode[A: DecodeJson](json: Json) =
     DecodeJson.of[A].decodeJson(json).result match {
       case Right(entity) => entity
-      case Left((m, h))  => sys.error(m + " - " + h)
+      case Left(m, h)    => sys.error(m + " - " + h)
     }
 
   /**

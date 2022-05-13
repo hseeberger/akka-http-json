@@ -80,7 +80,7 @@ trait AvroSupport {
   ): SourceOf[ByteString] =
     entitySource
       .map { obj =>
-        val baos   = new ByteArrayOutputStream()
+        val baos   = new ByteArrayOutputStream
         val stream = AvroOutputStream.json[A].to(baos).build()
         stream.write(obj)
         stream.close()
@@ -135,7 +135,7 @@ trait AvroSupport {
       HttpEntity.Strict(
         contentType,
         ByteString.fromArrayUnsafe {
-          val baos   = new ByteArrayOutputStream()
+          val baos   = new ByteArrayOutputStream
           val stream = AvroOutputStream.json[A].to(baos).build()
           stream.write(obj)
           stream.close()
