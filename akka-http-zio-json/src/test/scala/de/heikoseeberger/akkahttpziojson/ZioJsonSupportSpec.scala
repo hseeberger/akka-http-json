@@ -48,6 +48,8 @@ object ZioJsonSupportSpec {
   implicit val fooDecoder: JsonDecoder[Foo]             = DeriveJsonDecoder.gen
   implicit val multiFooDecoder: JsonDecoder[MultiFoo]   = DeriveJsonDecoder.gen
   implicit val optionFooDecoder: JsonDecoder[OptionFoo] = DeriveJsonDecoder.gen
+
+  implicit val rt: zio.Runtime[Any] = zio.Runtime.default
 }
 
 final class ZioJsonSupportSpec
