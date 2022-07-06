@@ -34,6 +34,8 @@ object ExampleApp {
     implicit val fooDecoder: JsonDecoder[Foo] = DeriveJsonDecoder.gen
   }
 
+  private implicit val rt: zio.Runtime[Any] = zio.Runtime.default
+
   def main(args: Array[String]): Unit = {
     implicit val system = ActorSystem()
 

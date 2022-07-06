@@ -36,6 +36,7 @@ import scala.concurrent.Future
 import scala.util.control.NonFatal
 import zio.json._
 import zio.stream.ZStream
+import zio.Unsafe
 
 object ZioJsonSupport extends ZioJsonSupport
 
@@ -95,12 +96,13 @@ trait ZioJsonSupport {
     * @return
     */
   implicit final def fromByteStringUnmarshaller[A](implicit
-      jd: JsonDecoder[A]
+      jd: JsonDecoder[A],
+      rt: zio.Runtime[Any]
   ): Unmarshaller[ByteString, A] =
     Unmarshaller(_ =>
       bs => {
         val decoded = jd.decodeJsonStreamInput(ZStream.fromIterable(bs))
-        zio.Runtime.default.unsafeRunToFuture(decoded)
+        Unsafe.unsafeCompat(implicit u => rt.unsafe.runToFuture(decoded))
       }
     )
 
@@ -127,7 +129,7 @@ trait ZioJsonSupport {
     * @return
     *   unmarshaller for `A`
     */
-  implicit final def unmarshaller[A: JsonDecoder]: FromEntityUnmarshaller[A] =
+  implicit final def unmarshaller[A: JsonDecoder, RT: zio.Runtime]: FromEntityUnmarshaller[A] =
     Unmarshaller.byteStringUnmarshaller
       .forContentTypes(unmarshallerContentTypes: _*)
       .flatMap { implicit ec => implicit m =>
@@ -147,7 +149,7 @@ trait ZioJsonSupport {
     * @return
     *   unmarshaller from `Source[A, _]`
     */
-  implicit final def sourceUnmarshaller[A: JsonDecoder](implicit
+  implicit final def sourceUnmarshaller[A: JsonDecoder, RT: zio.Runtime](implicit
       support: JsonEntityStreamingSupport = EntityStreamingSupport.json()
   ): FromEntityUnmarshaller[SourceOf[A]] =
     Unmarshaller
