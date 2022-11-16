@@ -33,7 +33,7 @@ final class UpickleCustomizationSupportSpec
     with Matchers
     with BeforeAndAfterAll {
 
-  private implicit val system = ActorSystem()
+  private implicit val system: ActorSystem = ActorSystem()
 
   object FooApi extends AttributeTagged {
     override implicit val IntWriter: FooApi.Writer[Int] = new Writer[Int] {
@@ -42,7 +42,7 @@ final class UpickleCustomizationSupportSpec
   }
   object UpickleFoo extends UpickleCustomizationSupport {
     override type Api = FooApi.type
-    override def api: FooApi.type = FooApi
+    override val api: FooApi.type = FooApi
   }
 
   import UpickleFoo._

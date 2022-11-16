@@ -171,7 +171,7 @@ lazy val `akka-http-play-json` =
 lazy val `akka-http-upickle` =
   project
     .enablePlugins(AutomateHeaderPlugin)
-    .settings(commonSettings)
+    .settings(commonSettings, withScala3)
     .settings(
       libraryDependencies ++= Seq(
         library.akkaHttp,
@@ -237,8 +237,8 @@ lazy val library =
       val jsoniterScala      = "2.17.9"
       val ninny              = "0.7.0"
       val play               = "2.9.2"
-      val scalaTest          = "3.2.11"
-      val upickle            = "1.5.0"
+      val scalaTest          = "3.2.14"
+      val upickle            = "1.6.0"
       val zioJson            = "0.3.0"
     }
     // format: off
