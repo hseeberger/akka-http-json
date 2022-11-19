@@ -20,29 +20,27 @@ import akka.http.javadsl.common.JsonEntityStreamingSupport
 import akka.http.javadsl.marshallers.jackson.Jackson
 import akka.http.scaladsl.common.EntityStreamingSupport
 import akka.http.scaladsl.marshalling._
-import akka.http.scaladsl.model.{ ContentTypeRange, HttpEntity, MediaType, MessageEntity }
 import akka.http.scaladsl.model.MediaTypes.`application/json`
+import akka.http.scaladsl.model.{ ContentTypeRange, HttpEntity, MediaType, MessageEntity }
 import akka.http.scaladsl.unmarshalling.{ FromEntityUnmarshaller, Unmarshal, Unmarshaller }
 import akka.http.scaladsl.util.FastFuture
 import akka.stream.scaladsl.{ Flow, Source }
 import akka.util.ByteString
-import com.fasterxml.jackson.core.`type`.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.scala.DefaultScalaModule
-import java.lang.reflect.{ ParameterizedType, Type => JType }
-import scala.collection.immutable.Seq
+import com.fasterxml.jackson.databind.json.JsonMapper
+import com.fasterxml.jackson.module.scala.{ ClassTagExtensions, DefaultScalaModule, JavaTypeable }
+
 import scala.concurrent.Future
-import scala.reflect.runtime.universe._
+import scala.reflect.ClassTag
 import scala.util.Try
 import scala.util.control.NonFatal
 
 /**
-  * Automatic to and from JSON marshalling/unmarshalling usung an in-scope Jackon's ObjectMapper
+  * Automatic to and from JSON marshalling/unmarshalling using an in-scope Jackson ObjectMapper
   */
 object JacksonSupport extends JacksonSupport {
-
-  val defaultObjectMapper: ObjectMapper =
-    new ObjectMapper().registerModule(DefaultScalaModule)
+  val defaultObjectMapper: ObjectMapper with ClassTagExtensions =
+    JsonMapper.builder().addModule(DefaultScalaModule).build() :: ClassTagExtensions
 }
 
 /**
@@ -66,24 +64,6 @@ trait JacksonSupport {
         case (ByteString.empty, _) => throw Unmarshaller.NoContentException
         case (data, charset)       => data.decodeString(charset.nioCharset.name)
       }
-
-  private def typeReference[T: TypeTag] = {
-    val t      = typeTag[T]
-    val mirror = t.mirror
-    def mapType(t: Type): JType =
-      if (t.typeArgs.isEmpty)
-        mirror.runtimeClass(t)
-      else
-        new ParameterizedType {
-          def getRawType()             = mirror.runtimeClass(t)
-          def getActualTypeArguments() = t.typeArgs.map(mapType).toArray
-          def getOwnerType()           = null
-        }
-
-    new TypeReference[T] {
-      override def getType = mapType(t.tpe)
-    }
-  }
 
   private def sourceByteStringMarshaller(
       mediaType: MediaType.WithFixedCharset
@@ -116,11 +96,10 @@ trait JacksonSupport {
   /**
     * HTTP entity => `A`
     */
-  implicit def unmarshaller[A](implicit
-      ct: TypeTag[A],
-      objectMapper: ObjectMapper = defaultObjectMapper
+  implicit def unmarshaller[A: JavaTypeable](implicit
+      objectMapper: ObjectMapper with ClassTagExtensions = defaultObjectMapper
   ): FromEntityUnmarshaller[A] =
-    jsonStringUnmarshaller.map(data => objectMapper.readValue(data, typeReference[A]))
+    jsonStringUnmarshaller.map(data => objectMapper.readValue[A](data))
 
   /**
     * `A` => HTTP entity
@@ -138,12 +117,11 @@ trait JacksonSupport {
     * @return
     *   unmarshaller for any `A` value
     */
-  implicit def fromByteStringUnmarshaller[A](implicit
-      ct: TypeTag[A],
-      objectMapper: ObjectMapper = defaultObjectMapper
+  implicit def fromByteStringUnmarshaller[A: ClassTag](implicit
+      objectMapper: ObjectMapper with ClassTagExtensions = defaultObjectMapper
   ): Unmarshaller[ByteString, A] =
     Unmarshaller { _ => bs =>
-      Future.fromTry(Try(objectMapper.readValue(bs.toArray, typeReference[A])))
+      Future.fromTry(Try(objectMapper.readValue[A](bs.toArray)))
     }
 
   /**
@@ -154,9 +132,8 @@ trait JacksonSupport {
     * @return
     *   unmarshaller for `Source[A, _]`
     */
-  implicit def sourceUnmarshaller[A](implicit
-      ct: TypeTag[A],
-      objectMapper: ObjectMapper = defaultObjectMapper,
+  implicit def sourceUnmarshaller[A: ClassTag](implicit
+      objectMapper: ObjectMapper with ClassTagExtensions = defaultObjectMapper,
       support: JsonEntityStreamingSupport = EntityStreamingSupport.json()
   ): FromEntityUnmarshaller[SourceOf[A]] =
     Unmarshaller
@@ -187,7 +164,6 @@ trait JacksonSupport {
     *   marshaller for any `SourceOf[A]` value
     */
   implicit def sourceMarshaller[A](implicit
-      ct: TypeTag[A],
       objectMapper: ObjectMapper = defaultObjectMapper,
       support: JsonEntityStreamingSupport = EntityStreamingSupport.json()
   ): ToEntityMarshaller[SourceOf[A]] =
