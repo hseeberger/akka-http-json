@@ -2,6 +2,7 @@
 // Build settings
 // *****************************************************************************
 
+lazy val scalaReleaseVersion = SettingKey[Int]("scalaReleaseVersion")
 inThisBuild(
   Seq(
     organization     := "de.heikoseeberger",
@@ -35,7 +36,13 @@ inThisBuild(
       "-target:jvm-1.8"
     ),
     scalafmtOnCompile := true,
-    dynverSeparator   := "_" // the default `+` is not compatible with docker tags,
+    dynverSeparator   := "_", // the default `+` is not compatible with docker tags,
+    scalaReleaseVersion := {
+      lazy val v = scalaVersion.value
+      CrossVersion.partialVersion(v).map(_._1.toInt).getOrElse {
+        throw new RuntimeException(s"could not get Scala release version from $v")
+      }
+    }
   )
 )
 
@@ -86,7 +93,7 @@ lazy val `akka-http-argonaut` =
 lazy val `akka-http-circe` =
   project
     .enablePlugins(AutomateHeaderPlugin)
-    .settings(commonSettings)
+    .settings(commonSettings, withScala3)
     .settings(
       libraryDependencies ++= Seq(
         library.akkaHttp,
@@ -94,8 +101,19 @@ lazy val `akka-http-circe` =
         library.circeParser,
         library.akkaStream   % Provided,
         library.circeGeneric % Test,
-        library.scalaTest    % Test,
-      )
+        library.scalaTest % Test,
+      ),
+      Test / unmanagedSourceDirectories ++= {
+        if (scalaReleaseVersion.value > 2) {
+          Seq(
+            (LocalRootProject / baseDirectory).value / "src" / "test" / "scala-3"
+          )
+        } else {
+          Seq(
+            (LocalRootProject / baseDirectory).value / "src" / "test" / "scala-2",
+          )
+        }
+      }
     )
 
 lazy val `akka-http-jackson` =
