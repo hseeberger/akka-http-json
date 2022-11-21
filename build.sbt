@@ -23,8 +23,8 @@ inThisBuild(
         url("https://github.com/hseeberger")
       )
     ),
-    scalaVersion       := "2.13.8",
-    crossScalaVersions := Seq(scalaVersion.value, "2.12.15"),
+    scalaVersion       := "2.13.10",
+    crossScalaVersions := Seq(scalaVersion.value, "2.12.17"),
     scalacOptions ++= Seq(
       "-unchecked",
       "-deprecation",
@@ -37,6 +37,10 @@ inThisBuild(
     scalafmtOnCompile := true,
     dynverSeparator   := "_" // the default `+` is not compatible with docker tags,
   )
+)
+
+val withScala3 = Seq(
+  crossScalaVersions += "3.2.1",
 )
 
 // *****************************************************************************
@@ -69,7 +73,7 @@ lazy val `akka-http-json` =
 lazy val `akka-http-argonaut` =
   project
     .enablePlugins(AutomateHeaderPlugin)
-    .settings(commonSettings)
+    .settings(commonSettings, withScala3)
     .settings(
       libraryDependencies ++= Seq(
         library.akkaHttp,
@@ -112,7 +116,7 @@ lazy val `akka-http-jackson` =
 lazy val `akka-http-json4s` =
   project
     .enablePlugins(AutomateHeaderPlugin)
-    .settings(commonSettings)
+    .settings(commonSettings, withScala3)
     .settings(
       libraryDependencies ++= Seq(
         library.akkaHttp,
@@ -127,7 +131,7 @@ lazy val `akka-http-json4s` =
 lazy val `akka-http-jsoniter-scala` =
   project
     .enablePlugins(AutomateHeaderPlugin)
-    .settings(commonSettings)
+    .settings(commonSettings, withScala3)
     .settings(
       libraryDependencies ++= Seq(
         library.akkaHttp,
@@ -193,7 +197,7 @@ lazy val `akka-http-avro4s` =
 lazy val `akka-http-zio-json` =
   project
     .enablePlugins(AutomateHeaderPlugin)
-    .settings(commonSettings)
+    .settings(commonSettings, withScala3)
     .settings(
       libraryDependencies ++= Seq(
         library.akkaHttp,
@@ -223,23 +227,23 @@ lazy val commonSettings =
 lazy val library =
   new {
     object Version {
-      val akka               = "2.6.18"
-      val akkaHttp           = "10.2.8"
+      val akka               = "2.6.20"
+      val akkaHttp           = "10.2.10"
       val argonaut           = "6.3.8"
       val avro4s             = "4.0.12"
       val circe              = "0.14.1"
       val jacksonModuleScala = "2.13.1"
-      val jsoniterScala      = "2.10.3"
-      val json4s             = "4.0.4"
+      val json4s             = "4.0.6"
+      val jsoniterScala      = "2.17.9"
       val ninny              = "0.7.0"
       val play               = "2.9.2"
       val scalaTest          = "3.2.11"
       val upickle            = "1.5.0"
-      val zioJson            = "0.3.0-RC9"
+      val zioJson            = "0.3.0"
     }
     // format: off
-    val akkaHttp            = "com.typesafe.akka"                     %% "akka-http"             % Version.akkaHttp
-    val akkaHttpJacksonJava = "com.typesafe.akka"                     %% "akka-http-jackson"     % Version.akkaHttp
+    val akkaHttp            = ("com.typesafe.akka"                     %% "akka-http"             % Version.akkaHttp).cross(CrossVersion.for3Use2_13)
+    val akkaHttpJacksonJava = ("com.typesafe.akka"                     %% "akka-http-jackson"     % Version.akkaHttp).cross(CrossVersion.for3Use2_13)
     val akkaStream          = "com.typesafe.akka"                     %% "akka-stream"           % Version.akka
     val argonaut            = "io.argonaut"                           %% "argonaut"              % Version.argonaut
     val avro4sJson          = "com.sksamuel.avro4s"                   %% "avro4s-json"           % Version.avro4s
