@@ -24,9 +24,11 @@ import akka.http.scaladsl.unmarshalling.{ Unmarshal, Unmarshaller }
 import akka.http.scaladsl.unmarshalling.Unmarshaller.UnsupportedContentTypeException
 import akka.stream.scaladsl.{ Sink, Source }
 import argonaut.Argonaut._
+import argonaut.CodecJson
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AsyncWordSpec
+
 import scala.concurrent.Await
 import scala.concurrent.duration.DurationInt
 
@@ -41,8 +43,9 @@ final class ArgonautSupportSpec extends AsyncWordSpec with Matchers with BeforeA
 
   import ArgonautSupportSpec._
 
-  private implicit val system   = ActorSystem()
-  private implicit def fooCodec = casecodec1(Foo.apply, Foo.unapply)("bar")
+  private implicit val system: ActorSystem = ActorSystem()
+  private implicit def fooCodec: CodecJson[Foo] =
+    casecodec1(Foo.apply, (f: Foo) => Option(f.bar))("bar")
 
   "ArgonautSupport" should {
     "enable marshalling and unmarshalling objects for generic derivation" in {

@@ -23,10 +23,12 @@ import akka.http.scaladsl.model.ContentTypes.{ `application/json`, `text/plain(U
 import akka.http.scaladsl.unmarshalling.{ Unmarshal, Unmarshaller }
 import akka.http.scaladsl.unmarshalling.Unmarshaller.UnsupportedContentTypeException
 import akka.stream.scaladsl.{ Sink, Source }
+import org.json4s.jackson.Serialization
 import org.json4s.{ DefaultFormats, jackson, native }
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AsyncWordSpec
+
 import scala.concurrent.Await
 import scala.concurrent.duration.DurationInt
 
@@ -41,14 +43,14 @@ final class Json4sSupportSpec extends AsyncWordSpec with Matchers with BeforeAnd
   import Json4sSupport._
   import Json4sSupportSpec._
 
-  private implicit val system  = ActorSystem()
-  private implicit val formats = DefaultFormats
+  private implicit val system: ActorSystem          = ActorSystem()
+  private implicit val formats: DefaultFormats.type = DefaultFormats
 
   private val foo = Foo("bar")
 
   "Json4sSupport" should {
     "enable marshalling and unmarshalling objects for `DefaultFormats` and `jackson.Serialization`" in {
-      implicit val serialization = jackson.Serialization
+      implicit val serialization: Serialization.type = jackson.Serialization
       Marshal(foo)
         .to[RequestEntity]
         .flatMap(Unmarshal(_).to[Foo])
@@ -56,7 +58,7 @@ final class Json4sSupportSpec extends AsyncWordSpec with Matchers with BeforeAnd
     }
 
     "enable streamed marshalling and unmarshalling for json arrays" in {
-      implicit val serialization = jackson.Serialization
+      implicit val serialization: Serialization.type = jackson.Serialization
 
       val foos = (0 to 100).map(i => Foo(s"bar-$i")).toList
 
@@ -72,7 +74,7 @@ final class Json4sSupportSpec extends AsyncWordSpec with Matchers with BeforeAnd
     }
 
     "enable marshalling and unmarshalling objects for `DefaultFormats` and `native.Serialization`" in {
-      implicit val serialization = native.Serialization
+      implicit val serialization: native.Serialization.type = native.Serialization
       Marshal(foo)
         .to[RequestEntity]
         .flatMap(Unmarshal(_).to[Foo])
@@ -80,7 +82,7 @@ final class Json4sSupportSpec extends AsyncWordSpec with Matchers with BeforeAnd
     }
 
     "provide proper error messages for requirement errors" in {
-      implicit val serialization = native.Serialization
+      implicit val serialization: native.Serialization.type = native.Serialization
       val entity =
         HttpEntity(MediaTypes.`application/json`, """{ "bar": "baz" }""")
       Unmarshal(entity)
@@ -90,8 +92,8 @@ final class Json4sSupportSpec extends AsyncWordSpec with Matchers with BeforeAnd
     }
 
     "fail with NoContentException when unmarshalling empty entities" in {
-      implicit val serialization = native.Serialization
-      val entity                 = HttpEntity.empty(`application/json`)
+      implicit val serialization: native.Serialization.type = native.Serialization
+      val entity                                            = HttpEntity.empty(`application/json`)
       Unmarshal(entity)
         .to[Foo]
         .failed
@@ -99,8 +101,8 @@ final class Json4sSupportSpec extends AsyncWordSpec with Matchers with BeforeAnd
     }
 
     "fail with UnsupportedContentTypeException when Content-Type is not `application/json`" in {
-      implicit val serialization = native.Serialization
-      val entity                 = HttpEntity("""{ "bar": "bar" }""")
+      implicit val serialization: native.Serialization.type = native.Serialization
+      val entity                                            = HttpEntity("""{ "bar": "bar" }""")
       Unmarshal(entity)
         .to[Foo]
         .failed
@@ -110,8 +112,8 @@ final class Json4sSupportSpec extends AsyncWordSpec with Matchers with BeforeAnd
     }
 
     "allow unmarshalling with passed in Content-Types" in {
-      implicit val serialization = native.Serialization
-      val foo                    = Foo("bar")
+      implicit val serialization: native.Serialization.type = native.Serialization
+      val foo                                               = Foo("bar")
       val `application/json-home` =
         MediaType.applicationWithFixedCharset("json-home", HttpCharsets.`UTF-8`, "json-home")
 
