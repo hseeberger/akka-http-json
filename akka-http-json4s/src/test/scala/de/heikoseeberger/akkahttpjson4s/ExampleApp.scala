@@ -22,7 +22,9 @@ import akka.http.scaladsl.model.HttpRequest
 import akka.http.scaladsl.server.Directives
 import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.stream.scaladsl.Source
+import org.json4s.jackson.Serialization
 import org.json4s.{ DefaultFormats, jackson }
+
 import scala.concurrent.Await
 import scala.concurrent.duration._
 import scala.io.StdIn
@@ -32,7 +34,7 @@ object ExampleApp {
   final case class Foo(bar: String)
 
   def main(args: Array[String]): Unit = {
-    implicit val system = ActorSystem()
+    implicit val system: ActorSystem = ActorSystem()
 
     Http().newServerAt("127.0.0.1", 8000).bindFlow(route)
 
@@ -44,8 +46,9 @@ object ExampleApp {
     import Directives._
     import Json4sSupport._
 
-    implicit val serialization = jackson.Serialization // or native.Serialization
-    implicit val formats       = DefaultFormats
+    implicit val serialization: Serialization.type =
+      jackson.Serialization // or native.Serialization
+    implicit val formats: DefaultFormats.type = DefaultFormats
 
     pathSingleSlash {
       post {
@@ -57,7 +60,7 @@ object ExampleApp {
       }
     } ~ pathPrefix("stream") {
       post {
-        entity(as[SourceOf[Foo]]) { fooSource: SourceOf[Foo] =>
+        entity(as[SourceOf[Foo]]) { (fooSource: SourceOf[Foo]) =>
           complete(fooSource.throttle(1, 2.seconds))
         }
       } ~ get {

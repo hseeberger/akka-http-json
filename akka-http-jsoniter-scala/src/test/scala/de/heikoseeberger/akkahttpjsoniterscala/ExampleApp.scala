@@ -64,7 +64,7 @@ object ExampleApp {
       }
     } ~ pathPrefix("stream") {
       post {
-        entity(as[SourceOf[Foo]]) { fooSource: SourceOf[Foo] =>
+        entity(as[SourceOf[Foo]]) { (fooSource: SourceOf[Foo]) =>
           complete(fooSource.throttle(1, 2.seconds))
         }
       } ~ get {
