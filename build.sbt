@@ -77,7 +77,6 @@ lazy val `akka-http-json` =
 
 lazy val `akka-http-argonaut` =
   project
-    .enablePlugins(AutomateHeaderPlugin)
     .settings(commonSettings, withScala3)
     .settings(
       libraryDependencies ++= Seq(
@@ -90,7 +89,6 @@ lazy val `akka-http-argonaut` =
 
 lazy val `akka-http-circe` =
   project
-    .enablePlugins(AutomateHeaderPlugin)
     .settings(commonSettings)
     .settings(
       libraryDependencies ++= Seq(
@@ -105,7 +103,6 @@ lazy val `akka-http-circe` =
 
 lazy val `akka-http-jackson` =
   project
-    .enablePlugins(AutomateHeaderPlugin)
     .settings(commonSettings, withScala3)
     .settings(
       libraryDependencies ++= Seq(
@@ -119,7 +116,6 @@ lazy val `akka-http-jackson` =
 
 lazy val `akka-http-json4s` =
   project
-    .enablePlugins(AutomateHeaderPlugin)
     .settings(commonSettings, withScala3)
     .settings(
       libraryDependencies ++= Seq(
@@ -134,7 +130,6 @@ lazy val `akka-http-json4s` =
 
 lazy val `akka-http-jsoniter-scala` =
   project
-    .enablePlugins(AutomateHeaderPlugin)
     .settings(commonSettings, withScala3)
     .settings(
       libraryDependencies ++= Seq(
@@ -148,7 +143,6 @@ lazy val `akka-http-jsoniter-scala` =
 
 lazy val `akka-http-ninny` =
   project
-    .enablePlugins(AutomateHeaderPlugin)
     .settings(commonSettings)
     .settings(
       libraryDependencies ++= Seq(
@@ -161,7 +155,6 @@ lazy val `akka-http-ninny` =
 
 lazy val `akka-http-play-json` =
   project
-    .enablePlugins(AutomateHeaderPlugin)
     .settings(commonSettings)
     .settings(
       libraryDependencies ++= Seq(
@@ -174,7 +167,6 @@ lazy val `akka-http-play-json` =
 
 lazy val `akka-http-upickle` =
   project
-    .enablePlugins(AutomateHeaderPlugin)
     .settings(commonSettings)
     .settings(
       libraryDependencies ++= Seq(
@@ -187,7 +179,6 @@ lazy val `akka-http-upickle` =
 
 lazy val `akka-http-avro4s` =
   project
-    .enablePlugins(AutomateHeaderPlugin)
     .settings(commonSettings)
     .settings(
       libraryDependencies ++= Seq(
@@ -200,7 +191,6 @@ lazy val `akka-http-avro4s` =
 
 lazy val `akka-http-zio-json` =
   project
-    .enablePlugins(AutomateHeaderPlugin)
     .settings(commonSettings, withScala3)
     .settings(
       libraryDependencies ++= Seq(
