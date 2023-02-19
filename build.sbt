@@ -4,8 +4,8 @@
 
 inThisBuild(
   Seq(
-    organization     := "com.github.pjfanning",
-    startYear        := Some(2023),
+    organization := "com.github.pjfanning",
+    startYear    := Some(2023),
     licenses += ("Apache-2.0", url("http://www.apache.org/licenses/LICENSE-2.0")),
     homepage := Some(url("https://github.com/pjfanning/pekko-http-json")),
     scmInfo := Some(
@@ -106,13 +106,12 @@ lazy val `akka-http-circe` =
 lazy val `akka-http-jackson` =
   project
     .enablePlugins(AutomateHeaderPlugin)
-    .settings(commonSettings)
+    .settings(commonSettings, withScala3)
     .settings(
       libraryDependencies ++= Seq(
         library.akkaHttp,
         library.akkaHttpJacksonJava,
         library.jacksonModuleScala,
-        "org.scala-lang"   % "scala-reflect" % scalaVersion.value,
         library.akkaStream % Provided,
         library.scalaTest  % Test,
       )
@@ -237,7 +236,7 @@ lazy val library =
       val argonaut           = "6.3.8"
       val avro4s             = "4.0.12"
       val circe              = "0.14.1"
-      val jacksonModuleScala = "2.13.1"
+      val jacksonModuleScala = "2.13.5"
       val json4s             = "4.0.6"
       val jsoniterScala      = "2.17.9"
       val ninny              = "0.7.0"
