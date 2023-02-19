@@ -53,21 +53,21 @@ val withScala3 = Seq(
 // Projects
 // *****************************************************************************
 
-lazy val `akka-http-json` =
+lazy val `pekko-http-json` =
   project
     .in(file("."))
     .disablePlugins(MimaPlugin)
     .aggregate(
-      `akka-http-argonaut`,
-      `akka-http-avro4s`,
-      `akka-http-circe`,
-      `akka-http-jackson`,
-      `akka-http-json4s`,
-      `akka-http-jsoniter-scala`,
-      `akka-http-ninny`,
-      `akka-http-play-json`,
-      `akka-http-upickle`,
-      `akka-http-zio-json`,
+      `pekko-http-argonaut`,
+      `pekko-http-avro4s`,
+      `pekko-http-circe`,
+      `pekko-http-jackson`,
+      `pekko-http-json4s`,
+      `pekko-http-jsoniter-scala`,
+      `pekko-http-ninny`,
+      `pekko-http-play-json`,
+      `pekko-http-upickle`,
+      `pekko-http-zio-json`,
     )
     .settings(commonSettings)
     .settings(
@@ -76,7 +76,7 @@ lazy val `akka-http-json` =
       publishArtifact                      := false,
     )
 
-lazy val `akka-http-argonaut` =
+lazy val `pekko-http-argonaut` =
   project
     .settings(commonSettings, withScala3)
     .settings(
@@ -88,7 +88,7 @@ lazy val `akka-http-argonaut` =
       )
     )
 
-lazy val `akka-http-circe` =
+lazy val `pekko-http-circe` =
   project
     .settings(commonSettings)
     .settings(
@@ -102,7 +102,7 @@ lazy val `akka-http-circe` =
       )
     )
 
-lazy val `akka-http-jackson` =
+lazy val `pekko-http-jackson` =
   project
     .settings(commonSettings, withScala3)
     .settings(
@@ -115,7 +115,7 @@ lazy val `akka-http-jackson` =
       )
     )
 
-lazy val `akka-http-json4s` =
+lazy val `pekko-http-json4s` =
   project
     .settings(commonSettings, withScala3)
     .settings(
@@ -129,7 +129,7 @@ lazy val `akka-http-json4s` =
       )
     )
 
-lazy val `akka-http-jsoniter-scala` =
+lazy val `pekko-http-jsoniter-scala` =
   project
     .settings(commonSettings, withScala3)
     .settings(
@@ -142,7 +142,7 @@ lazy val `akka-http-jsoniter-scala` =
       )
     )
 
-lazy val `akka-http-ninny` =
+lazy val `pekko-http-ninny` =
   project
     .settings(commonSettings)
     .settings(
@@ -154,7 +154,7 @@ lazy val `akka-http-ninny` =
       )
     )
 
-lazy val `akka-http-play-json` =
+lazy val `pekko-http-play-json` =
   project
     .settings(commonSettings)
     .settings(
@@ -166,7 +166,7 @@ lazy val `akka-http-play-json` =
       )
     )
 
-lazy val `akka-http-upickle` =
+lazy val `pekko-http-upickle` =
   project
     .settings(commonSettings)
     .settings(
@@ -178,7 +178,7 @@ lazy val `akka-http-upickle` =
       )
     )
 
-lazy val `akka-http-avro4s` =
+lazy val `pekko-http-avro4s` =
   project
     .settings(commonSettings)
     .settings(
@@ -190,7 +190,7 @@ lazy val `akka-http-avro4s` =
       )
     )
 
-lazy val `akka-http-zio-json` =
+lazy val `pekko-http-zio-json` =
   project
     .settings(commonSettings, withScala3)
     .settings(
