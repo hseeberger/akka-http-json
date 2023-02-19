@@ -4,15 +4,14 @@
 
 inThisBuild(
   Seq(
-    organization     := "de.heikoseeberger",
-    organizationName := "Heiko Seeberger",
-    startYear        := Some(2015),
+    organization     := "com.github.pjfanning",
+    startYear        := Some(2023),
     licenses += ("Apache-2.0", url("http://www.apache.org/licenses/LICENSE-2.0")),
-    homepage := Some(url("https://github.com/hseeberger/akka-http-json")),
+    homepage := Some(url("https://github.com/pjfanning/pekko-http-json")),
     scmInfo := Some(
       ScmInfo(
-        url("https://github.com/hseeberger/akka-http-json"),
-        "git@github.com:hseeberger/akka-http-json.git"
+        url("https://github.com/pjfanning/pekko-http-json"),
+        "git@github.com:pjfanning/pekko-http-json.git"
       )
     ),
     developers := List(
@@ -21,7 +20,13 @@ inThisBuild(
         "Heiko Seeberger",
         "mail@heikoseeberger.de",
         url("https://github.com/hseeberger")
-      )
+      ),
+      Developer(
+        "pjfanning",
+        "PJ Fanning",
+        "",
+        url("https://github.com/pjfanning")
+      ),
     ),
     scalaVersion       := "2.13.10",
     crossScalaVersions := Seq(scalaVersion.value, "2.12.17"),
@@ -40,7 +45,7 @@ inThisBuild(
 )
 
 val withScala3 = Seq(
-  crossScalaVersions += "3.2.1",
+  crossScalaVersions += "3.2.2",
 )
 
 // *****************************************************************************
