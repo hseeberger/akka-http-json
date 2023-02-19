@@ -6,9 +6,9 @@
 [![Scala Steward badge](https://img.shields.io/badge/Scala_Steward-helping-blue.svg?style=flat&logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAQCAMAAAARSr4IAAAAVFBMVEUAAACHjojlOy5NWlrKzcYRKjGFjIbp293YycuLa3pYY2LSqql4f3pCUFTgSjNodYRmcXUsPD/NTTbjRS+2jomhgnzNc223cGvZS0HaSD0XLjbaSjElhIr+AAAAAXRSTlMAQObYZgAAAHlJREFUCNdNyosOwyAIhWHAQS1Vt7a77/3fcxxdmv0xwmckutAR1nkm4ggbyEcg/wWmlGLDAA3oL50xi6fk5ffZ3E2E3QfZDCcCN2YtbEWZt+Drc6u6rlqv7Uk0LdKqqr5rk2UCRXOk0vmQKGfc94nOJyQjouF9H/wCc9gECEYfONoAAAAASUVORK5CYII=)](https://scala-steward.org)
 -->
 
-**pekko-http-json is under development an no releases will be made until after Apache Pekko HTTP is released.**
+**pekko-http-json is under development and no releases will be made until after Apache Pekko HTTP is released.**
 
-This is a fork of [akka-http-json](https://github.com/hseeberger/akka-http-json).
+This is a fork of [akka-http-json](https://github.com/hseeberger/akka-http-json). Thanks to Heiko Seeberger and all those who contributed to akka-http-json.
 
 pekko-http-json provides JSON (un)marshalling support for [Apache Pekko HTTP](https://github.com/apache/incubator-pekko-http) via the following JSON libraries:
 - [Argonaut](http://argonaut.io)
