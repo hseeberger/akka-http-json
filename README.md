@@ -31,27 +31,22 @@ The artifacts are published to Maven Central.
 
 ``` scala
 libraryDependencies ++= Seq(
-  "com.github.pjfanningr" %% "pekko-http-circe" % PekkoHttpJsonVersion,
+  "com.github.pjfanning" %% "pekko-http-circe" % PekkoHttpJsonVersion,
   ...
 )
+```
+
+### Snapshots
+
+Check https://oss.sonatype.org/content/repositories/snapshots/com/github/pjfanning/ to find the version numbers for the latest pekko-http-json snapshots.
+
+``` scala
+resolvers ++= Resolver.sonatypeOssRepos("snapshots")
 ```
 
 ## Usage
 
 Use respective support trait or object, e.g. `ArgonautSupport`, `FailFastCirceSupport`, etc. into your Akka HTTP code which is supposed to (un)marshal from/to JSON. Don't forget to provide the type class instances for the respective JSON libraries, if needed.
-
-## Snapshots
-
-Check https://oss.sonatype.org/content/repositories/snapshots/com/github/pjfanning/ to find the version numbers for the latest pekko-http-json snapshots.
-
-```scala
-resolvers ++= Resolver.sonatypeOssRepos("snapshots")
-
-libraryDependencies ++= Seq(
-  "com.github.pjfanning" %% "pekko-http-circe" % "<add-version-here>",
-  ...
-)
-```
 
 ## Contribution policy ##
 
