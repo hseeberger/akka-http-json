@@ -40,7 +40,7 @@ final class JacksonSupportSpec extends AsyncWordSpec with Matchers with BeforeAn
   import JacksonSupport._
   import JacksonSupportSpec._
 
-  private implicit val system = ActorSystem()
+  private implicit val system: ActorSystem = ActorSystem()
 
   "JacksonSupport" should {
     "should enable marshalling and unmarshalling of case classes" in {
