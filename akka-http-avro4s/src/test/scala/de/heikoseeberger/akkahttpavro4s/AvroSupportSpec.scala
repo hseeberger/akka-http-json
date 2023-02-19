@@ -16,13 +16,13 @@
 
 package de.heikoseeberger.akkahttpavro4s
 
-import akka.actor.ActorSystem
-import akka.http.scaladsl.marshalling.Marshal
-import akka.http.scaladsl.model._
-import akka.http.scaladsl.model.ContentTypes.{ `application/json`, `text/plain(UTF-8)` }
-import akka.http.scaladsl.unmarshalling.{ Unmarshal, Unmarshaller }
-import akka.http.scaladsl.unmarshalling.Unmarshaller.UnsupportedContentTypeException
-import akka.stream.scaladsl.{ Sink, Source }
+import org.apache.pekko.actor.ActorSystem
+import org.apache.pekko.http.scaladsl.marshalling.Marshal
+import org.apache.pekko.http.scaladsl.model._
+import org.apache.pekko.http.scaladsl.model.ContentTypes.{ `application/json`, `text/plain(UTF-8)` }
+import org.apache.pekko.http.scaladsl.unmarshalling.{ Unmarshal, Unmarshaller }
+import org.apache.pekko.http.scaladsl.unmarshalling.Unmarshaller.UnsupportedContentTypeException
+import org.apache.pekko.stream.scaladsl.{ Sink, Source }
 import com.sksamuel.avro4s.{ Decoder, Encoder, SchemaFor }
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.matchers.should.Matchers

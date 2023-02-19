@@ -39,6 +39,7 @@ inThisBuild(
       "-Ywarn-unused:imports",
       "-target:jvm-1.8"
     ),
+    resolvers += "Apache Snapshots" at "https://repository.apache.org/content/groups/snapshots",
     scalafmtOnCompile := true,
     dynverSeparator   := "_" // the default `+` is not compatible with docker tags,
   )
@@ -80,10 +81,10 @@ lazy val `akka-http-argonaut` =
     .settings(commonSettings, withScala3)
     .settings(
       libraryDependencies ++= Seq(
-        library.akkaHttp,
+        library.pekkoHttp,
         library.argonaut,
-        library.akkaStream % Provided,
-        library.scalaTest  % Test,
+        library.pekkoStream % Provided,
+        library.scalaTest   % Test,
       )
     )
 
@@ -92,10 +93,10 @@ lazy val `akka-http-circe` =
     .settings(commonSettings)
     .settings(
       libraryDependencies ++= Seq(
-        library.akkaHttp,
+        library.pekkoHttp,
         library.circe,
         library.circeParser,
-        library.akkaStream   % Provided,
+        library.pekkoStream  % Provided,
         library.circeGeneric % Test,
         library.scalaTest    % Test,
       )
@@ -106,11 +107,11 @@ lazy val `akka-http-jackson` =
     .settings(commonSettings, withScala3)
     .settings(
       libraryDependencies ++= Seq(
-        library.akkaHttp,
-        library.akkaHttpJacksonJava,
+        library.pekkoHttp,
+        library.pekkoHttpJacksonJava,
         library.jacksonModuleScala,
-        library.akkaStream % Provided,
-        library.scalaTest  % Test,
+        library.pekkoStream % Provided,
+        library.scalaTest   % Test,
       )
     )
 
@@ -119,9 +120,9 @@ lazy val `akka-http-json4s` =
     .settings(commonSettings, withScala3)
     .settings(
       libraryDependencies ++= Seq(
-        library.akkaHttp,
+        library.pekkoHttp,
         library.json4sCore,
-        library.akkaStream    % Provided,
+        library.pekkoStream   % Provided,
         library.json4sJackson % Test,
         library.json4sNative  % Test,
         library.scalaTest     % Test,
@@ -133,9 +134,9 @@ lazy val `akka-http-jsoniter-scala` =
     .settings(commonSettings, withScala3)
     .settings(
       libraryDependencies ++= Seq(
-        library.akkaHttp,
+        library.pekkoHttp,
         library.jsoniterScalaCore,
-        library.akkaStream          % Provided,
+        library.pekkoStream         % Provided,
         library.jsoniterScalaMacros % Test,
         library.scalaTest           % Test,
       )
@@ -146,10 +147,10 @@ lazy val `akka-http-ninny` =
     .settings(commonSettings)
     .settings(
       libraryDependencies ++= Seq(
-        library.akkaHttp,
+        library.pekkoHttp,
         library.ninny,
-        library.akkaStream % Provided,
-        library.scalaTest  % Test,
+        library.pekkoStream % Provided,
+        library.scalaTest   % Test,
       )
     )
 
@@ -158,10 +159,10 @@ lazy val `akka-http-play-json` =
     .settings(commonSettings)
     .settings(
       libraryDependencies ++= Seq(
-        library.akkaHttp,
+        library.pekkoHttp,
         library.playJson,
-        library.akkaStream % Provided,
-        library.scalaTest  % Test,
+        library.pekkoStream % Provided,
+        library.scalaTest   % Test,
       )
     )
 
@@ -170,10 +171,10 @@ lazy val `akka-http-upickle` =
     .settings(commonSettings)
     .settings(
       libraryDependencies ++= Seq(
-        library.akkaHttp,
+        library.pekkoHttp,
         library.upickle,
-        library.akkaStream % Provided,
-        library.scalaTest  % Test,
+        library.pekkoStream % Provided,
+        library.scalaTest   % Test,
       )
     )
 
@@ -182,10 +183,10 @@ lazy val `akka-http-avro4s` =
     .settings(commonSettings)
     .settings(
       libraryDependencies ++= Seq(
-        library.akkaHttp,
+        library.pekkoHttp,
         library.avro4sJson,
-        library.akkaStream % Provided,
-        library.scalaTest  % Test,
+        library.pekkoStream % Provided,
+        library.scalaTest   % Test,
       )
     )
 
@@ -194,10 +195,10 @@ lazy val `akka-http-zio-json` =
     .settings(commonSettings, withScala3)
     .settings(
       libraryDependencies ++= Seq(
-        library.akkaHttp,
+        library.pekkoHttp,
         library.zioJson,
-        library.akkaStream % Provided,
-        library.scalaTest  % Test
+        library.pekkoStream % Provided,
+        library.scalaTest   % Test
       )
     )
 
@@ -221,8 +222,8 @@ lazy val commonSettings =
 lazy val library =
   new {
     object Version {
-      val akka               = "2.6.20"
-      val akkaHttp           = "10.2.10"
+      val pekko              = "0.0.0+26592-864ee821-SNAPSHOT"
+      val pekkoHttp          = "0.0.0+4284-374ff95e-SNAPSHOT"
       val argonaut           = "6.3.8"
       val avro4s             = "4.0.12"
       val circe              = "0.14.1"
@@ -236,9 +237,9 @@ lazy val library =
       val zioJson            = "0.3.0"
     }
     // format: off
-    val akkaHttp            = ("com.typesafe.akka"                     %% "akka-http"             % Version.akkaHttp).cross(CrossVersion.for3Use2_13)
-    val akkaHttpJacksonJava = ("com.typesafe.akka"                     %% "akka-http-jackson"     % Version.akkaHttp).cross(CrossVersion.for3Use2_13)
-    val akkaStream          = "com.typesafe.akka"                     %% "akka-stream"           % Version.akka
+    val pekkoHttp            = ("org.apache.pekko"                     %% "pekko-http"             % Version.pekkoHttp).cross(CrossVersion.for3Use2_13)
+    val pekkoHttpJacksonJava = ("org.apache.pekko"                     %% "pekko-http-jackson"     % Version.pekkoHttp).cross(CrossVersion.for3Use2_13)
+    val pekkoStream          = "org.apache.pekko"                     %% "pekko-stream"           % Version.pekko
     val argonaut            = "io.argonaut"                           %% "argonaut"              % Version.argonaut
     val avro4sJson          = "com.sksamuel.avro4s"                   %% "avro4s-json"           % Version.avro4s
     val circe               = "io.circe"                              %% "circe-core"            % Version.circe

@@ -16,21 +16,25 @@
 
 package de.heikoseeberger.akkahttpziojson
 
-import akka.http.javadsl.common.JsonEntityStreamingSupport
-import akka.http.scaladsl.common.EntityStreamingSupport
-import akka.http.scaladsl.marshalling.{ Marshaller, Marshalling, ToEntityMarshaller }
-import akka.http.scaladsl.model.{
+import org.apache.pekko.http.javadsl.common.JsonEntityStreamingSupport
+import org.apache.pekko.http.scaladsl.common.EntityStreamingSupport
+import org.apache.pekko.http.scaladsl.marshalling.{ Marshaller, Marshalling, ToEntityMarshaller }
+import org.apache.pekko.http.scaladsl.model.{
   ContentType,
   ContentTypeRange,
   HttpEntity,
   MediaType,
   MessageEntity
 }
-import akka.http.scaladsl.model.MediaTypes.`application/json`
-import akka.http.scaladsl.unmarshalling.{ FromEntityUnmarshaller, Unmarshal, Unmarshaller }
-import akka.http.scaladsl.util.FastFuture
-import akka.stream.scaladsl.{ Flow, Source }
-import akka.util.ByteString
+import org.apache.pekko.http.scaladsl.model.MediaTypes.`application/json`
+import org.apache.pekko.http.scaladsl.unmarshalling.{
+  FromEntityUnmarshaller,
+  Unmarshal,
+  Unmarshaller
+}
+import org.apache.pekko.http.scaladsl.util.FastFuture
+import org.apache.pekko.stream.scaladsl.{ Flow, Source }
+import org.apache.pekko.util.ByteString
 import scala.collection.immutable.Seq
 import scala.concurrent.Future
 import scala.util.control.NonFatal
