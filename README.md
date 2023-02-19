@@ -8,6 +8,8 @@
 
 **pekko-http-json is under development and no releases will be made until after Apache Pekko HTTP is released.**
 
+Snapshots are pushed to Sonatype. See below.
+
 This is a fork of [akka-http-json](https://github.com/hseeberger/akka-http-json). Thanks to Heiko Seeberger and all those who contributed to akka-http-json.
 
 pekko-http-json provides JSON (un)marshalling support for [Apache Pekko HTTP](https://github.com/apache/incubator-pekko-http) via the following JSON libraries:
@@ -37,6 +39,19 @@ libraryDependencies ++= Seq(
 ## Usage
 
 Use respective support trait or object, e.g. `ArgonautSupport`, `FailFastCirceSupport`, etc. into your Akka HTTP code which is supposed to (un)marshal from/to JSON. Don't forget to provide the type class instances for the respective JSON libraries, if needed.
+
+## Snapshots
+
+Check https://oss.sonatype.org/content/repositories/snapshots/com/github/pjfanning/ to find the version numbers for the latest pekko-http-json snapshots.
+
+```scala
+resolvers ++= Resolver.sonatypeOssRepos("snapshots")
+
+libraryDependencies ++= Seq(
+  "com.github.pjfanning" %% "pekko-http-circe" % "<add-version-here>",
+  ...
+)
+```
 
 ## Contribution policy ##
 
