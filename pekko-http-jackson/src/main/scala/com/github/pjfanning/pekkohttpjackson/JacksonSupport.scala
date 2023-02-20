@@ -44,7 +44,7 @@ import scala.util.Try
 import scala.util.control.NonFatal
 
 /**
-  * Automatic to and from JSON marshalling/unmarshalling usung an in-scope Jackon's ObjectMapper
+  * Automatic to and from JSON marshalling/unmarshalling using an in-scope Jackon's ObjectMapper
   */
 object JacksonSupport extends JacksonSupport {
 
@@ -145,7 +145,6 @@ trait JacksonSupport {
     *   unmarshaller for `Source[A, _]`
     */
   implicit def sourceUnmarshaller[A: JavaTypeable](implicit
-      objectMapper: ObjectMapper = defaultObjectMapper,
       support: JsonEntityStreamingSupport = EntityStreamingSupport.json()
   ): FromEntityUnmarshaller[SourceOf[A]] =
     Unmarshaller
