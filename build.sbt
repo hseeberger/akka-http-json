@@ -223,7 +223,7 @@ lazy val library =
   new {
     object Version {
       val pekko              = "0.0.0+26592-864ee821-SNAPSHOT"
-      val pekkoHttp          = "0.0.0+4284-374ff95e-SNAPSHOT"
+      val pekkoHttp          = "0.0.0+4285-5b5b6ff7-SNAPSHOT"
       val argonaut           = "6.3.8"
       val avro4s             = "4.0.12"
       val circe              = "0.14.1"
