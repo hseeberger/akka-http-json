@@ -16,6 +16,7 @@
 
 package com.github.pjfanning.pekkohttpupickle
 
+import com.github.pjfanning.pekkohttpupickle.UpickleCustomizationSupport._
 import org.apache.pekko.http.javadsl.common.JsonEntityStreamingSupport
 import org.apache.pekko.http.scaladsl.common.EntityStreamingSupport
 import org.apache.pekko.http.scaladsl.marshalling.{ Marshaller, Marshalling, ToEntityMarshaller }
@@ -34,7 +35,7 @@ import org.apache.pekko.http.scaladsl.unmarshalling.{
 import org.apache.pekko.http.scaladsl.util.FastFuture
 import org.apache.pekko.stream.scaladsl.{ Flow, Source }
 import org.apache.pekko.util.ByteString
-import com.github.pjfanning.pekkohttpupickle.UpickleCustomizationSupport._
+
 import scala.collection.immutable.Seq
 import scala.concurrent.Future
 import scala.util.Try
@@ -67,9 +68,7 @@ trait UpickleCustomizationSupport {
 
   type Api <: upickle.Api
 
-  def api: Api
-
-  private lazy val apiInstance: Api = api
+  val api: Api
 
   def unmarshallerContentTypes: Seq[ContentTypeRange] =
     mediaTypes.map(ContentTypeRange.apply)
@@ -94,11 +93,11 @@ trait UpickleCustomizationSupport {
     }
 
   private def jsonSource[A](entitySource: SourceOf[A])(implicit
-      writes: apiInstance.Writer[A],
+      writes: api.Writer[A],
       support: JsonEntityStreamingSupport
   ): SourceOf[ByteString] =
     entitySource
-      .map(apiInstance.write(_))
+      .map(api.write(_))
       .map(ByteString(_))
       .via(support.framingRenderer)
 
@@ -110,8 +109,8 @@ trait UpickleCustomizationSupport {
     * @return
     *   unmarshaller for any `A` value
     */
-  implicit def fromByteStringUnmarshaller[A: apiInstance.Reader]: Unmarshaller[ByteString, A] =
-    Unmarshaller(_ => bs => Future.fromTry(Try(apiInstance.read(bs.toArray))))
+  implicit def fromByteStringUnmarshaller[A: api.Reader]: Unmarshaller[ByteString, A] =
+    Unmarshaller(_ => bs => Future.fromTry(Try(api.read(bs.toArray))))
 
   /**
     * HTTP entity => `A`
@@ -121,8 +120,8 @@ trait UpickleCustomizationSupport {
     * @return
     *   unmarshaller for `A`
     */
-  implicit def unmarshaller[A: apiInstance.Reader]: FromEntityUnmarshaller[A] =
-    jsonStringUnmarshaller(this).map(apiInstance.read(_))
+  implicit def unmarshaller[A: api.Reader]: FromEntityUnmarshaller[A] =
+    jsonStringUnmarshaller(this).map(api.read(_))
 
   /**
     * `A` => HTTP entity
@@ -132,8 +131,8 @@ trait UpickleCustomizationSupport {
     * @return
     *   marshaller for any `A` value
     */
-  implicit def marshaller[A: apiInstance.Writer]: ToEntityMarshaller[A] =
-    jsonStringMarshaller(this).compose(apiInstance.write(_))
+  implicit def marshaller[A: api.Writer]: ToEntityMarshaller[A] =
+    jsonStringMarshaller(this).compose(api.write(_))
 
   /**
     * HTTP entity => `Source[A, _]`
@@ -143,7 +142,7 @@ trait UpickleCustomizationSupport {
     * @return
     *   unmarshaller for `Source[A, _]`
     */
-  implicit def sourceUnmarshaller[A: apiInstance.Reader](implicit
+  implicit def sourceUnmarshaller[A: api.Reader](implicit
       support: JsonEntityStreamingSupport = EntityStreamingSupport.json()
   ): FromEntityUnmarshaller[SourceOf[A]] =
     Unmarshaller
@@ -174,7 +173,7 @@ trait UpickleCustomizationSupport {
     *   marshaller for any `SourceOf[A]` value
     */
   implicit def sourceMarshaller[A](implicit
-      writes: apiInstance.Writer[A],
+      writes: api.Writer[A],
       support: JsonEntityStreamingSupport = EntityStreamingSupport.json()
   ): ToEntityMarshaller[SourceOf[A]] =
     jsonSourceStringMarshaller(this).compose(jsonSource[A])

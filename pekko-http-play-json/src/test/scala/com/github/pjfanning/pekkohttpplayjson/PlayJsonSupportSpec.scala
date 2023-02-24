@@ -45,7 +45,7 @@ final class PlayJsonSupportSpec extends AsyncWordSpec with Matchers with BeforeA
   import PlayJsonSupport._
   import PlayJsonSupportSpec._
 
-  private implicit val system = ActorSystem()
+  private implicit val system: ActorSystem = ActorSystem()
 
   "PlayJsonSupport" should {
     "enable marshalling and unmarshalling objects for which `Writes` and `Reads` exist" in {

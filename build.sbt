@@ -2,6 +2,7 @@
 // Build settings
 // *****************************************************************************
 
+lazy val scalaReleaseVersion = SettingKey[Int]("scalaReleaseVersion")
 inThisBuild(
   Seq(
     organization := "com.github.pjfanning",
@@ -41,7 +42,13 @@ inThisBuild(
     ),
     resolvers += "Apache Snapshots" at "https://repository.apache.org/content/groups/snapshots",
     scalafmtOnCompile := true,
-    dynverSeparator   := "_" // the default `+` is not compatible with docker tags,
+    dynverSeparator   := "_", // the default `+` is not compatible with docker tags
+    scalaReleaseVersion := {
+      lazy val v = scalaVersion.value
+      CrossVersion.partialVersion(v).map(_._1.toInt).getOrElse {
+        throw new RuntimeException(s"could not get Scala release version from $v")
+      }
+    }
   )
 )
 
@@ -90,7 +97,7 @@ lazy val `pekko-http-argonaut` =
 
 lazy val `pekko-http-circe` =
   project
-    .settings(commonSettings)
+    .settings(commonSettings, withScala3)
     .settings(
       libraryDependencies ++= Seq(
         library.pekkoHttp,
@@ -99,7 +106,18 @@ lazy val `pekko-http-circe` =
         library.pekkoStream  % Provided,
         library.circeGeneric % Test,
         library.scalaTest    % Test,
-      )
+      ),
+      Test / unmanagedSourceDirectories ++= {
+        if (scalaReleaseVersion.value > 2) {
+          Seq(
+            (LocalRootProject / baseDirectory).value / "src" / "test" / "scala-3"
+          )
+        } else {
+          Seq(
+            (LocalRootProject / baseDirectory).value / "src" / "test" / "scala-2",
+          )
+        }
+      }
     )
 
 lazy val `pekko-http-jackson` =
@@ -168,7 +186,7 @@ lazy val `pekko-http-play-json` =
 
 lazy val `pekko-http-upickle` =
   project
-    .settings(commonSettings)
+    .settings(commonSettings, withScala3)
     .settings(
       libraryDependencies ++= Seq(
         library.pekkoHttp,
@@ -232,8 +250,8 @@ lazy val library =
       val jsoniterScala      = "2.17.9"
       val ninny              = "0.7.0"
       val play               = "2.9.2"
-      val scalaTest          = "3.2.11"
-      val upickle            = "1.5.0"
+      val scalaTest          = "3.2.15"
+      val upickle            = "1.6.0"
       val zioJson            = "0.3.0"
     }
     // format: off
