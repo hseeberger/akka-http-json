@@ -37,7 +37,7 @@ object ExampleApp {
   private implicit val rt: zio.Runtime[Any] = zio.Runtime.default
 
   def main(args: Array[String]): Unit = {
-    implicit val system = ActorSystem()
+    implicit val system: ActorSystem = ActorSystem()
 
     Http().newServerAt("127.0.0.1", 8000).bindFlow(route)
 

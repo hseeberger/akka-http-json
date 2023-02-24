@@ -42,7 +42,7 @@ final class NinnySupportSpec extends AsyncWordSpec with Matchers with BeforeAndA
   import NinnySupportSpec._
   import io.github.kag0.ninny.Auto._
 
-  private implicit val system = ActorSystem()
+  private implicit val system: ActorSystem = ActorSystem()
 
   "NinnySupport" should {
     "enable marshalling and unmarshalling objects for which `ToJson` and `FromSomeJson` exist" in {

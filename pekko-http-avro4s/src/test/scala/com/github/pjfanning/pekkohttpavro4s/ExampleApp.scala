@@ -38,7 +38,7 @@ object ExampleApp {
   final case class Foo(bar: String)
 
   def main(args: Array[String]): Unit = {
-    implicit val system = ActorSystem()
+    implicit val system: ActorSystem = ActorSystem()
 
     Http().newServerAt("127.0.0.1", 8000).bindFlow(route)
 
