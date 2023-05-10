@@ -240,8 +240,8 @@ lazy val commonSettings =
 lazy val library =
   new {
     object Version {
-      val pekko              = "0.0.0+26592-864ee821-SNAPSHOT"
-      val pekkoHttp          = "0.0.0+4285-5b5b6ff7-SNAPSHOT"
+      val pekko              = "0.0.0+26656-898c6970-SNAPSHOT"
+      val pekkoHttp          = "0.0.0+4345-fa1cb9cb-SNAPSHOT"
       val argonaut           = "6.3.8"
       val avro4s             = "4.0.12"
       val circe              = "0.14.1"
