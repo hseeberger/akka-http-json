@@ -240,8 +240,8 @@ lazy val commonSettings =
 lazy val library =
   new {
     object Version {
-      val pekko              = "0.0.0+26656-898c6970-SNAPSHOT"
-      val pekkoHttp          = "0.0.0+4345-fa1cb9cb-SNAPSHOT"
+      val pekko              = "0.0.0+26669-ec5b6764-SNAPSHOT"
+      val pekkoHttp          = "0.0.0+4411-6fe04045-SNAPSHOT"
       val argonaut           = "6.3.8"
       val avro4s             = "4.0.12"
       val circe              = "0.14.1"
@@ -255,24 +255,24 @@ lazy val library =
       val zioJson            = "0.3.0"
     }
     // format: off
-    val pekkoHttp            = ("org.apache.pekko"                     %% "pekko-http"             % Version.pekkoHttp).cross(CrossVersion.for3Use2_13)
-    val pekkoHttpJacksonJava = ("org.apache.pekko"                     %% "pekko-http-jackson"     % Version.pekkoHttp).cross(CrossVersion.for3Use2_13)
+    val pekkoHttp            = "org.apache.pekko"                     %% "pekko-http"             % Version.pekkoHttp
+    val pekkoHttpJacksonJava = "org.apache.pekko"                     %% "pekko-http-jackson"     % Version.pekkoHttp
     val pekkoStream          = "org.apache.pekko"                     %% "pekko-stream"           % Version.pekko
-    val argonaut            = "io.argonaut"                           %% "argonaut"              % Version.argonaut
-    val avro4sJson          = "com.sksamuel.avro4s"                   %% "avro4s-json"           % Version.avro4s
-    val circe               = "io.circe"                              %% "circe-core"            % Version.circe
-    val circeGeneric        = "io.circe"                              %% "circe-generic"         % Version.circe
-    val circeParser         = "io.circe"                              %% "circe-parser"          % Version.circe
-    val jacksonModuleScala  = "com.fasterxml.jackson.module"          %% "jackson-module-scala"  % Version.jacksonModuleScala
-    val json4sCore          = "org.json4s"                            %% "json4s-core"           % Version.json4s
-    val json4sJackson       = "org.json4s"                            %% "json4s-jackson"        % Version.json4s
-    val json4sNative        = "org.json4s"                            %% "json4s-native"         % Version.json4s
-    val jsoniterScalaCore   = "com.github.plokhotnyuk.jsoniter-scala" %% "jsoniter-scala-core"   % Version.jsoniterScala
-    val jsoniterScalaMacros = "com.github.plokhotnyuk.jsoniter-scala" %% "jsoniter-scala-macros" % Version.jsoniterScala
-    val ninny               = "tk.nrktkt"                             %% "ninny"                 % Version.ninny
-    val playJson            = "com.typesafe.play"                     %% "play-json"             % Version.play
-    val scalaTest           = "org.scalatest"                         %% "scalatest"             % Version.scalaTest
-    val upickle             = "com.lihaoyi"                           %% "upickle"               % Version.upickle
-    val zioJson             = "dev.zio"                               %% "zio-json"              % Version.zioJson
+    val argonaut             = "io.argonaut"                           %% "argonaut"              % Version.argonaut
+    val avro4sJson           = "com.sksamuel.avro4s"                   %% "avro4s-json"           % Version.avro4s
+    val circe                = "io.circe"                              %% "circe-core"            % Version.circe
+    val circeGeneric         = "io.circe"                              %% "circe-generic"         % Version.circe
+    val circeParser          = "io.circe"                              %% "circe-parser"          % Version.circe
+    val jacksonModuleScala   = "com.fasterxml.jackson.module"          %% "jackson-module-scala"  % Version.jacksonModuleScala
+    val json4sCore           = "org.json4s"                            %% "json4s-core"           % Version.json4s
+    val json4sJackson        = "org.json4s"                            %% "json4s-jackson"        % Version.json4s
+    val json4sNative         = "org.json4s"                            %% "json4s-native"         % Version.json4s
+    val jsoniterScalaCore    = "com.github.plokhotnyuk.jsoniter-scala" %% "jsoniter-scala-core"   % Version.jsoniterScala
+    val jsoniterScalaMacros  = "com.github.plokhotnyuk.jsoniter-scala" %% "jsoniter-scala-macros" % Version.jsoniterScala
+    val ninny                = "tk.nrktkt"                             %% "ninny"                 % Version.ninny
+    val playJson             = "com.typesafe.play"                     %% "play-json"             % Version.play
+    val scalaTest            = "org.scalatest"                         %% "scalatest"             % Version.scalaTest
+    val upickle              = "com.lihaoyi"                           %% "upickle"               % Version.upickle
+    val zioJson              = "dev.zio"                               %% "zio-json"              % Version.zioJson
     // format: on
   }
