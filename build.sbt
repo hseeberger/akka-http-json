@@ -53,7 +53,7 @@ inThisBuild(
 )
 
 val withScala3 = Seq(
-  crossScalaVersions += "3.2.2",
+  crossScalaVersions += "3.3.0",
 )
 
 // *****************************************************************************
@@ -65,7 +65,7 @@ lazy val `pekko-http-json` =
     .in(file("."))
     .disablePlugins(MimaPlugin)
     .aggregate(
-      // `pekko-http-argonaut`,
+      `pekko-http-argonaut`,
       `pekko-http-avro4s`,
       `pekko-http-circe`,
       `pekko-http-jackson`,
