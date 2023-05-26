@@ -65,7 +65,7 @@ lazy val `pekko-http-json` =
     .in(file("."))
     .disablePlugins(MimaPlugin)
     .aggregate(
-      `pekko-http-argonaut`,
+      // `pekko-http-argonaut`,
       `pekko-http-avro4s`,
       `pekko-http-circe`,
       `pekko-http-jackson`,
