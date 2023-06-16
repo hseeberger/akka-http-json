@@ -29,8 +29,8 @@ inThisBuild(
         url("https://github.com/pjfanning")
       ),
     ),
-    scalaVersion       := "2.13.10",
-    crossScalaVersions := Seq(scalaVersion.value, "2.12.17"),
+    scalaVersion       := "2.13.11",
+    crossScalaVersions := Seq(scalaVersion.value, "2.12.18"),
     scalacOptions ++= Seq(
       "-unchecked",
       "-deprecation",
