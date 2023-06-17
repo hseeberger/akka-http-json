@@ -2,7 +2,6 @@
 // Build settings
 // *****************************************************************************
 
-lazy val scalaReleaseVersion = SettingKey[Int]("scalaReleaseVersion")
 inThisBuild(
   Seq(
     organization := "com.github.pjfanning",
@@ -40,15 +39,9 @@ inThisBuild(
       "-Ywarn-unused:imports",
       "-target:jvm-1.8"
     ),
-    resolvers += "Apache Snapshots" at "https://repository.apache.org/content/groups/snapshots",
+    resolvers += Resolver.ApacheMavenSnapshotsRepo,
     scalafmtOnCompile := true,
-    dynverSeparator   := "_", // the default `+` is not compatible with docker tags
-    scalaReleaseVersion := {
-      lazy val v = scalaVersion.value
-      CrossVersion.partialVersion(v).map(_._1.toInt).getOrElse {
-        throw new RuntimeException(s"could not get Scala release version from $v")
-      }
-    }
+    dynverSeparator   := "_" // the default `+` is not compatible with docker tags
   )
 )
 
@@ -106,18 +99,7 @@ lazy val `pekko-http-circe` =
         library.pekkoStream  % Provided,
         library.circeGeneric % Test,
         library.scalaTest    % Test,
-      ),
-      Test / unmanagedSourceDirectories ++= {
-        if (scalaReleaseVersion.value > 2) {
-          Seq(
-            (LocalRootProject / baseDirectory).value / "src" / "test" / "scala-3"
-          )
-        } else {
-          Seq(
-            (LocalRootProject / baseDirectory).value / "src" / "test" / "scala-2",
-          )
-        }
-      }
+      )
     )
 
 lazy val `pekko-http-jackson` =
