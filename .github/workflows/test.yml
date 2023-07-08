@@ -1,5 +1,8 @@
 name: Test
 
+permissions:
+  contents: read
+
 on:
   push:
     branches: [ main ]
@@ -26,3 +29,8 @@ jobs:
           key: ${{ runner.os }}-sbt-${{ hashFiles('build.sbt', 'project/plugins.sbt') }}
       - name: Run tests
         run: sbt +test
+      - name: Publish snapshot
+        run: sbt +publish
+        env:
+          SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
+          SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}        
