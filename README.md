@@ -10,7 +10,7 @@
 
 Snapshots are pushed to Sonatype. See below.
 
-This is a fork of [akka-http-json](https://github.com/hseeberger/akka-http-json). Thanks to Heiko Seeberger and all those who contributed to akka-http-json.
+This is a fork of [-http-json](https://github.com/hseeberger/-http-json). Thanks to Heiko Seeberger and all those who contributed to -http-json.
 
 pekko-http-json provides JSON (un)marshalling support for [Apache Pekko HTTP](https://github.com/apache/incubator-pekko-http) via the following JSON libraries:
 - [Argonaut](http://argonaut.io)
@@ -46,7 +46,7 @@ resolvers ++= Resolver.sonatypeOssRepos("snapshots")
 
 ## Usage
 
-Use respective support trait or object, e.g. `ArgonautSupport`, `FailFastCirceSupport`, etc. into your Akka HTTP code which is supposed to (un)marshal from/to JSON. Don't forget to provide the type class instances for the respective JSON libraries, if needed.
+Use respective support trait or object, e.g. `ArgonautSupport`, `FailFastCirceSupport`, etc. into your Pekko HTTP code which is supposed to (un)marshal from/to JSON. Don't forget to provide the type class instances for the respective JSON libraries, if needed.
 
 ## Contribution policy ##
 
