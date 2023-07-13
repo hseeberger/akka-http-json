@@ -40,8 +40,6 @@ inThisBuild(
       "-target:jvm-1.8"
     ),
     resolvers += Resolver.ApacheMavenSnapshotsRepo,
-    resolvers += "Apache Pekko Staging" at
-    "https://repository.apache.org/content/groups/staging",
     scalafmtOnCompile := true,
     dynverSeparator   := "_" // the default `+` is not compatible with docker tags
   )
