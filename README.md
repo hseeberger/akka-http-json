@@ -10,7 +10,7 @@
 
 Snapshots are pushed to Sonatype. See below.
 
-This is a fork of [-http-json](https://github.com/hseeberger/-http-json). Thanks to Heiko Seeberger and all those who contributed to -http-json.
+This is a fork of [akka-http-json](https://github.com/hseeberger/akka-http-json). Thanks to Heiko Seeberger and all those who contributed to -http-json.
 
 pekko-http-json provides JSON (un)marshalling support for [Apache Pekko HTTP](https://github.com/apache/incubator-pekko-http) via the following JSON libraries:
 - [Argonaut](http://argonaut.io)
