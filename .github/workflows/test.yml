@@ -51,6 +51,6 @@ jobs:
           key: ${{ runner.os }}-sbt-${{ hashFiles('build.sbt', 'project/plugins.sbt') }}
       - name: Publish snapshot
         run: sbt +publish
-          env:
-            SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
-            SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
+        env:
+          SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
+          SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
