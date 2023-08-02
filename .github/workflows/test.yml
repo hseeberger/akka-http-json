@@ -29,6 +29,7 @@ jobs:
           key: ${{ runner.os }}-sbt-${{ hashFiles('build.sbt', 'project/plugins.sbt') }}
       - name: Run tests
         run: sbt +test
+
   publish:
     name: Publish Artifacts
     needs: [build]
@@ -49,7 +50,7 @@ jobs:
             ~/.sbt
           key: ${{ runner.os }}-sbt-${{ hashFiles('build.sbt', 'project/plugins.sbt') }}
       - name: Publish snapshot
-          run: sbt +publish
+        run: sbt +publish
           env:
             SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
             SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
