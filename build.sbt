@@ -39,7 +39,6 @@ inThisBuild(
       "-Ywarn-unused:imports",
       "-target:jvm-1.8"
     ),
-    resolvers += Resolver.ApacheMavenSnapshotsRepo,
     scalafmtOnCompile := true,
     dynverSeparator   := "_" // the default `+` is not compatible with docker tags
   )
@@ -223,7 +222,7 @@ lazy val library =
   new {
     object Version {
       val pekko              = "1.0.1"
-      val pekkoHttp          = "0.0.0+4468-963bd592-SNAPSHOT"
+      val pekkoHttp          = "1.0.0"
       val argonaut           = "6.3.8"
       val avro4s             = "4.0.12"
       val circe              = "0.14.1"
@@ -237,9 +236,9 @@ lazy val library =
       val zioJson            = "0.3.0"
     }
     // format: off
-    val pekkoHttp            = "org.apache.pekko"                     %% "pekko-http"             % Version.pekkoHttp
-    val pekkoHttpJacksonJava = "org.apache.pekko"                     %% "pekko-http-jackson"     % Version.pekkoHttp
-    val pekkoStream          = "org.apache.pekko"                     %% "pekko-stream"           % Version.pekko
+    val pekkoHttp            = "org.apache.pekko"                      %% "pekko-http"            % Version.pekkoHttp
+    val pekkoHttpJacksonJava = "org.apache.pekko"                      %% "pekko-http-jackson"    % Version.pekkoHttp
+    val pekkoStream          = "org.apache.pekko"                      %% "pekko-stream"          % Version.pekko
     val argonaut             = "io.argonaut"                           %% "argonaut"              % Version.argonaut
     val avro4sJson           = "com.sksamuel.avro4s"                   %% "avro4s-json"           % Version.avro4s
     val circe                = "io.circe"                              %% "circe-core"            % Version.circe
