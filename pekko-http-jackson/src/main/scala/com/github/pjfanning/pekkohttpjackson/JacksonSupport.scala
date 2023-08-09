@@ -44,7 +44,7 @@ import scala.util.Try
 import scala.util.control.NonFatal
 
 /**
-  * Automatic to and from JSON marshalling/unmarshalling using an in-scope Jackon's ObjectMapper
+  * Automatic to and from JSON marshalling/unmarshalling using an in-scope Jackson's ObjectMapper
   */
 object JacksonSupport extends JacksonSupport {
 
