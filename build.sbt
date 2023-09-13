@@ -23,7 +23,7 @@ inThisBuild(
         url("https://github.com/hseeberger")
       )
     ),
-    scalaVersion       := "2.13.10",
+    scalaVersion       := "2.13.12",
     crossScalaVersions := Seq(scalaVersion.value, "2.12.17"),
     scalacOptions ++= Seq(
       "-unchecked",
