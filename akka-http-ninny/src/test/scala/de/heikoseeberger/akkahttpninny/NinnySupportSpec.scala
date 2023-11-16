@@ -23,7 +23,7 @@ import akka.http.scaladsl.model.ContentTypes.{ `application/json`, `text/plain(U
 import akka.http.scaladsl.unmarshalling.{ Unmarshal, Unmarshaller }
 import akka.http.scaladsl.unmarshalling.Unmarshaller.UnsupportedContentTypeException
 import akka.stream.scaladsl.{ Sink, Source }
-import io.github.kag0.ninny.JsonException
+import nrktkt.ninny._
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AsyncWordSpec
@@ -35,14 +35,17 @@ object NinnySupportSpec {
   final case class Foo(bar: String) {
     require(bar startsWith "bar", "bar must start with 'bar'!")
   }
+  private object Foo {
+    implicit val toJson: ToSomeJson[Foo] = foo => obj("bar" --> foo.bar)
+    implicit val fromJson: FromJson[Foo] = FromJson.fromSome(_.bar.to[String].map(Foo(_)))
+  }
 }
 
 final class NinnySupportSpec extends AsyncWordSpec with Matchers with BeforeAndAfterAll {
   import NinnySupport._
   import NinnySupportSpec._
-  import io.github.kag0.ninny.Auto._
 
-  private implicit val system = ActorSystem()
+  private implicit val system: ActorSystem = ActorSystem()
 
   "NinnySupport" should {
     "enable marshalling and unmarshalling objects for which `ToJson` and `FromSomeJson` exist" in {
@@ -78,7 +81,7 @@ final class NinnySupportSpec extends AsyncWordSpec with Matchers with BeforeAndA
         .failed
         .map { err =>
           err shouldBe a[JsonException]
-          err should have message "Error converting bar from JSON: Expected string, got 5"
+          err should have message "Expected string, got 5"
         }
     }
 
@@ -105,7 +108,7 @@ final class NinnySupportSpec extends AsyncWordSpec with Matchers with BeforeAndA
       val `application/json-home` =
         MediaType.applicationWithFixedCharset("json-home", HttpCharsets.`UTF-8`, "json-home")
 
-      final object CustomNinnySupport extends NinnySupport {
+      object CustomNinnySupport extends NinnySupport {
         override def unmarshallerContentTypes = List(`application/json`, `application/json-home`)
       }
       import CustomNinnySupport._

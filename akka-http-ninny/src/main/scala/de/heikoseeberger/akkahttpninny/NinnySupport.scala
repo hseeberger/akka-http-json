@@ -25,7 +25,7 @@ import akka.http.scaladsl.unmarshalling.{ FromEntityUnmarshaller, Unmarshal, Unm
 import akka.http.scaladsl.util.FastFuture
 import akka.stream.scaladsl.{ Flow, Source }
 import akka.util.ByteString
-import io.github.kag0.ninny._
+import nrktkt.ninny._
 import java.nio.charset.StandardCharsets
 import scala.collection.immutable.Seq
 import scala.concurrent.Future
