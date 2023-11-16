@@ -23,7 +23,7 @@ import akka.http.scaladsl.model.ContentTypes.{ `application/json`, `text/plain(U
 import akka.http.scaladsl.unmarshalling.{ Unmarshal, Unmarshaller }
 import akka.http.scaladsl.unmarshalling.Unmarshaller.UnsupportedContentTypeException
 import akka.stream.scaladsl.{ Sink, Source }
-import io.github.kag0.ninny.JsonException
+import nrktkt.ninny.JsonException
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AsyncWordSpec
@@ -40,7 +40,7 @@ object NinnySupportSpec {
 final class NinnySupportSpec extends AsyncWordSpec with Matchers with BeforeAndAfterAll {
   import NinnySupport._
   import NinnySupportSpec._
-  import io.github.kag0.ninny.Auto._
+  import nrktkt.ninny.Auto._
 
   private implicit val system = ActorSystem()
 

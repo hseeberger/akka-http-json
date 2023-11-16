@@ -43,7 +43,7 @@ object ExampleApp {
   private def route(implicit sys: ActorSystem) = {
     import Directives._
     import NinnySupport._
-    import io.github.kag0.ninny.Auto._
+    import nrktkt.ninny.Auto._
 
     pathSingleSlash {
       post {

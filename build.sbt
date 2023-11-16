@@ -145,7 +145,7 @@ lazy val `akka-http-jsoniter-scala` =
 lazy val `akka-http-ninny` =
   project
     .enablePlugins(AutomateHeaderPlugin)
-    .settings(commonSettings)
+    .settings(commonSettings, withScala3)
     .settings(
       libraryDependencies ++= Seq(
         library.akkaHttp,
