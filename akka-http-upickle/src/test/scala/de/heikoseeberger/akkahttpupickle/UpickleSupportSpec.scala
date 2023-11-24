@@ -46,7 +46,7 @@ final class UpickleSupportSpec extends AsyncWordSpec with Matchers with BeforeAn
   import UpickleSupport._
   import UpickleSupportSpec._
 
-  private implicit val system = ActorSystem()
+  private implicit val system: ActorSystem = ActorSystem()
 
   "UpickleSupport" should {
     "enable marshalling and unmarshalling of case classes" in {

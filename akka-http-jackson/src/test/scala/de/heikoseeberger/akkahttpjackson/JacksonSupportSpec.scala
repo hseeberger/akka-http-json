@@ -26,6 +26,7 @@ import akka.stream.scaladsl.{ Sink, Source }
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AsyncWordSpec
+
 import scala.concurrent.Await
 import scala.concurrent.duration.DurationInt
 
@@ -40,7 +41,7 @@ final class JacksonSupportSpec extends AsyncWordSpec with Matchers with BeforeAn
   import JacksonSupport._
   import JacksonSupportSpec._
 
-  private implicit val system = ActorSystem()
+  private implicit val system: ActorSystem = ActorSystem()
 
   "JacksonSupport" should {
     "should enable marshalling and unmarshalling of case classes" in {

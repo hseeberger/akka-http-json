@@ -2,6 +2,7 @@
 // Build settings
 // *****************************************************************************
 
+lazy val scalaReleaseVersion = SettingKey[Int]("scalaReleaseVersion")
 inThisBuild(
   Seq(
     organization     := "de.heikoseeberger",
@@ -35,7 +36,13 @@ inThisBuild(
       "-target:jvm-1.8"
     ),
     scalafmtOnCompile := true,
-    dynverSeparator   := "_" // the default `+` is not compatible with docker tags,
+    dynverSeparator   := "_", // the default `+` is not compatible with docker tags,
+    scalaReleaseVersion := {
+      lazy val v = scalaVersion.value
+      CrossVersion.partialVersion(v).map(_._1.toInt).getOrElse {
+        throw new RuntimeException(s"could not get Scala release version from $v")
+      }
+    }
   )
 )
 
@@ -86,7 +93,7 @@ lazy val `akka-http-argonaut` =
 lazy val `akka-http-circe` =
   project
     .enablePlugins(AutomateHeaderPlugin)
-    .settings(commonSettings)
+    .settings(commonSettings, withScala3)
     .settings(
       libraryDependencies ++= Seq(
         library.akkaHttp,
@@ -94,22 +101,32 @@ lazy val `akka-http-circe` =
         library.circeParser,
         library.akkaStream   % Provided,
         library.circeGeneric % Test,
-        library.scalaTest    % Test,
-      )
+        library.scalaTest % Test,
+      ),
+      Test / unmanagedSourceDirectories ++= {
+        if (scalaReleaseVersion.value > 2) {
+          Seq(
+            (LocalRootProject / baseDirectory).value / "src" / "test" / "scala-3"
+          )
+        } else {
+          Seq(
+            (LocalRootProject / baseDirectory).value / "src" / "test" / "scala-2",
+          )
+        }
+      }
     )
 
 lazy val `akka-http-jackson` =
   project
     .enablePlugins(AutomateHeaderPlugin)
-    .settings(commonSettings)
+    .settings(commonSettings, withScala3)
     .settings(
       libraryDependencies ++= Seq(
         library.akkaHttp,
         library.akkaHttpJacksonJava,
         library.jacksonModuleScala,
-        "org.scala-lang"   % "scala-reflect" % scalaVersion.value,
         library.akkaStream % Provided,
-        library.scalaTest  % Test,
+        library.scalaTest % Test,
       )
     )
 
@@ -171,7 +188,7 @@ lazy val `akka-http-play-json` =
 lazy val `akka-http-upickle` =
   project
     .enablePlugins(AutomateHeaderPlugin)
-    .settings(commonSettings)
+    .settings(commonSettings, withScala3)
     .settings(
       libraryDependencies ++= Seq(
         library.akkaHttp,
@@ -232,13 +249,13 @@ lazy val library =
       val argonaut           = "6.3.8"
       val avro4s             = "4.0.12"
       val circe              = "0.14.1"
-      val jacksonModuleScala = "2.13.1"
+      val jacksonModuleScala = "2.14.0"
       val json4s             = "4.0.6"
       val jsoniterScala      = "2.17.9"
       val ninny              = "0.7.0"
       val play               = "2.9.2"
-      val scalaTest          = "3.2.11"
-      val upickle            = "1.5.0"
+      val scalaTest          = "3.2.14"
+      val upickle            = "1.6.0"
       val zioJson            = "0.3.0"
     }
     // format: off
