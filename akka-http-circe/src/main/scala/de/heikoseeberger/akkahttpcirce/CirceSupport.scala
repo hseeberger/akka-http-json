@@ -64,7 +64,7 @@ trait FailFastCirceSupport extends BaseCirceSupport with FailFastUnmarshaller
   */
 object ErrorAccumulatingCirceSupport extends ErrorAccumulatingCirceSupport {
   final case class DecodingFailures(failures: NonEmptyList[DecodingFailure]) extends Exception {
-    override def getMessage = failures.toList.map(_.show).mkString("\n")
+    override def getMessage: String = failures.toList.map(_.show).mkString("\n")
   }
 }
 

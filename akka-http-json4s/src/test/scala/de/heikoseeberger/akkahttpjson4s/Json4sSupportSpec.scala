@@ -117,7 +117,7 @@ final class Json4sSupportSpec extends AsyncWordSpec with Matchers with BeforeAnd
       val `application/json-home` =
         MediaType.applicationWithFixedCharset("json-home", HttpCharsets.`UTF-8`, "json-home")
 
-      final object CustomJson4sSupport extends Json4sSupport {
+      object CustomJson4sSupport extends Json4sSupport {
         override def unmarshallerContentTypes = List(`application/json`, `application/json-home`)
       }
       import CustomJson4sSupport._

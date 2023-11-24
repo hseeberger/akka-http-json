@@ -32,7 +32,7 @@ import scala.io.StdIn
 
 object ExampleApp {
 
-  final object Foo {
+  object Foo {
     implicit val fooCodec: CodecJson[Foo] =
       casecodec1(Foo.apply, (f: Foo) => Option(f.bar))("bar")
   }
