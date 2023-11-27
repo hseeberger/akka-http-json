@@ -102,7 +102,7 @@ trait ZioJsonSupport {
     Unmarshaller(_ =>
       bs => {
         val decoded = jd.decodeJsonStreamInput(ZStream.fromIterable(bs))
-        Unsafe.unsafeCompat(implicit u => rt.unsafe.runToFuture(decoded))
+        Unsafe.unsafe(implicit u => rt.unsafe.runToFuture(decoded))
       }
     )
 

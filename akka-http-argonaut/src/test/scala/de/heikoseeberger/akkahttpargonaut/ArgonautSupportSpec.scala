@@ -107,7 +107,7 @@ final class ArgonautSupportSpec extends AsyncWordSpec with Matchers with BeforeA
       val `application/json-home` =
         MediaType.applicationWithFixedCharset("json-home", HttpCharsets.`UTF-8`, "json-home")
 
-      final object CustomArgonautSupport extends ArgonautSupport {
+      object CustomArgonautSupport extends ArgonautSupport {
         override def unmarshallerContentTypes = List(`application/json`, `application/json-home`)
       }
       import CustomArgonautSupport._

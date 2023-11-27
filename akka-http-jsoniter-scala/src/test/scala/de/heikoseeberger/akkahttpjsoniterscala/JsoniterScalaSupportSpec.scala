@@ -95,7 +95,7 @@ final class JsoniterScalaSupportSpec extends AsyncWordSpec with Matchers with Be
       val `application/json-home` =
         MediaType.applicationWithFixedCharset("json-home", HttpCharsets.`UTF-8`, "json-home")
 
-      final object CustomJsoniterScalaSupport extends JsoniterScalaSupport {
+      object CustomJsoniterScalaSupport extends JsoniterScalaSupport {
         override def unmarshallerContentTypes: List[ContentTypeRange] =
           List(`application/json`, `application/json-home`)
       }
