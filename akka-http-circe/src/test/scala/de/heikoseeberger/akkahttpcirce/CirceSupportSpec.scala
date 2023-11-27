@@ -26,7 +26,7 @@ import akka.stream.scaladsl.{ Sink, Source }
 import cats.data.{ NonEmptyList, ValidatedNel }
 import cats.implicits.toShow
 import io.circe.CursorOp.DownField
-import io.circe.{ DecodingFailure, Encoder, ParsingFailure, Printer }
+import io.circe.{ DecodingFailure, ParsingFailure, Printer }
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AsyncWordSpec
@@ -72,24 +72,6 @@ final class CirceSupportSpec
         .to[RequestEntity]
         .flatMap(Unmarshal(_).to[Foo])
         .map(_ shouldBe foo)
-    }
-
-    "enable streamed marshalling and unmarshalling for json arrays" in {
-      val foos = (0 to 100).map(i => Foo(s"bar-$i")).toList
-
-      // Don't know why, the encoder is not resolving alongside the marshaller
-      // this only happens if we use the implicits from BaseCirceSupport
-      // so, tried to create it before and guess what? it worked.
-      // not sure if this is a bug, but, the error is this:
-      //  diverging implicit expansion for type io.circe.Encoder[A]
-      //  [error] starting with lazy value encodeZoneOffset in object Encoder
-      implicit val e = implicitly[Encoder[Foo]]
-
-      Marshal(Source(foos))
-        .to[ResponseEntity]
-        .flatMap(entity => Unmarshal(entity).to[SourceOf[Foo]])
-        .flatMap(_.runWith(Sink.seq))
-        .map(_ shouldBe foos)
     }
 
     "provide proper error messages for requirement errors" in {
@@ -139,6 +121,15 @@ final class CirceSupportSpec
     import io.circe.generic.auto._
 
     behave like commonCirceSupport(FailFastCirceSupport)
+
+    "enable streamed marshalling and unmarshalling for json arrays" in {
+      val foos = (0 to 100).map(i => Foo(s"bar-$i")).toList
+      Marshal(Source(foos))
+        .to[ResponseEntity]
+        .flatMap(entity => Unmarshal(entity).to[SourceOf[Foo]])
+        .flatMap(_.runWith(Sink.seq))
+        .map(_ shouldBe foos)
+    }
 
     "fail with a ParsingFailure when unmarshalling empty entities with safeUnmarshaller" in {
       val entity = HttpEntity.empty(`application/json`)
@@ -190,6 +181,16 @@ final class CirceSupportSpec
     import io.circe.generic.auto._
 
     behave like commonCirceSupport(ErrorAccumulatingCirceSupport)
+
+    "enable streamed marshalling and unmarshalling for json arrays" in {
+      val foos = (0 to 100).map(i => Foo(s"bar-$i")).toList
+      Marshal(Source(foos))
+        .to[ResponseEntity]
+        .flatMap(entity => Unmarshal(entity).to[SourceOf[Foo]])
+        .flatMap(_.runWith(Sink.seq))
+        .map(_ shouldBe foos)
+
+    }
 
     "fail with a NonEmptyList of Errors when unmarshalling empty entities with safeUnmarshaller" in {
       val entity = HttpEntity.empty(`application/json`)
