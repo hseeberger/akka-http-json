@@ -22,6 +22,7 @@ import akka.http.scaladsl.model.HttpRequest
 import akka.http.scaladsl.server.Directives
 import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.stream.scaladsl.Source
+
 import scala.concurrent.Await
 import scala.concurrent.duration._
 import scala.io.StdIn
@@ -31,7 +32,7 @@ object ExampleApp {
   final case class Foo(bar: String)
 
   def main(args: Array[String]): Unit = {
-    implicit val system = ActorSystem()
+    implicit val system: ActorSystem = ActorSystem()
 
     // provide an implicit ObjectMapper if you want serialization/deserialization to use it
     // instead of a default ObjectMapper configured only with DefaultScalaModule provided
@@ -64,7 +65,7 @@ object ExampleApp {
       }
     } ~ pathPrefix("stream") {
       post {
-        entity(as[SourceOf[Foo]]) { fooSource: SourceOf[Foo] =>
+        entity(as[SourceOf[Foo]]) { (fooSource: SourceOf[Foo]) =>
           complete(fooSource.throttle(1, 2.seconds))
         }
       } ~ get {

@@ -28,5 +28,5 @@ trait UpickleSupport extends UpickleCustomizationSupport {
 
   override type Api = upickle.default.type
 
-  override def api: Api = upickle.default
+  override val api: Api = upickle.default
 }
