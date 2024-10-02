@@ -40,7 +40,7 @@ inThisBuild(
 )
 
 val withScala3 = Seq(
-  crossScalaVersions += "3.2.1",
+  crossScalaVersions += "3.3.1",
 )
 
 // *****************************************************************************
@@ -86,7 +86,7 @@ lazy val `akka-http-argonaut` =
 lazy val `akka-http-circe` =
   project
     .enablePlugins(AutomateHeaderPlugin)
-    .settings(commonSettings)
+    .settings(commonSettings, withScala3)
     .settings(
       libraryDependencies ++= Seq(
         library.akkaHttp,
@@ -227,11 +227,11 @@ lazy val commonSettings =
 lazy val library =
   new {
     object Version {
-      val akka               = "2.6.20"
-      val akkaHttp           = "10.2.10"
+      val akka               = "2.8.5"
+      val akkaHttp           = "10.5.3"
       val argonaut           = "6.3.8"
       val avro4s             = "4.0.12"
-      val circe              = "0.14.1"
+      val circe              = "0.14.6"
       val jacksonModuleScala = "2.13.1"
       val json4s             = "4.0.6"
       val jsoniterScala      = "2.17.9"
